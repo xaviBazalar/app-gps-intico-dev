@@ -1,0 +1,18 @@
+ion-button {
+    --background: #E7360F;
+}
+
+ion-router-link{
+    color:#E7360F;
+    margin:auto;
+}
+
+ion-card{
+    position: absolute;
+    left: 48%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-52%, -50%);
+    width: 82%;
+    border-radius: 20px;
+}
