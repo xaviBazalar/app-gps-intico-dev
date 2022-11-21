@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>tomar foto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-card>
+      <ion-button (click)="camara()" shape="round" class="mitad">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
+  
+      <ion-button (click)="galeria()" shape="round" class="mitad">
+        <ion-icon name="images-outline"></ion-icon>
+      </ion-button>
+    </ion-card>
+    
+    <ion-row>
+      <ion-col size="3" *ngFor="let image of templateImages">
+        <ion-card>
+          <!-- <img [src]="image" id="file"> -->
+          <ion-img [src]="image" id="file" ></ion-img>
+          <!-- <ion-input type="img" [src]="image" id="file" ></ion-input> -->
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  
+    <ion-button (click)="aceptar()" expand="full" color="success">
+      Aceptar
+    </ion-button>
+  
+    <ion-button (click)="cerrar()" expand="full" color="danger">
+      Cerrar
+    </ion-button>
+  </form>
+</ion-content>

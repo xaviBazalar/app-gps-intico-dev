@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="first"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>Asignación de Tarea</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    
+    <ion-card>
+      <ion-card-content>      
+        <ion-label>Planificacion de Trabajo</ion-label>
+        <ion-item>
+          <ion-select interface="popover" placeholder="--Seleccione--">
+            <ion-select-option value="apples">--Seleccione--</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-label>Maquinaria</ion-label>
+        <ion-item>
+          <ion-select interface="popover" placeholder="--Seleccione--">
+            <ion-select-option value="apples">--Seleccione--</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-label>Tarea de la maquinaria</ion-label>
+        <ion-item>
+          <ion-select interface="popover" placeholder="--Seleccione--">
+            <ion-select-option value="apples">--Seleccione--</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-button color="danger" expand="full" (click)="abrirMaquinaTrabajo()">Inicio de Trabajo</ion-button>
+    </ion-card>
+  </form>
+</ion-content>
