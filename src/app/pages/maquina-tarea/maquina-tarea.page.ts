@@ -5,6 +5,7 @@ import { TomaTiempoPage } from '../toma-tiempo/toma-tiempo.page';
 import { Geolocation, Geoposition } from '@awesome-cordova-plugins/geolocation/ngx';
 // import { PositionError } from '@awesome-cordova-plugins/geolocation';
 import { BehaviorSubject } from 'rxjs';
+import { MaquinariaService } from '../../services/maquinaria.service';
 
 @Component({
   selector: 'app-maquina-tarea',
@@ -38,7 +39,8 @@ export class MaquinaTareaPage implements OnInit {
   constructor(private modalController: ModalController,
               private menuController: MenuController,
               private modalCtrl: ModalController,
-              private geoLocation: Geolocation) {
+              private geoLocation: Geolocation,
+              private maquinariaSrv: MaquinariaService) {
     //this.menuController.enable(false);
     this.getGep();
   }
@@ -89,18 +91,7 @@ export class MaquinaTareaPage implements OnInit {
        this.cargandoGeo = false;
      });
 
-    // const watch = this.geoLocation.watchPosition();
-    // watch.subscribe((position) => {
-    //   if ((position as Geoposition).coords !== undefined) {
-    //     const geoposition = (position as Geoposition);
-    //     // console.log('Latitude: ' + geoposition.coords.latitude + ' - Longitude: ' + geoposition.coords.longitude);
-    //     const coords = `${ geoposition.coords.latitude },${ geoposition.coords.longitude }`;
-    //     this.post.coords = coords;
-    //   } else {
-    //     const positionError = (position as PositionError);
-    //     console.log('Error ' + positionError.code + ': ' + positionError.message);
-    //   }
-    // });
+     this.maquinariaSrv.obtenerUbicacion('4656765');
   }
 
   iniciarOperativo(tipoBoton: number){
