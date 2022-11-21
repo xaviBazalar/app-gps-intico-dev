@@ -1,0 +1,127 @@
+<ion-header>
+  <ion-toolbar>
+    <!-- <ion-buttons slot="start">
+      <ion-menu-button menu="first"></ion-menu-button>
+    </ion-buttons> -->
+    
+    <ion-title>Tarea a Realizar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content color="tertiary">
+  <form>
+    <fieldset>
+      <legend>Maquina</legend>
+        <ion-label>Izaje500 toneladas</ion-label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <ion-label>5 Hrs SLA</ion-label>
+      
+        <br/>
+        <ion-label>09-nov-2022 13:05 hrs</ion-label> &nbsp;&nbsp;&nbsp;
+        <ion-label>Turno P.M</ion-label>
+    </fieldset>
+
+    <fieldset>
+      <legend> GPS MAQUINARIA </legend>
+      <ion-label>Encendido: ON</ion-label>&nbsp;&nbsp;&nbsp;
+      <ion-label>Pos: {{ post.coords }} </ion-label>
+      <ion-spinner name="lines-small"
+                   *ngIf="!cargandoGeo"></ion-spinner>
+      <ion-toggle slot="end"
+                  [(ngModel)]="post.posicion"
+                  (ionChange)="getGep()"
+                  *ngIf="!cargandoGeo"></ion-toggle>
+      <br />
+
+      <ion-label>Movimiento: SI</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
+      <ion-label>Velocidad: 55Km/h</ion-label>
+    </fieldset>
+    
+    <ion-card>
+      <ion-card-content>
+        <ion-button id="open-Operativo" expand="block" color="success">
+          Operativo {{ timeOperativo | async }} <ion-icon name="play-circle" slot="end"></ion-icon>
+        </ion-button>
+        <ion-button id="open-Pausa" expand="block" color="warning">
+          Pausa {{ timePausa | async }} <ion-icon name="pause-circle" slot="end"></ion-icon>
+        </ion-button>
+        <ion-button id="open-Detencion" expand="block" color="danger">
+          Detención {{ timeDetencion | async }} <ion-icon name="stop-circle" slot="end"></ion-icon>
+        </ion-button>
+        <ion-button color="dark" class="mitad" (click)="abrirTomarFoto()">
+          <ion-icon name="eye"></ion-icon>
+        </ion-button>
+        <ion-button color="dark" class="mitad" (click)="abrirTomarTiempo()">
+          <ion-icon name="alarm"></ion-icon>
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    
+    <ion-card>
+      <ion-card-content>
+        <ion-button expand="full" (click)="finalizar()">Finalizar</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </form>
+
+  <ion-modal #modalOperativo trigger="open-Operativo" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>OPERATIVO</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="modalOperativo.dismiss()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+
+        <ion-button expand="block">Efectivo</ion-button>
+        <ion-button expand="block">No Efectivo</ion-button>
+
+        <ion-button *ngIf="stateOperativo === 'stop'" color="success" expand="block" (click)="iniciarOperativo(1)">Iniciar</ion-button>
+        <ion-button *ngIf="stateOperativo === 'start'" color="danger" expand="block" (click)="stopTimerOperativo()">Detener</ion-button>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalPausa trigger="open-Pausa" [initialBreakpoint]="1" [breakpoints]="[0, 0.50, 0.75, 1]">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>Pausa</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="modalPausa.dismiss()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+
+        <ion-button expand="block">Desplazamiento</ion-button>
+        <ion-button expand="block">Permiso</ion-button>
+        <ion-button expand="block">Colacion</ion-button>
+        <ion-button expand="block">chl Seguridad</ion-button>
+
+        <ion-button *ngIf="statePausa === 'stop'" color="success"  expand="block" (click)="iniciarPausa(2)">Iniciar</ion-button>
+        <ion-button *ngIf="statePausa === 'start'" color="danger" expand="block" (click)="stopTimerPausa()">Detener</ion-button>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalDetencion trigger="open-Detencion" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.25, 0.5, 0.75]">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>Detencion</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="modalDetencion.dismiss()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+
+        <ion-button expand="block">Falla Mecanica</ion-button>
+        <ion-button expand="block">Condiciones Climaticas</ion-button>
+
+        <ion-button *ngIf="stateDetencion === 'stop'" color="success"  expand="block" (click)="iniciarDetencion(3)">Iniciar</ion-button>
+        <ion-button *ngIf="stateDetencion === 'start'" color="danger" expand="block" (click)="stopTimerDetencion()">Detener</ion-button>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
