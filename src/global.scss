@@ -25,7 +25,13 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+
+
 @font-face {
     font-family: 'Montserrat';
-    src: url('/assets/font/Montserrat-Regular.ttf');
+    src: url('/assets/fonts/MontserratRegular.ttf');
+}
+
+*{
+    font-family: "Montserrat" !important;
 }
