@@ -16,7 +16,11 @@ export class MaquinaTareaPage implements OnInit {
   post = {
     mensaje: '',
     coords: '',
-    posicion: false
+    posicion: false,
+    encendido: '',
+    nombre: '',
+    velocidad: 0,
+    movimiento:''
   };
 
   cargandoGeo = false;
@@ -82,7 +86,7 @@ export class MaquinaTareaPage implements OnInit {
     this.cargandoGeo = true;
 
     // this.geoLocation.getCurrentPosition().then((resp) => {
-    //   this.cargandoGeo = false;
+    //   this.cargandoGeo = false;  
     //   const coords = `${ resp.coords.latitude },${ resp.coords.longitude }`;
     //   this.post.coords = coords;
     //   console.log(coords);
@@ -93,13 +97,29 @@ export class MaquinaTareaPage implements OnInit {
 
      this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
       const result = data.result;
-      // console.log('--flespi--', data.result);
-      const { telemetry   } = result[0];
-      // console.log('--telemetry--', telemetry);
-      const { latitude, longitude } = telemetry.position;
+      console.log('--flespi--', result[0]);
+      const { telemetry, connected } = result[0];
+      const { 'device.name': nameMachine } = telemetry;
+      // console.log('--name--', nameMachine);
+      const { latitude, longitude, speed } = telemetry.position;
       const coords = `${ latitude },${ longitude }`;
-      // console.log('--coords--', coords);
+      
+      this.post.nombre = nameMachine;
       this.post.coords = coords;
+
+      if( speed === 0){
+        this.post.velocidad = 0;
+        this.post.movimiento = 'NO'
+      }else{
+        this.post.velocidad = speed;
+        this.post.movimiento = 'SI'
+      }
+
+      if(connected){
+        this.post.encendido = 'ON'
+      }else{
+        this.post.encendido = 'OFF'
+      }
      });
   }
 

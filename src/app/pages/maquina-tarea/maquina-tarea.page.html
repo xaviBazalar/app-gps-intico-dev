@@ -11,7 +11,7 @@
 <ion-content color="tertiary">
   <form>
     <fieldset>
-      <legend>Maquina</legend>
+      <legend>Maquina: {{ post.nombre }} </legend>
         <ion-label>Izaje500 toneladas</ion-label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <ion-label>5 Hrs SLA</ion-label>
       
@@ -22,7 +22,7 @@
 
     <fieldset>
       <legend> GPS MAQUINARIA </legend>
-      <ion-label>Encendido: ON</ion-label>&nbsp;&nbsp;&nbsp;
+      <ion-label>Encendido: {{ post.encendido }}</ion-label>&nbsp;&nbsp;&nbsp;
       <ion-label>Pos: {{ post.coords }} </ion-label>
       <ion-spinner name="lines-small"
                    *ngIf="!cargandoGeo"></ion-spinner>
@@ -32,8 +32,8 @@
                   *ngIf="!cargandoGeo"></ion-toggle> -->
       <br />
 
-      <ion-label>Movimiento: SI</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
-      <ion-label>Velocidad: 55Km/h</ion-label>
+      <ion-label>Movimiento: {{ post.movimiento }}</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
+      <ion-label>Velocidad: {{ post.velocidad }} Km/h</ion-label>
     </fieldset>
     
     <ion-card>
