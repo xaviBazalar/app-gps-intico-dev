@@ -21,16 +21,13 @@ export class MaquinariaService {
       })
     }
     /* 4656765 */
-    const url = `${ URL }/${ id }?fields=telemetry`
+    const url = `${ URL }/${ id }`;//?fields=telemetry
 
-    console.log(url);
-    console.log(options);
     const data =  this.http.get(url, options).subscribe((data:any) => {
-      console.log(data.result);
-
-      // { telemetry } 
+      console.log('result', data.result)
+      return data.result; 
     });
 
-    console.log(data);
+    console.log('data', data);
   }
 }

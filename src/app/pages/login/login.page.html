@@ -1,21 +1,19 @@
-
-
 <ion-content color="tertiary">
   <ion-card>
     
     <ion-card-content>
-      <form [formGroup]="formularioLogin">
+      <form [formGroup]="formularioLogin" (ngSubmit)="iniciarSesion()">
         <ion-img src="assets/Logo-IntiCo-HighRes.png" alt="Logo"></ion-img>
 
         <ion-item>
             <ion-label position="floating">Nombre</ion-label>
-            <ion-input formControlName="nombre"></ion-input>
+            <ion-input formControlName="nombre" [(ngModel)]="usuario.user"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Password</ion-label>
-          <ion-input formControlName="password" type="password"></ion-input>
+          <ion-input formControlName="password" type="password" [(ngModel)]="usuario.pass"></ion-input>
         </ion-item>
-        <ion-button expand="block" shape="round" routerLink="/inicio">Ingresar</ion-button>
+        <ion-button expand="block" shape="round" (click)="iniciarSesion()">Ingresar</ion-button>
         <ion-item >
           <ion-router-link routerLink="/recuperar-password">Recuperar contraseña</ion-router-link>
         </ion-item>

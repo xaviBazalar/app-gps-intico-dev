@@ -12,26 +12,26 @@ export class PhotoService {
 
   constructor(private http: HttpClient, private fileTransfer: FileTransfer) { }
 
-  subirImagen(img: string){
+  // subirImagen(img: string){
 
-    console.log(img);
-    console.log(URL);
-    const options: FileUploadOptions = {
-      fileKey: 'archivo',
-      headers:{
-        'x-token': ''//usuario.token
-      }
-    };
+  //   console.log(img);
+  //   console.log(URL);
+  //   const options: FileUploadOptions = {
+  //     fileKey: 'archivo',
+  //     headers:{
+  //       'x-token': ''//usuario.token
+  //     }
+  //   };
 
-    const fileTransferObject: FileTransferObject = this.fileTransfer.create();
+  //   const fileTransferObject: FileTransferObject = this.fileTransfer.create();
 
-    fileTransferObject.upload( img, `${ URL }/upload`, options)
-      .then( data => {
-        console.log(data);
-      }).catch(ex => {
-        console.log('Error en la carga', ex);
-      });
-  }
+  //   fileTransferObject.upload( img, `${ URL }/upload`, options)
+  //     .then( data => {
+  //       console.log(data);
+  //     }).catch(ex => {
+  //       console.log('Error en la carga', ex);
+  //     });
+  // }
 
   addFileToApp( data:any ){
     return this.http.post(`${ URL }/upload`, data)

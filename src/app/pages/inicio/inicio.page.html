@@ -1,20 +1,21 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
 
-  <ion-header>
-    <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="first"></ion-menu-button>
+    </ion-buttons>
 
-      <ion-buttons slot="start">
-        <ion-menu-button menu="first"></ion-menu-button>
-      </ion-buttons>
+    <ion-title>Menu Tareas</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-      <ion-title>Menu Tareas</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content color="tertiary">
+<ion-content color="tertiary">
+  <ion-card>
     <ion-list>
       <ion-item *ngFor="let c of maquinaria" detail 
                 [routerLink]="c.redirect">
         {{ c.nombre }}
       </ion-item>
     </ion-list>
-  </ion-content>
+  </ion-card>
+</ion-content>
