@@ -12,6 +12,8 @@ const URL = environment.url;
 
     constructor(private http: HttpClient) { }
 
+    
+
     login( user: string, pass: string ){
 
     //   const options = {
