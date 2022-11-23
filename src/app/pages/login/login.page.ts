@@ -19,6 +19,8 @@ export class LoginPage implements OnInit {
     pass: ''
   }
 
+  errorMsg = '';
+
   constructor(public fb: FormBuilder, 
               private menu: MenuController,
               private route: Router,
@@ -35,10 +37,16 @@ export class LoginPage implements OnInit {
   }
 
   iniciarSesion(){
-    console.log(this.usuario);
+    //console.log(this.usuario);
     this.loginService.validateLogin(this.usuario.user, this.usuario.pass).subscribe(
       (data:any)=>{
-        console.log(data)
+        console.log('rpta', data.usuario);
+        if(data.ok){
+          console.log('paso');
+          this.route.navigate(['./inicio']);
+        }else{
+          this.errorMsg = data.msg;
+        }
       }
     );
     

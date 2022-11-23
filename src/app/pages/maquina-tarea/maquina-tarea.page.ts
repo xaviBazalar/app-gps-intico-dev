@@ -42,7 +42,7 @@ export class MaquinaTareaPage implements OnInit {
               private geoLocation: Geolocation,
               private maquinariaSrv: MaquinariaService) {
     //this.menuController.enable(false);
-    this.getGep();
+    this.getGep('4656765');
   }
 
   ngOnInit() {
@@ -73,33 +73,42 @@ export class MaquinaTareaPage implements OnInit {
     (await modal).present();
   }
 
-  getGep(){
-    if(!this.post.posicion){
-      this.post.coords = '';
-      return;
-    }
+  getGep(idMachine: string){
+    // if(!this.post.posicion){
+    //   this.post.coords = '';
+    //   return;
+    // }
 
     this.cargandoGeo = true;
 
-    this.geoLocation.getCurrentPosition().then((resp) => {
-      this.cargandoGeo = false;
-      const coords = `${ resp.coords.latitude },${ resp.coords.longitude }`;
-      this.post.coords = coords;
-      console.log(coords);
-     }).catch((error) => {
-       console.log('Error getting location', error);
-       this.cargandoGeo = false;
-     });
+    // this.geoLocation.getCurrentPosition().then((resp) => {
+    //   this.cargandoGeo = false;
+    //   const coords = `${ resp.coords.latitude },${ resp.coords.longitude }`;
+    //   this.post.coords = coords;
+    //   console.log(coords);
+    //  }).catch((error) => {
+    //    console.log('Error getting location', error);
+    //    this.cargandoGeo = false;
+    //  });
 
-     this.maquinariaSrv.obtenerUbicacion('4656765');
+     this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
+      const result = data.result;
+      // console.log('--flespi--', data.result);
+      const { telemetry   } = result[0];
+      // console.log('--telemetry--', telemetry);
+      const { latitude, longitude } = telemetry.position;
+      const coords = `${ latitude },${ longitude }`;
+      // console.log('--coords--', coords);
+      this.post.coords = coords;
+     });
   }
 
-  iniciarOperativo(tipoBoton: number){
+  iniciarOperativo(){
     this.stateOperativo = 'start';
     clearInterval(this.intervalOperativo);
     this.timerOperativo = 0;
     this.intervalOperativo = setInterval(() => {
-      this.updateTimerOperativo(tipoBoton);
+      this.updateTimerOperativo();
     },1000);
   }
 
@@ -109,7 +118,7 @@ export class MaquinaTareaPage implements OnInit {
     this.stateOperativo = 'stop';
   }
 
-  updateTimerOperativo(tipoBoton: number){
+  updateTimerOperativo(){
     this.timerOperativo++;
     let minutes: any = this.timerOperativo / 60;
     let seconds: any = this.timerOperativo % 60;
@@ -121,12 +130,12 @@ export class MaquinaTareaPage implements OnInit {
     this.timeOperativo.next(text);
   }
 
-  iniciarPausa(tipoBoton: number){
+  iniciarPausa(){
     this.statePausa = 'start';
     clearInterval(this.intervalPausa);
     this.timerPausa = 0;
     this.intervalPausa = setInterval(() => {
-      this.updateTimerPausa(tipoBoton);
+      this.updateTimerPausa();
     },1000);
   }
 
@@ -136,7 +145,7 @@ export class MaquinaTareaPage implements OnInit {
     this.statePausa = 'stop';
   }
 
-  updateTimerPausa(tipoBoton: number){
+  updateTimerPausa(){
     this.timerPausa++;
     let minutes: any = this.timerPausa / 60;
     let seconds: any = this.timerPausa % 60;
@@ -148,12 +157,12 @@ export class MaquinaTareaPage implements OnInit {
     this.timePausa.next(text);
   }
 
-  iniciarDetencion(tipoBoton: number){
+  iniciarDetencion(){
     this.stateDetencion = 'start';
     clearInterval(this.intervalDetencion);
     this.timerDetencion = 0;
     this.intervalDetencion = setInterval(() => {
-      this.updateTimerDetencion(tipoBoton);
+      this.updateTimerDetencion();
     },1000);
   }
 
@@ -163,7 +172,7 @@ export class MaquinaTareaPage implements OnInit {
     this.stateDetencion = 'stop';
   }
 
-  updateTimerDetencion(tipoBoton: number){
+  updateTimerDetencion(){
     this.timerDetencion++;
     let minutes: any = this.timerDetencion / 60;
     let seconds: any = this.timerDetencion % 60;

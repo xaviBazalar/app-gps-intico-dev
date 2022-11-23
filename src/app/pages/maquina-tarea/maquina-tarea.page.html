@@ -26,10 +26,10 @@
       <ion-label>Pos: {{ post.coords }} </ion-label>
       <ion-spinner name="lines-small"
                    *ngIf="!cargandoGeo"></ion-spinner>
-      <ion-toggle slot="end"
+      <!-- <ion-toggle slot="end"
                   [(ngModel)]="post.posicion"
                   (ionChange)="getGep()"
-                  *ngIf="!cargandoGeo"></ion-toggle>
+                  *ngIf="!cargandoGeo"></ion-toggle> -->
       <br />
 
       <ion-label>Movimiento: SI</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -76,7 +76,7 @@
         <ion-button expand="block">Efectivo</ion-button>
         <ion-button expand="block">No Efectivo</ion-button>
 
-        <ion-button *ngIf="stateOperativo === 'stop'" color="success" expand="block" (click)="iniciarOperativo(1)">Iniciar</ion-button>
+        <ion-button *ngIf="stateOperativo === 'stop'" color="success" expand="block" (click)="iniciarOperativo()">Iniciar</ion-button>
         <ion-button *ngIf="stateOperativo === 'start'" color="danger" expand="block" (click)="stopTimerOperativo()">Detener</ion-button>
 
       </ion-content>
@@ -98,7 +98,7 @@
         <ion-button expand="block">Colacion</ion-button>
         <ion-button expand="block">chl Seguridad</ion-button>
 
-        <ion-button *ngIf="statePausa === 'stop'" color="success"  expand="block" (click)="iniciarPausa(2)">Iniciar</ion-button>
+        <ion-button *ngIf="statePausa === 'stop'" color="success"  expand="block" (click)="iniciarPausa()">Iniciar</ion-button>
         <ion-button *ngIf="statePausa === 'start'" color="danger" expand="block" (click)="stopTimerPausa()">Detener</ion-button>
 
       </ion-content>
@@ -118,7 +118,7 @@
         <ion-button expand="block">Falla Mecanica</ion-button>
         <ion-button expand="block">Condiciones Climaticas</ion-button>
 
-        <ion-button *ngIf="stateDetencion === 'stop'" color="success"  expand="block" (click)="iniciarDetencion(3)">Iniciar</ion-button>
+        <ion-button *ngIf="stateDetencion === 'stop'" color="success"  expand="block" (click)="iniciarDetencion()">Iniciar</ion-button>
         <ion-button *ngIf="stateDetencion === 'start'" color="danger" expand="block" (click)="stopTimerDetencion()">Detener</ion-button>
 
       </ion-content>
