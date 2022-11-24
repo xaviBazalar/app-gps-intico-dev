@@ -20,7 +20,9 @@ export class AsignaTareaPage implements OnInit {
   const modal = this.modalCtrl.create({
     component: MaquinaTareaPage,
     componentProps: {
-      idMaquina: '123456'
+      idMaquina: '637d169d21c773c9052c9406',
+      idUser: '6377fb874bf53e9bb88d55dd',
+      idTarea: '637d1c9321c773c9052c9416'
     }
   });
 

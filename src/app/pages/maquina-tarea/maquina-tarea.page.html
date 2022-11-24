@@ -11,7 +11,7 @@
 <ion-content color="tertiary">
   <form>
     <fieldset>
-      <legend>Maquina: {{ post.nombre }} </legend>
+      <legend>Maquina: {{ maquinaModel.nombre }} </legend>
         <ion-label>Izaje500 toneladas</ion-label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <ion-label>5 Hrs SLA</ion-label>
       
@@ -22,8 +22,8 @@
 
     <fieldset>
       <legend> GPS MAQUINARIA </legend>
-      <ion-label>Encendido: {{ post.encendido }}</ion-label>&nbsp;&nbsp;&nbsp;
-      <ion-label>Pos: {{ post.coords }} </ion-label>
+      <ion-label>Encendido: {{ maquinaModel.encendido }}</ion-label>&nbsp;&nbsp;&nbsp;
+      <ion-label>Pos: {{ maquinaModel.coords }} </ion-label>
       <ion-spinner name="lines-small"
                    *ngIf="!cargandoGeo"></ion-spinner>
       <!-- <ion-toggle slot="end"
@@ -32,8 +32,8 @@
                   *ngIf="!cargandoGeo"></ion-toggle> -->
       <br />
 
-      <ion-label>Movimiento: {{ post.movimiento }}</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
-      <ion-label>Velocidad: {{ post.velocidad }} Km/h</ion-label>
+      <ion-label>Movimiento: {{ maquinaModel.movimiento }}</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
+      <ion-label>Velocidad: {{ maquinaModel.velocidad }} Km/h</ion-label>
     </fieldset>
     
     <ion-card>
@@ -73,8 +73,20 @@
           </ion-buttons>
         </ion-toolbar>
 
-        <ion-button expand="block">Efectivo</ion-button>
-        <ion-button expand="block">No Efectivo</ion-button>
+        <!-- <ion-button expand="block">Efectivo</ion-button>
+        <ion-button expand="block">No Efectivo</ion-button> -->
+
+        <ion-radio-group color="primary" [(ngModel)]="taskEventsModel.subTipo" name="rgbOperativo">
+          <ion-item>
+            <ion-label>Efectivo</ion-label> 
+            <ion-radio slot="end" value="Efectivo" [attr.aria-checked]="(tipoOperativo === 'Efectivo')?true:false" [ngClass]="(tipoOperativo === 'Efectivo')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'" ></ion-radio>
+          </ion-item>
+      
+          <ion-item>
+            <ion-label>No Efectivo</ion-label>
+            <ion-radio slot="end" value="NoEfectivo" [attr.aria-checked]="tipoOperativo === 'NoEfectivo'" ></ion-radio>
+          </ion-item>      
+        </ion-radio-group>
 
         <ion-button *ngIf="stateOperativo === 'stop'" color="success" expand="block" (click)="iniciarOperativo()">Iniciar</ion-button>
         <ion-button *ngIf="stateOperativo === 'start'" color="danger" expand="block" (click)="stopTimerOperativo()">Detener</ion-button>
@@ -93,10 +105,32 @@
           </ion-buttons>
         </ion-toolbar>
 
-        <ion-button expand="block">Desplazamiento</ion-button>
+        <!-- <ion-button expand="block">Desplazamiento</ion-button>
         <ion-button expand="block">Permiso</ion-button>
         <ion-button expand="block">Colacion</ion-button>
-        <ion-button expand="block">chl Seguridad</ion-button>
+        <ion-button expand="block">chl Seguridad</ion-button> -->
+
+        <ion-radio-group color="primary" [(ngModel)]="taskEventsModel.subTipo"  name="rgbPausa">
+          <ion-item>
+            <ion-label>Desplazamiento</ion-label>
+            <ion-radio slot="end" value="Desplazamiento"></ion-radio>
+          </ion-item>
+      
+          <ion-item>
+            <ion-label>Permiso</ion-label>
+            <ion-radio slot="end" value="Permiso"></ion-radio>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>Colación</ion-label>
+            <ion-radio slot="end" value="Colacion"></ion-radio>
+          </ion-item>
+      
+          <ion-item>
+            <ion-label>Chl Seguridad</ion-label>
+            <ion-radio slot="end" value="ChlSeguridad"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
 
         <ion-button *ngIf="statePausa === 'stop'" color="success"  expand="block" (click)="iniciarPausa()">Iniciar</ion-button>
         <ion-button *ngIf="statePausa === 'start'" color="danger" expand="block" (click)="stopTimerPausa()">Detener</ion-button>
@@ -115,8 +149,20 @@
           </ion-buttons>
         </ion-toolbar>
 
-        <ion-button expand="block">Falla Mecanica</ion-button>
-        <ion-button expand="block">Condiciones Climaticas</ion-button>
+        <!-- <ion-button expand="block">Falla Mecanica</ion-button>
+        <ion-button expand="block">Condiciones Climaticas</ion-button> -->
+
+        <ion-radio-group color="primary" [(ngModel)]="taskEventsModel.subTipo"  name="rgbDetencion">
+          <ion-item>
+            <ion-label>Falla Mecanica</ion-label>
+            <ion-radio slot="end" value="FallaMecanica"></ion-radio>
+          </ion-item>
+      
+          <ion-item>
+            <ion-label>Condiciones Climaticas</ion-label>
+            <ion-radio slot="end" value="CondicionesClimaticas"></ion-radio>
+          </ion-item>      
+        </ion-radio-group>
 
         <ion-button *ngIf="stateDetencion === 'stop'" color="success"  expand="block" (click)="iniciarDetencion()">Iniciar</ion-button>
         <ion-button *ngIf="stateDetencion === 'start'" color="danger" expand="block" (click)="stopTimerDetencion()">Detener</ion-button>

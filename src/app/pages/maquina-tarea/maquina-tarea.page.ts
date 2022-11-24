@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuController, ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { AlertController, MenuController, ModalController } from '@ionic/angular';
 import { TomarFotoPage } from '../tomar-foto/tomar-foto.page';
 import { TomaTiempoPage } from '../toma-tiempo/toma-tiempo.page';
 import { Geolocation, Geoposition } from '@awesome-cordova-plugins/geolocation/ngx';
 // import { PositionError } from '@awesome-cordova-plugins/geolocation';
 import { BehaviorSubject } from 'rxjs';
 import { MaquinariaService } from '../../services/maquinaria.service';
+import { MaquinariaModel } from '../../models/maquinaria'
+import { TaskEventsModel } from '../../models/taskEvents';
+import { TaskService } from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-maquina-tarea',
@@ -13,15 +16,8 @@ import { MaquinariaService } from '../../services/maquinaria.service';
   styleUrls: ['./maquina-tarea.page.scss'],
 })
 export class MaquinaTareaPage implements OnInit {
-  post = {
-    mensaje: '',
-    coords: '',
-    posicion: false,
-    encendido: '',
-    nombre: '',
-    velocidad: 0,
-    movimiento:''
-  };
+  maquinaModel: MaquinariaModel = new MaquinariaModel;
+  taskEventsModel: TaskEventsModel = new TaskEventsModel;
 
   cargandoGeo = false;
 
@@ -40,11 +36,23 @@ export class MaquinaTareaPage implements OnInit {
   intervalDetencion;
   stateDetencion: 'start' | 'stop' = 'stop';
 
+  tipoOperativo: String = '';
+  tipoPausa: String = '';
+  tipoDetencion: String = '';
+  operativo:Boolean = false;
+
+  @Input() idMaquina;
+  @Input() idUser;
+  @Input() idTarea;
+
   constructor(private modalController: ModalController,
               private menuController: MenuController,
               private modalCtrl: ModalController,
               private geoLocation: Geolocation,
-              private maquinariaSrv: MaquinariaService) {
+              private maquinariaSrv: MaquinariaService,
+              private taskServise: TaskService,
+              private alertController: AlertController
+              ) {
     //this.menuController.enable(false);
     this.getGep('4656765');
   }
@@ -104,38 +112,68 @@ export class MaquinaTareaPage implements OnInit {
       const { latitude, longitude, speed } = telemetry.position;
       const coords = `${ latitude },${ longitude }`;
       
-      this.post.nombre = nameMachine;
-      this.post.coords = coords;
+      this.maquinaModel.nombre = nameMachine;
+      this.maquinaModel.latitude = latitude;
+      this.maquinaModel.longitude = longitude;
+      this.maquinaModel.coords = coords;
 
       if( speed === 0){
-        this.post.velocidad = 0;
-        this.post.movimiento = 'NO'
+        this.maquinaModel.velocidad = 0;
+        this.maquinaModel.movimiento = 'NO'
       }else{
-        this.post.velocidad = speed;
-        this.post.movimiento = 'SI'
+        this.maquinaModel.velocidad = speed;
+        this.maquinaModel.movimiento = 'SI'
       }
 
       if(connected){
-        this.post.encendido = 'ON'
+        this.maquinaModel.encendido = 'ON'
       }else{
-        this.post.encendido = 'OFF'
+        this.maquinaModel.encendido = 'OFF'
       }
      });
   }
 
-  iniciarOperativo(){
+  async iniciarOperativo() {
+    if(!await this.presentAlert('iniciar')){
+      return;
+    }
+
     this.stateOperativo = 'start';
     clearInterval(this.intervalOperativo);
     this.timerOperativo = 0;
     this.intervalOperativo = setInterval(() => {
       this.updateTimerOperativo();
     },1000);
+
+    const tipo = 'Operativo';
+    this.llenarDatos(tipo);
+    this.tipoOperativo = this.taskEventsModel.subTipo;
+    if(this.tipoOperativo==='Efectivo'){
+      this.operativo = true;
+    }else{
+      this.operativo = false;
+    }
+    
+    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+      console.log(data);
+    });
   }
 
-  stopTimerOperativo(){
+  async stopTimerOperativo(){
+    if(!await this.presentAlert('detener')){
+      return;
+    }
+
     clearInterval(this.intervalOperativo);
     // this.timeOperativo.next('00:00');
     this.stateOperativo = 'stop';
+
+    const tipo = 'Operativo';
+    this.llenarDatos(tipo);
+
+    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+      console.log(data);
+    });
   }
 
   updateTimerOperativo(){
@@ -150,19 +188,43 @@ export class MaquinaTareaPage implements OnInit {
     this.timeOperativo.next(text);
   }
 
-  iniciarPausa(){
+  async iniciarPausa() {
+    if(!await this.presentAlert('iniciar')){
+      return;
+    }
+
     this.statePausa = 'start';
     clearInterval(this.intervalPausa);
     this.timerPausa = 0;
     this.intervalPausa = setInterval(() => {
       this.updateTimerPausa();
     },1000);
+
+    const tipo = 'Pausa';
+    this.llenarDatos(tipo);
+    this.tipoPausa = this.taskEventsModel.subTipo;
+    console.log(this.tipoOperativo)
+    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+      console.log(data);
+    });
+    
   }
 
-  stopTimerPausa(){
+  async stopTimerPausa(){
+    if(!await this.presentAlert('detener')){
+      return;
+    }
+
     clearInterval(this.intervalPausa);
     // this.timePausa.next('00:00');
     this.statePausa = 'stop';
+
+    const tipo = 'Pausa';
+    this.llenarDatos(tipo);
+
+    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+      console.log(data);
+    });
   }
 
   updateTimerPausa(){
@@ -177,19 +239,42 @@ export class MaquinaTareaPage implements OnInit {
     this.timePausa.next(text);
   }
 
-  iniciarDetencion(){
+  async iniciarDetencion(){
+    if(!await this.presentAlert('iniciar')){
+      return;
+    }
+
     this.stateDetencion = 'start';
     clearInterval(this.intervalDetencion);
     this.timerDetencion = 0;
     this.intervalDetencion = setInterval(() => {
       this.updateTimerDetencion();
     },1000);
+
+    const tipo = 'Detencion';
+    this.llenarDatos(tipo);
+    this.tipoDetencion = this.taskEventsModel.subTipo;
+
+    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+      console.log(data);
+    });
   }
 
-  stopTimerDetencion(){
+  async stopTimerDetencion(){
+    if(!await this.presentAlert('detener')){
+      return;
+    }
+
     clearInterval(this.intervalDetencion);
     // this.timeDetencion.next('00:00');
     this.stateDetencion = 'stop';
+
+    const tipo = 'Detencion';
+    this.llenarDatos(tipo);
+
+    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+      console.log(data);
+    });
   }
 
   updateTimerDetencion(){
@@ -202,5 +287,50 @@ export class MaquinaTareaPage implements OnInit {
 
     const text = minutes + ':' + seconds;
     this.timeDetencion.next(text);
+  }
+
+  async presentAlert(tipo: string) {
+    const alert = await this.alertController.create({
+      header: `¿Esta seguro de querer ${ tipo }?`,
+      cssClass: 'custom-alert',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Si',
+          cssClass: 'alert-button-confirm',
+          role: '1',
+        },
+        {
+          text: 'No',
+          cssClass: 'alert-button-cancel',
+          role: '0'
+        },
+      ],
+    });
+
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+
+    let rpta: boolean;
+    if(role === '0'){
+      rpta = false;
+    }else{
+      rpta = true;
+    }
+
+    return rpta;
+  }
+
+  llenarDatos(tipo: string) {
+    this.taskEventsModel.user = this.idUser;
+    this.taskEventsModel.machine = this.idMaquina;
+    this.taskEventsModel.task = this.idTarea;
+    this.taskEventsModel.latitude = this.maquinaModel.latitude;
+    this.taskEventsModel.longitude = this.maquinaModel.longitude;
+    this.taskEventsModel.tipo = tipo;
+    this.taskEventsModel.fechaRegistro = new Date();
+    // taskEventsModel.subTipo = 'Efectivo1';
+
+    // console.log('fechaCorta', taskEventsModel.fechaRegistro.toISOString().substring(0,10));
   }
 }
