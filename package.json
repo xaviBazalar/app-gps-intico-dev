@@ -19,6 +19,7 @@
     "@angular/platform-browser": "^15.0.0",
     "@angular/platform-browser-dynamic": "^15.0.0",
     "@angular/router": "^15.0.0",
+    "@awesome-cordova-plugins/background-mode": "^6.2.0",
     "@awesome-cordova-plugins/camera": "^6.2.0",
     "@awesome-cordova-plugins/file-transfer": "^6.2.0",
     "@awesome-cordova-plugins/geolocation": "^6.2.0",
@@ -31,6 +32,7 @@
     "@ionic/cordova-builders": "^7.0.0",
     "@ionic/pwa-elements": "^3.1.1",
     "@ngx-translate/http-loader": "^7.0.0",
+    "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-camera": "^6.0.0",
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-geolocation": "^4.1.0",
@@ -89,7 +91,8 @@
       },
       "cordova-plugin-camera": {
         "ANDROIDX_CORE_VERSION": "1.6.+"
-      }
+      },
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "android"

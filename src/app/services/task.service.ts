@@ -11,8 +11,8 @@ export class TaskService {
 
   constructor(private http: HttpClient) { }
 
-  getTask(machine:string|null,fecha:string|null) {
-    return this.http.get(`${this.baseUrl}/task?machine=${ machine }&fecha=${ fecha }`)
+  getTask(user:String|null,machine:String|null,fecha:String|null) {
+    return this.http.get(`${this.baseUrl}/task?machine=${ machine }&fecha=${ fecha }&idUser=${ user }`)
   }
 
   guardarTaskEvent(task: TaskEventsModel) {

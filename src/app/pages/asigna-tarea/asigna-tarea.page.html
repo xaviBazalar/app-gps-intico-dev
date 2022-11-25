@@ -16,19 +16,25 @@
         <ion-label>Planificacion de Trabajo</ion-label>
         <ion-item>
           <ion-select interface="popover" placeholder="--Seleccione--">
-            <ion-select-option value="apples">--Seleccione--</ion-select-option>
+            <ion-select-option *ngFor="let c of planTrabajo" 
+                                [value]="c"> {{ c }} </ion-select-option>
+            <!-- <ion-select-option value="apples">{{ taskModel.planificacionTrabajo }}</ion-select-option>             -->
           </ion-select>
         </ion-item>
         <ion-label>Maquinaria</ion-label>
         <ion-item>
           <ion-select interface="popover" placeholder="--Seleccione--">
-            <ion-select-option value="apples">--Seleccione--</ion-select-option>
+            <ion-select-option *ngFor="let c of machine" 
+                                [value]="c"> {{ c }} </ion-select-option>
+            <!-- <ion-select-option value="apples">{{ taskModel.machine }}</ion-select-option> -->
           </ion-select>
         </ion-item>
         <ion-label>Tarea de la maquinaria</ion-label>
         <ion-item>
           <ion-select interface="popover" placeholder="--Seleccione--">
-            <ion-select-option value="apples">--Seleccione--</ion-select-option>
+            <ion-select-option *ngFor="let c of tareaMachine" 
+                                [value]="c"> {{ c }} </ion-select-option>
+            <!-- <ion-select-option value="apples">{{ taskModel.tareaMaquinaria }}</ion-select-option> -->
           </ion-select>
         </ion-item>
       </ion-card-content>

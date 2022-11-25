@@ -8,7 +8,7 @@ export class TaskEventsModel {
     machine: string;
     task: String;
     user: String;
-
+    timpo: Number;
 
     constructor(){
         this.latitude = 0;
@@ -19,6 +19,7 @@ export class TaskEventsModel {
         this.subTipo = '';
         this.machine = '';
         this.task = '';
-        this.user = '';        
+        this.user = '';
+        this.timpo = 0;
     }
 }

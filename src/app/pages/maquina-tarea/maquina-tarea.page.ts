@@ -3,12 +3,14 @@ import { AlertController, MenuController, ModalController } from '@ionic/angular
 import { TomarFotoPage } from '../tomar-foto/tomar-foto.page';
 import { TomaTiempoPage } from '../toma-tiempo/toma-tiempo.page';
 import { Geolocation, Geoposition } from '@awesome-cordova-plugins/geolocation/ngx';
+import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 // import { PositionError } from '@awesome-cordova-plugins/geolocation';
 import { BehaviorSubject } from 'rxjs';
 import { MaquinariaService } from '../../services/maquinaria.service';
 import { MaquinariaModel } from '../../models/maquinaria'
 import { TaskEventsModel } from '../../models/taskEvents';
 import { TaskService } from 'src/app/services/task.service';
+
 
 @Component({
   selector: 'app-maquina-tarea',
@@ -51,7 +53,8 @@ export class MaquinaTareaPage implements OnInit {
               private geoLocation: Geolocation,
               private maquinariaSrv: MaquinariaService,
               private taskServise: TaskService,
-              private alertController: AlertController
+              private alertController: AlertController,
+              private backgroundMode: BackgroundMode
               ) {
     //this.menuController.enable(false);
     this.getGep('4656765');
@@ -65,6 +68,7 @@ export class MaquinaTareaPage implements OnInit {
     return true;
   }
 
+  //#region "submodulos"
   async abrirTomarFoto() {
     const modal = this.modalCtrl.create({
       component: TomarFotoPage,
@@ -84,7 +88,9 @@ export class MaquinaTareaPage implements OnInit {
     });
     (await modal).present();
   }
+  //#endregion "submodulos"
 
+  //#region "obtener ubicacion de la maquina"
   getGep(idMachine: string){
     // if(!this.post.posicion){
     //   this.post.coords = '';
@@ -103,36 +109,38 @@ export class MaquinaTareaPage implements OnInit {
     //    this.cargandoGeo = false;
     //  });
 
-     this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
-      const result = data.result;
-      console.log('--flespi--', result[0]);
-      const { telemetry, connected } = result[0];
-      const { 'device.name': nameMachine } = telemetry;
-      // console.log('--name--', nameMachine);
-      const { latitude, longitude, speed } = telemetry.position;
-      const coords = `${ latitude },${ longitude }`;
-      
-      this.maquinaModel.nombre = nameMachine;
-      this.maquinaModel.latitude = latitude;
-      this.maquinaModel.longitude = longitude;
-      this.maquinaModel.coords = coords;
+    this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
+    const result = data.result;
+    console.log('--flespi--', result[0]);
+    const { telemetry } = result[0];
+    const { 'device.name': nameMachine,'engine.ignition.status': status } = telemetry;
+    const { latitude, longitude, speed } = telemetry.position;
+    const coords = `${ latitude },${ longitude }`;
+    
+    this.maquinaModel.nombre = nameMachine;
+    this.maquinaModel.latitude = latitude;
+    this.maquinaModel.longitude = longitude;
+    this.maquinaModel.coords = coords;
 
-      if( speed === 0){
-        this.maquinaModel.velocidad = 0;
-        this.maquinaModel.movimiento = 'NO'
-      }else{
-        this.maquinaModel.velocidad = speed;
-        this.maquinaModel.movimiento = 'SI'
-      }
+    if( speed === 0){
+      this.maquinaModel.velocidad = 0;
+      this.maquinaModel.movimiento = 'NO'
+    }else{
+      this.maquinaModel.velocidad = speed;
+      this.maquinaModel.movimiento = 'SI'
+    }
 
-      if(connected){
-        this.maquinaModel.encendido = 'ON'
-      }else{
-        this.maquinaModel.encendido = 'OFF'
-      }
-     });
+    if(status){
+      this.maquinaModel.encendido = 'ON'
+    }else{
+      this.maquinaModel.encendido = 'OFF'
+    }
+    });
   }
 
+  //#endregion "obtener ubicacion de la maquina"
+
+  //#region "metodos cronometro operativo"  
   async iniciarOperativo() {
     if(!await this.presentAlert('iniciar')){
       return;
@@ -187,7 +195,9 @@ export class MaquinaTareaPage implements OnInit {
     const text = minutes + ':' + seconds;
     this.timeOperativo.next(text);
   }
+  //#endregion "metodos cronometro"  
 
+  //#region "metodos cronometro pausa"
   async iniciarPausa() {
     if(!await this.presentAlert('iniciar')){
       return;
@@ -238,7 +248,9 @@ export class MaquinaTareaPage implements OnInit {
     const text = minutes + ':' + seconds;
     this.timePausa.next(text);
   }
+  //#endregion "metodos cronometro pausa"
 
+  //#region "metodos cronometro detencion"
   async iniciarDetencion(){
     if(!await this.presentAlert('iniciar')){
       return;
@@ -288,7 +300,9 @@ export class MaquinaTareaPage implements OnInit {
     const text = minutes + ':' + seconds;
     this.timeDetencion.next(text);
   }
+  //#endregion "metodos cronometro detencion"
 
+  //#region "metodo para las alertas"
   async presentAlert(tipo: string) {
     const alert = await this.alertController.create({
       header: `¿Esta seguro de querer ${ tipo }?`,
@@ -320,7 +334,9 @@ export class MaquinaTareaPage implements OnInit {
 
     return rpta;
   }
+  //#endregion "metodo para las alertas"
 
+  //#region "metodos"
   llenarDatos(tipo: string) {
     this.taskEventsModel.user = this.idUser;
     this.taskEventsModel.machine = this.idMaquina;
@@ -333,4 +349,5 @@ export class MaquinaTareaPage implements OnInit {
 
     // console.log('fechaCorta', taskEventsModel.fechaRegistro.toISOString().substring(0,10));
   }
+  //#endregion "metodos cronometro operativo"
 }
