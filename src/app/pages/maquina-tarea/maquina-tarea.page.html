@@ -79,12 +79,12 @@
         <ion-radio-group color="primary" [(ngModel)]="taskEventsModel.subTipo" name="rgbOperativo">
           <ion-item>
             <ion-label>Efectivo</ion-label> 
-            <ion-radio slot="end" value="Efectivo" [attr.aria-checked]="(tipoOperativo === 'Efectivo')?true:false" [ngClass]="(tipoOperativo === 'Efectivo')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'" ></ion-radio>
+            <ion-radio slot="end" value="Efectivo" [attr.aria-checked]="(tipoOperativo === 'Efectivo')?true:false" [ngClass]="(tipoOperativo === 'Efectivo')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'" mode="ios" ></ion-radio>
           </ion-item>
       
           <ion-item>
             <ion-label>No Efectivo</ion-label>
-            <ion-radio slot="end" value="NoEfectivo" [attr.aria-checked]="tipoOperativo === 'NoEfectivo'" ></ion-radio>
+            <ion-radio slot="end" value="NoEfectivo" [attr.aria-checked]="(tipoOperativo === 'NoEfectivo')?true:false" [ngClass]="(tipoOperativo === 'NoEfectivo')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'" mode="ios" ></ion-radio>
           </ion-item>      
         </ion-radio-group>
 
@@ -113,22 +113,22 @@
         <ion-radio-group color="primary" [(ngModel)]="taskEventsModel.subTipo"  name="rgbPausa">
           <ion-item>
             <ion-label>Desplazamiento</ion-label>
-            <ion-radio slot="end" value="Desplazamiento"></ion-radio>
+            <ion-radio slot="end" value="Desplazamiento" mode="ios" [attr.aria-checked]="(tipoPausa === 'Desplazamiento')?true:false" [ngClass]="(tipoPausa === 'Desplazamiento')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'"></ion-radio>
           </ion-item>
       
           <ion-item>
             <ion-label>Permiso</ion-label>
-            <ion-radio slot="end" value="Permiso"></ion-radio>
+            <ion-radio slot="end" value="Permiso" mode="ios" [attr.aria-checked]="(tipoPausa === 'Permiso')?true:false" [ngClass]="(tipoPausa === 'Permiso')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'"></ion-radio>
           </ion-item>
 
           <ion-item>
             <ion-label>Colación</ion-label>
-            <ion-radio slot="end" value="Colacion"></ion-radio>
+            <ion-radio slot="end" value="Colacion" mode="ios" [attr.aria-checked]="(tipoPausa === 'Colacion')?true:false" [ngClass]="(tipoPausa === 'Colacion')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'"></ion-radio>
           </ion-item>
       
           <ion-item>
             <ion-label>Chl Seguridad</ion-label>
-            <ion-radio slot="end" value="ChlSeguridad"></ion-radio>
+            <ion-radio slot="end" value="ChlSeguridad" mode="ios" [attr.aria-checked]="(tipoPausa === 'ChlSeguridad')?true:false" [ngClass]="(tipoPausa === 'ChlSeguridad')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'"></ion-radio>
           </ion-item>
         </ion-radio-group>
 
@@ -155,12 +155,12 @@
         <ion-radio-group color="primary" [(ngModel)]="taskEventsModel.subTipo"  name="rgbDetencion">
           <ion-item>
             <ion-label>Falla Mecanica</ion-label>
-            <ion-radio slot="end" value="FallaMecanica"></ion-radio>
+            <ion-radio slot="end" value="FallaMecanica" mode="ios" [attr.aria-checked]="(tipoDetencion === 'FallaMecanica')?true:false" [ngClass]="(tipoDetencion === 'FallaMecanica')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'"></ion-radio>
           </ion-item>
       
           <ion-item>
             <ion-label>Condiciones Climaticas</ion-label>
-            <ion-radio slot="end" value="CondicionesClimaticas"></ion-radio>
+            <ion-radio slot="end" value="CondicionesClimaticas" mode="ios" [attr.aria-checked]="(tipoDetencion === 'FallaMecanica')?true:false" [ngClass]="(tipoDetencion === 'FallaMecanica')?'ios in-item interactive hydrated radio-checked':'ios in-item interactive hydrated'"></ion-radio>
           </ion-item>      
         </ion-radio-group>
 

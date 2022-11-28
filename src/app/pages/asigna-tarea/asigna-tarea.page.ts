@@ -15,9 +15,14 @@ export class AsignaTareaPage implements OnInit {
   planTrabajo: any = [];
   tareaMachine: any = [];
   turnoArray: any=[];  
-  machine: any = [];
+  machine = [{ 
+    id: { idInter: '', idGene: ''},
+    des: ''
+  }];
+  idMaquina: any = [];
   idTask: String = '';
   idUser: String = '';
+  idInterno: any = { idInter: '', idGene: '' };
 
   constructor(private menu: MenuController, 
               private modalCtrl: ModalController,
@@ -28,17 +33,19 @@ export class AsignaTareaPage implements OnInit {
     this.idUser = '6380de2a43a95b03d1418337';
 
     this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
+      console.log(data);
       const { task } = data;
-      console.log(task);
+      console.log('tarea', task);
       for (let index = 0; index < task.length; index++) {
         console.log(task[index]);
-        const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine } = task[index];
+        const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = task[index];
         console.log(tareaMaquinaria)
         this.planTrabajo.push(planificacionTrabajo);
         this.tareaMachine.push(tareaMaquinaria);
         this.turnoArray.push(turno);
-        this.machine.push(machine.descripcion);
+        this.machine.push({des: machine.descripcion, id: {idInter: machine.idInterno, idGene: machine._id}});
         this.idTask = uid;
+        this.idUser = user;
       }
 
       console.log(this.planTrabajo);
@@ -49,12 +56,15 @@ export class AsignaTareaPage implements OnInit {
   }
 
  async abrirMaquinaTrabajo() {
+  // console.log('idmaquina',this.idInterno.idInter);
+  // console.log('maquina',this.idInterno.idGene );
   const modal = this.modalCtrl.create({
     component: MaquinaTareaPage,
     componentProps: {
-      idMaquina: '637d169d21c773c9052c9406',
-      idUser: '6377fb874bf53e9bb88d55dd',
-      idTarea: '637d1c9321c773c9052c9416'
+      idMaquina: this.idInterno.idGene,//'637d169d21c773c9052c9406',
+      idUser: this.idUser,//'6377fb874bf53e9bb88d55dd',
+      idTarea: this.idTask,//'637d1c9321c773c9052c9416',
+      idMaquinaInterna: this.idInterno.idInter
     }
   });
 

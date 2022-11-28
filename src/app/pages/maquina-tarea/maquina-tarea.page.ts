@@ -3,7 +3,6 @@ import { AlertController, MenuController, ModalController } from '@ionic/angular
 import { TomarFotoPage } from '../tomar-foto/tomar-foto.page';
 import { TomaTiempoPage } from '../toma-tiempo/toma-tiempo.page';
 import { Geolocation, Geoposition } from '@awesome-cordova-plugins/geolocation/ngx';
-import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 // import { PositionError } from '@awesome-cordova-plugins/geolocation';
 import { BehaviorSubject } from 'rxjs';
 import { MaquinariaService } from '../../services/maquinaria.service';
@@ -20,8 +19,12 @@ import { TaskService } from 'src/app/services/task.service';
 export class MaquinaTareaPage implements OnInit {
   maquinaModel: MaquinariaModel = new MaquinariaModel;
   taskEventsModel: TaskEventsModel = new TaskEventsModel;
+  taskEvent: TaskEventsModel = new TaskEventsModel;
 
   cargandoGeo = false;
+  flagOperativo = false;
+  flagPausa = false;
+  flagDetencion = false;
 
   timeOperativo: BehaviorSubject<string> = new BehaviorSubject('00:00');
   timerOperativo: number = 0;
@@ -46,6 +49,7 @@ export class MaquinaTareaPage implements OnInit {
   @Input() idMaquina;
   @Input() idUser;
   @Input() idTarea;
+  @Input() idMaquinaInterna;
 
   constructor(private modalController: ModalController,
               private menuController: MenuController,
@@ -54,13 +58,17 @@ export class MaquinaTareaPage implements OnInit {
               private maquinariaSrv: MaquinariaService,
               private taskServise: TaskService,
               private alertController: AlertController,
-              private backgroundMode: BackgroundMode
               ) {
     //this.menuController.enable(false);
-    this.getGep('4656765');
+
   }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit(): void {
+    // console.log('--->', this.idMaquinaInterna)
+    this.getGep(this.idMaquinaInterna);//'4656765'
   }
 
   async finalizar(){
@@ -100,7 +108,7 @@ export class MaquinaTareaPage implements OnInit {
     this.cargandoGeo = true;
 
     // this.geoLocation.getCurrentPosition().then((resp) => {
-    //   this.cargandoGeo = false;  
+    //   this.cargandoGeo = false;
     //   const coords = `${ resp.coords.latitude },${ resp.coords.longitude }`;
     //   this.post.coords = coords;
     //   console.log(coords);
@@ -111,12 +119,12 @@ export class MaquinaTareaPage implements OnInit {
 
     this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
     const result = data.result;
-    console.log('--flespi--', result[0]);
+    // console.log('--flespi--', result[0]);
     const { telemetry } = result[0];
     const { 'device.name': nameMachine,'engine.ignition.status': status } = telemetry;
     const { latitude, longitude, speed } = telemetry.position;
     const coords = `${ latitude },${ longitude }`;
-    
+
     this.maquinaModel.nombre = nameMachine;
     this.maquinaModel.latitude = latitude;
     this.maquinaModel.longitude = longitude;
@@ -140,12 +148,18 @@ export class MaquinaTareaPage implements OnInit {
 
   //#endregion "obtener ubicacion de la maquina"
 
-  //#region "metodos cronometro operativo"  
+  //#region "metodos cronometro operativo"
   async iniciarOperativo() {
+    if(this.flagDetencion || this.flagPausa){
+      this.alertMessage('No se puede iniciar este proceso primero detenga el preceso en ejecucion')
+      return;
+    }
+
     if(!await this.presentAlert('iniciar')){
       return;
     }
 
+    this.flagOperativo = true;
     this.stateOperativo = 'start';
     clearInterval(this.intervalOperativo);
     this.timerOperativo = 0;
@@ -161,10 +175,8 @@ export class MaquinaTareaPage implements OnInit {
     }else{
       this.operativo = false;
     }
-    
-    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
-      console.log(data);
-    });
+
+    this.guardarTaskEvent(this.taskEventsModel, 1);
   }
 
   async stopTimerOperativo(){
@@ -175,6 +187,7 @@ export class MaquinaTareaPage implements OnInit {
     clearInterval(this.intervalOperativo);
     // this.timeOperativo.next('00:00');
     this.stateOperativo = 'stop';
+    this.flagOperativo = false;
 
     const tipo = 'Operativo';
     this.llenarDatos(tipo);
@@ -194,16 +207,37 @@ export class MaquinaTareaPage implements OnInit {
 
     const text = minutes + ':' + seconds;
     this.timeOperativo.next(text);
+
+    if(seconds === '00' && minutes !== '00'){
+      this.getGep(this.idMaquinaInterna);//'4656765'
+
+      this.taskEvent.user = this.idUser;
+      this.taskEvent.machine = this.idMaquina;
+      this.taskEvent.task = this.idTarea;
+      this.taskEvent.latitude = this.maquinaModel.latitude;
+      this.taskEvent.longitude = this.maquinaModel.longitude;
+      this.taskEvent.tipo = 'Ubicacion';
+      this.taskEvent.subTipo = 'Seguimiento'
+      this.taskEvent.fechaRegistro = new Date();
+
+      this.guardarTaskEvent(this.taskEvent, 0);
+    }
   }
-  //#endregion "metodos cronometro"  
+  //#endregion "metodos cronometro"
 
   //#region "metodos cronometro pausa"
   async iniciarPausa() {
+    if(this.flagDetencion || this.flagOperativo){
+      this.alertMessage('No se puede iniciar este proceso primero detenga el preceso en ejecucion')
+      return;
+    }
+
     if(!await this.presentAlert('iniciar')){
       return;
     }
 
     this.statePausa = 'start';
+    this.flagPausa = true;
     clearInterval(this.intervalPausa);
     this.timerPausa = 0;
     this.intervalPausa = setInterval(() => {
@@ -213,11 +247,11 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Pausa';
     this.llenarDatos(tipo);
     this.tipoPausa = this.taskEventsModel.subTipo;
-    console.log(this.tipoOperativo)
+    // console.log(this.tipoOperativo)
     this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
       console.log(data);
     });
-    
+
   }
 
   async stopTimerPausa(){
@@ -228,6 +262,7 @@ export class MaquinaTareaPage implements OnInit {
     clearInterval(this.intervalPausa);
     // this.timePausa.next('00:00');
     this.statePausa = 'stop';
+    this.flagPausa = false;
 
     const tipo = 'Pausa';
     this.llenarDatos(tipo);
@@ -252,11 +287,17 @@ export class MaquinaTareaPage implements OnInit {
 
   //#region "metodos cronometro detencion"
   async iniciarDetencion(){
+    if(this.flagOperativo || this.flagPausa){
+      this.alertMessage('No se puede iniciar este proceso primero detenga el preceso en ejecucion')
+      return;
+    }
+
     if(!await this.presentAlert('iniciar')){
       return;
     }
 
     this.stateDetencion = 'start';
+    this.flagDetencion = true;
     clearInterval(this.intervalDetencion);
     this.timerDetencion = 0;
     this.intervalDetencion = setInterval(() => {
@@ -280,6 +321,7 @@ export class MaquinaTareaPage implements OnInit {
     clearInterval(this.intervalDetencion);
     // this.timeDetencion.next('00:00');
     this.stateDetencion = 'stop';
+    this.flagDetencion = false;
 
     const tipo = 'Detencion';
     this.llenarDatos(tipo);
@@ -334,6 +376,53 @@ export class MaquinaTareaPage implements OnInit {
 
     return rpta;
   }
+
+  async presentMessage(flag: boolean) {
+    let head: string;
+    if(flag){
+      head = 'Se realizó con éxitó'
+    }else{
+      head = 'Se produjo un error'
+    }
+
+    const alert = await this.alertController.create({
+      header: head,
+      cssClass: 'custom-alert',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Ok',
+          cssClass: 'alert-button-confirm',
+          role: '1',
+        },
+      ],
+    });
+
+    await alert.present();
+
+    return true;
+  }
+
+  async alertMessage(mensaje: string) {
+    const head = mensaje
+
+    const alert = await this.alertController.create({
+      header: head,
+      cssClass: 'custom-alert',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Ok',
+          cssClass: 'alert-button-confirm',
+          role: '1',
+        },
+      ],
+    });
+
+    await alert.present();
+
+    return true;
+  }
   //#endregion "metodo para las alertas"
 
   //#region "metodos"
@@ -348,6 +437,17 @@ export class MaquinaTareaPage implements OnInit {
     // taskEventsModel.subTipo = 'Efectivo1';
 
     // console.log('fechaCorta', taskEventsModel.fechaRegistro.toISOString().substring(0,10));
+  }
+
+  async guardarTaskEvent(taskEventsModel: TaskEventsModel, tipo: Number) {
+
+
+    this.taskServise.guardarTaskEvent(taskEventsModel).subscribe(async (data: any) => {
+      console.log(data);
+      if(tipo === 1){
+        await this.presentMessage(data.ok);
+      }
+    });
   }
   //#endregion "metodos cronometro operativo"
 }

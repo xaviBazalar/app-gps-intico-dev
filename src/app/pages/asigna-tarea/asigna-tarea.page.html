@@ -15,7 +15,7 @@
       <ion-card-content>      
         <ion-label>Planificacion de Trabajo</ion-label>
         <ion-item>
-          <ion-select interface="popover" placeholder="--Seleccione--">
+          <ion-select interface="popover" placeholder="--Seleccione--" >
             <ion-select-option *ngFor="let c of planTrabajo" 
                                 [value]="c"> {{ c }} </ion-select-option>
             <!-- <ion-select-option value="apples">{{ taskModel.planificacionTrabajo }}</ion-select-option>             -->
@@ -23,9 +23,9 @@
         </ion-item>
         <ion-label>Maquinaria</ion-label>
         <ion-item>
-          <ion-select interface="popover" placeholder="--Seleccione--">
+          <ion-select interface="popover" placeholder="--Seleccione--" [(ngModel)]="idInterno">
             <ion-select-option *ngFor="let c of machine" 
-                                [value]="c"> {{ c }} </ion-select-option>
+                                [value]="c.id"> {{ c.des }} </ion-select-option>
             <!-- <ion-select-option value="apples">{{ taskModel.machine }}</ion-select-option> -->
           </ion-select>
         </ion-item>

@@ -13,7 +13,7 @@ export class MaquinariaService {
   constructor(private http: HttpClient) { }
 
   obtenerUbicacion( id: string ){
-    console.log( id );
+    // console.log( id );
     const options = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
