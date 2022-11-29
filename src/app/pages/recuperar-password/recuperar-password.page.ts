@@ -7,7 +7,7 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
   styleUrls: ['./recuperar-password.page.scss'],
 })
 export class RecuperarPasswordPage implements OnInit {
-
+  codigoHash: String = '';
   formRecuperacion: FormGroup;
   constructor(public formBuilder: FormBuilder) {
     this.formRecuperacion = this.formBuilder.group({

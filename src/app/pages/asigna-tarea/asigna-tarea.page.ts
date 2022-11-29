@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MenuController, ModalController } from '@ionic/angular';
 import { TaskService } from 'src/app/services/task.service';
 import { MaquinaTareaPage } from '../maquina-tarea/maquina-tarea.page';
 import { TaskModel } from '../../models/task'
+import { UserModel } from '../../models/user'
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-asigna-tarea',
@@ -12,10 +14,12 @@ import { TaskModel } from '../../models/task'
 export class AsignaTareaPage implements OnInit {
 
   // taskModel: TaskModel = new TaskModel;
+  // userModel:UserModel = new UserModel;
+
   planTrabajo: any = [];
   tareaMachine: any = [];
-  turnoArray: any=[];  
-  machine = [{ 
+  turnoArray: any=[];
+  machine = [{
     id: { idInter: '', idGene: ''},
     des: ''
   }];
@@ -24,13 +28,26 @@ export class AsignaTareaPage implements OnInit {
   idUser: String = '';
   idInterno: any = { idInter: '', idGene: '' };
 
-  constructor(private menu: MenuController, 
+  constructor(private menu: MenuController,
               private modalCtrl: ModalController,
-              private taskService: TaskService
+              private taskService: TaskService,
+              private storageService: StorageService
               ) {
     this.menu.enable(true);
-    
-    this.idUser = '6380de2a43a95b03d1418337';
+
+  }
+
+  ngOnInit() {
+  }
+
+  ngAfterViewInit(): void {
+    //this.idUser = '6380de2a43a95b03d1418337';
+    this.storageService.getUsuario().then((usuario: UserModel) => {
+      // console.log('storage', usuario);
+      this.idUser = usuario.uid;
+      console.log(this.idUser);
+    })
+
 
     this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
       console.log(data);
@@ -50,9 +67,6 @@ export class AsignaTareaPage implements OnInit {
 
       console.log(this.planTrabajo);
     });
-  }
-
-  ngOnInit() {
   }
 
  async abrirMaquinaTrabajo() {

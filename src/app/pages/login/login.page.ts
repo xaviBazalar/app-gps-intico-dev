@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { UsuarioService } from '../../services/usuario.service';
 import { LoginService } from '../../services/login.service';
+import { UserModel } from 'src/app/models/user';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -13,18 +15,19 @@ import { LoginService } from '../../services/login.service';
 export class LoginPage implements OnInit {
 
   formularioLogin: FormGroup;
-
-  usuario = {
-    user: '',
-    pass: ''
-  }
+  usuario: UserModel = new UserModel;
+  // usuario = {
+  //   user: '',
+  //   pass: ''
+  // }
 
   errorMsg = '';
 
   constructor(public fb: FormBuilder, 
               private menu: MenuController,
               private route: Router,
-              private loginService: LoginService) {
+              private loginService: LoginService,
+              private storageService: StorageService) {
     this.formularioLogin = this.fb.group({
       nombre: ['', Validators.required],
       password: ['',Validators.required]
@@ -38,9 +41,12 @@ export class LoginPage implements OnInit {
 
   iniciarSesion(){
     //console.log(this.usuario);
-    this.loginService.validateLogin(this.usuario.user, this.usuario.pass).subscribe(
+    this.loginService.validateLogin(this.usuario.usuario, this.usuario.password).subscribe(
       (data:any)=>{
-        console.log('rpta', data.usuario);
+        this.usuario = data.usuario;
+        console.log('rpta', this.usuario);
+        this.storageService.saveRemoveUsuario(this.usuario);
+        
         if(data.ok){
           console.log('paso');
           this.route.navigate(['./inicio']);

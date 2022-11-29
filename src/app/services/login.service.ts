@@ -10,7 +10,7 @@ export class LoginService {
 
   constructor(private http: HttpClient) { }
 
-  validateLogin(user:string|null,pass:string|null){
+  validateLogin(user:String|null,pass:String|null){
     return this.http.get(`${this.baseUrl}/user?user=${ user }&pass=${ pass }`)
   }
 

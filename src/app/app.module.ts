@@ -14,6 +14,7 @@ import { FileTransfer } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 export function HttpLoaderFactory(http: HttpClient){
   return new TranslateHttpLoader(http);
@@ -34,7 +35,8 @@ export function HttpLoaderFactory(http: HttpClient){
                   deps:[HttpClient]
                 }
               }
-            )
+            ),
+            IonicStorageModule.forRoot()
           ],
   providers: [Camera,
               Geolocation,
