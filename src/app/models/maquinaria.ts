@@ -8,6 +8,7 @@ export class MaquinariaModel {
     nombre: String;
     latitude: Number;
     longitude: Number;
+    url: String;
 
     constructor() {
         this.mensaje = '';
@@ -19,5 +20,6 @@ export class MaquinariaModel {
         this.nombre = '';
         this.latitude = 0;
         this.longitude = 0;
+        this.url = '';
     }
 }

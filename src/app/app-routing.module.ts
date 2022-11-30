@@ -19,7 +19,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/asigna-tarea/asigna-tarea.module').then( m => m.AsignaTareaPageModule)
   },
   {
-    path: 'maquina-tarea/:id',
+    path: 'maquina-tarea/:idMaquina/:idUser/:idTarea/:idMaquinaInterna',
     loadChildren: () => import('./pages/maquina-tarea/maquina-tarea.module').then( m => m.MaquinaTareaPageModule)
   },
   {

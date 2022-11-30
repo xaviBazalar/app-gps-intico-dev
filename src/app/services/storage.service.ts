@@ -8,7 +8,7 @@ import { UserModel } from '../models/user'
 })
 export class StorageService {
   private _storage: Storage | null = null;
-  private _localUser: UserModel = new UserModel;
+  private _localUser: UserModel[] = [];
 
   constructor(private storage: Storage) {
     this.init();
@@ -17,23 +17,21 @@ export class StorageService {
   async init() {
     const storage = await this.storage.create();
     this._storage = storage;
-  }
 
+    this.loadUser();
+  }
+    
+  get getUser() {
+    return [ ...this._localUser ];
+  }
+  
   async saveRemoveUsuario( user: UserModel ) {
-    this._storage?.set( 'user', user );
+    this._storage?.set('user', user);
   }
 
-  async getUsuario(){
-    try{
-      await this._storage?.get('user').then((usuario: any) => {
-        // console.log('userStorage', usuario[0]);
-        this._localUser = usuario[0];
-      });
-      
-    }catch(error){
-      console.log(error);
-    }
-
-    return this._localUser;
+  async loadUser(){    
+    const user = await this._storage?.get('user');
+    console.log('storageUser', user)
+    this._localUser = user;
   }
 }

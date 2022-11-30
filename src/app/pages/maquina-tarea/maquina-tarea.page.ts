@@ -9,6 +9,7 @@ import { MaquinariaService } from '../../services/maquinaria.service';
 import { MaquinariaModel } from '../../models/maquinaria'
 import { TaskEventsModel } from '../../models/taskEvents';
 import { TaskService } from 'src/app/services/task.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -58,6 +59,8 @@ export class MaquinaTareaPage implements OnInit {
               private maquinariaSrv: MaquinariaService,
               private taskServise: TaskService,
               private alertController: AlertController,
+              private _route: ActivatedRoute,
+              private router: Router
               ) {
     //this.menuController.enable(false);
 
@@ -68,12 +71,36 @@ export class MaquinaTareaPage implements OnInit {
 
   ngAfterViewInit(): void {
     // console.log('--->', this.idMaquinaInterna)
+    let _idMaquina: String | null = this._route.snapshot.paramMap.get("idMaquina");
+    let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
+    let _idTarea: String | null = this._route.snapshot.paramMap.get("idTarea");
+    let _idMaquinaInterna: String | null = this._route.snapshot.paramMap.get("idMaquinaInterna");
+
+    if(!this.idMaquinaInterna){
+      this.idMaquinaInterna = _idMaquinaInterna
+    }
+
+    if(!this.idTarea){
+      this.idTarea = _idTarea;
+    }
+
+    if(!this.idUser){
+      this.idUser = _idUser;
+    }
+
+    if(!this.idMaquina){
+      this.idMaquina = _idMaquina;
+    }
+
     this.getGep(this.idMaquinaInterna);//'4656765'
   }
 
   async finalizar(){
-    this.modalController.dismiss();
-    return true;
+    const fin=await this.modalCtrl.dismiss({
+      'dismissed': true
+    }).then().catch(data=>{
+      this.router.navigate(['/inicio'])
+    })
   }
 
   //#region "submodulos"
@@ -81,7 +108,7 @@ export class MaquinaTareaPage implements OnInit {
     const modal = this.modalCtrl.create({
       component: TomarFotoPage,
       componentProps: {
-        idTarea: '123456'
+        idTarea: this.idTarea
       }
     });
     (await modal).present();
@@ -100,10 +127,6 @@ export class MaquinaTareaPage implements OnInit {
 
   //#region "obtener ubicacion de la maquina"
   getGep(idMachine: string){
-    // if(!this.post.posicion){
-    //   this.post.coords = '';
-    //   return;
-    // }
 
     this.cargandoGeo = true;
 

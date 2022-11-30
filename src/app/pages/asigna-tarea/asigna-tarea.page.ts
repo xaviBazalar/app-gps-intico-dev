@@ -18,11 +18,8 @@ export class AsignaTareaPage implements OnInit {
 
   planTrabajo: any = [];
   tareaMachine: any = [];
-  turnoArray: any=[];
-  machine = [{
-    id: { idInter: '', idGene: ''},
-    des: ''
-  }];
+  turnoArray: any = [];
+  machine: any = [];
   idMaquina: any = [];
   idTask: String = '';
   idUser: String = '';
@@ -40,14 +37,16 @@ export class AsignaTareaPage implements OnInit {
   ngOnInit() {
   }
 
+  get users(): UserModel[]{
+    return this.storageService.getUser;
+  }
+
   ngAfterViewInit(): void {
     //this.idUser = '6380de2a43a95b03d1418337';
-    this.storageService.getUsuario().then((usuario: UserModel) => {
-      // console.log('storage', usuario);
-      this.idUser = usuario.uid;
-      console.log(this.idUser);
-    })
 
+    const dataUser = this.users;
+    // console.log('localuser' ,dataUser);
+    this.idUser = dataUser[0].uid;
 
     this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
       console.log(data);
