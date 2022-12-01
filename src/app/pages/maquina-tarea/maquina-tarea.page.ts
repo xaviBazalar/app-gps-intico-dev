@@ -108,7 +108,8 @@ export class MaquinaTareaPage implements OnInit {
     const modal = this.modalCtrl.create({
       component: TomarFotoPage,
       componentProps: {
-        idTarea: this.idTarea
+        idTarea: this.idTarea,
+        idUser: this.idUser
       }
     });
     (await modal).present();

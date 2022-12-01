@@ -42,10 +42,10 @@ export class LoginPage implements OnInit {
   iniciarSesion(){
     //console.log(this.usuario);
     this.loginService.validateLogin(this.usuario.usuario, this.usuario.password).subscribe(
-      (data:any)=>{
+      async (data:any) => {
         this.usuario = data.usuario;
         console.log('rpta', this.usuario);
-        this.storageService.saveRemoveUsuario(this.usuario);
+        await this.storageService.saveRemoveUsuario(this.usuario);
         
         if(data.ok){
           console.log('paso');

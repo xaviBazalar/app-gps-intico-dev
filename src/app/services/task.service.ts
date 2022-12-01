@@ -19,12 +19,7 @@ export class TaskService {
     console.log(task);
 
     return this.http.post(`${ this.baseUrl }/task/event`, task)
-        //   .pipe(
-        //     map( (resp: any) => {
-        //       heroe.id = resp.name;
-        //       return heroe;
-        //     })
-        //   )
+        
   }
 
 }

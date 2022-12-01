@@ -32,22 +32,24 @@ export class InicioPage implements OnInit {
     let idUser: String = '';
 
     const dataUser = this.users;
-    console.log('localuser' ,dataUser);
-    idUser = dataUser[0].uid;
+    // console.log('localuser' ,dataUser);
+    if(dataUser){
+      idUser = dataUser[0].uid;
     
-    this.taskService.getTask(idUser, null, null).subscribe((data:any) => {
-      console.log('idUser', idUser);
-      const { task } = data;
-      console.log('tarea', task);
-      for (let index = 0; index < task.length; index++) {
-        // console.log('task', task[index]);
-        const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = task[index];
-        const _item = {nombre: machine.descripcion + "--" + planificacionTrabajo + '--' + tareaMaquinaria, 
-        redirect: `/maquina-tarea/${ machine._id }/${ idUser }/${ uid }/${ machine.idInterno }`};
-        console.log(_item );
-        this.item.push( _item );        
-      }
-    });
+      this.taskService.getTask(idUser, null, null).subscribe((data:any) => {
+        // console.log('idUser', idUser);
+        const { task } = data;
+        // console.log('tarea', task);
+        for (let index = 0; index < task.length; index++) {
+          // console.log('task', task[index]);
+          const { planificacionTrabajo, tareaMaquinaria, turno, uid='', machine, user } = task[index];
+          const _item = {nombre: machine.descripcion + "--" + planificacionTrabajo + '--' + tareaMaquinaria, 
+          redirect: `/maquina-tarea/${ machine._id }/${ idUser }/${ uid }/${ machine.idInterno }`};
+          // console.log(_item );
+          this.item.push( _item );        
+        }
+      });
+    }
   }
 
   toogleMenu(){
