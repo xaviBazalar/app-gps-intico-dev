@@ -37,35 +37,34 @@ export class AsignaTareaPage implements OnInit {
   ngOnInit() {
   }
 
-  get users(): UserModel[]{
-    return this.storageService.getUser;
-  }
+  async ngAfterViewInit(): Promise<void> {
+    let userData = this.storageService.loadUser();
+    const [user] = await Promise.all([userData])
 
-  ngAfterViewInit(): void {
-    //this.idUser = '6380de2a43a95b03d1418337';
+    const dataUser = user;
 
-    const dataUser = this.users;
-    // console.log('localuser' ,dataUser);
-    this.idUser = dataUser[0].uid;
+    if(dataUser){
+      this.idUser = dataUser[0].uid;
 
-    this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
-      console.log(data);
-      const { task } = data;
-      console.log('tarea', task);
-      for (let index = 0; index < task.length; index++) {
-        console.log(task[index]);
-        const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = task[index];
-        console.log(tareaMaquinaria)
-        this.planTrabajo.push(planificacionTrabajo);
-        this.tareaMachine.push(tareaMaquinaria);
-        this.turnoArray.push(turno);
-        this.machine.push({des: machine.descripcion, id: {idInter: machine.idInterno, idGene: machine._id}});
-        this.idTask = uid;
-        this.idUser = user;
-      }
+      this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
+        console.log(data);
+        const { task } = data;
+        console.log('tarea', task);
+        for (let index = 0; index < task.length; index++) {
+          console.log(task[index]);
+          const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = task[index];
+          console.log(tareaMaquinaria)
+          this.planTrabajo.push(planificacionTrabajo);
+          this.tareaMachine.push(tareaMaquinaria);
+          this.turnoArray.push(turno);
+          this.machine.push({des: machine.descripcion, id: {idInter: machine.idInterno, idGene: machine._id}});
+          this.idTask = uid;
+          this.idUser = user;
+        }
 
-      console.log(this.planTrabajo);
-    });
+        console.log(this.planTrabajo);
+      });
+    }
   }
 
  async abrirMaquinaTrabajo() {

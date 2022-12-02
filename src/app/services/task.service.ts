@@ -22,4 +22,8 @@ export class TaskService {
         
   }
 
+  getTaskEvent(idTask: String){
+    return this.http.get(`${ this.baseUrl }/task/event?task=${ idTask }`)
+  }
+
 }

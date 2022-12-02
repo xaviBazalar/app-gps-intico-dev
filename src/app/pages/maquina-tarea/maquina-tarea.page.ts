@@ -119,7 +119,8 @@ export class MaquinaTareaPage implements OnInit {
     const modal = this.modalCtrl.create({
       component: TomaTiempoPage,
       componentProps: {
-        idTarea: '123456'
+        idTarea: this.idTarea,
+        idMaquina: this.idMaquina
       }
     });
     (await modal).present();

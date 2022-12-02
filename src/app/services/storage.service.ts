@@ -31,7 +31,8 @@ export class StorageService {
 
   async loadUser(){    
     const user = await this._storage?.get('user');
-    console.log('storageUser', user)
-    this._localUser = user;
+    //console.log('storageUser', user)
+    //this._localUser = user;
+    return user
   }
 }

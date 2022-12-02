@@ -31,7 +31,10 @@ export class InicioPage implements OnInit {
   async ngAfterViewInit(): Promise<void> {
     let idUser: String = '';
 
-    const dataUser = this.users;
+    let userData=this.storageService.loadUser();
+    const [user] = await Promise.all([userData])
+
+    const dataUser = user;
     // console.log('localuser' ,dataUser);
     if(dataUser){
       idUser = dataUser[0].uid;

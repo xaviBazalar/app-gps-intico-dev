@@ -35,6 +35,10 @@ const routes: Routes = [
     path: 'toma-tiempo',
     loadChildren: () => import('./pages/toma-tiempo/toma-tiempo.module').then( m => m.TomaTiempoPageModule)
   },
+  {
+    path: 'map',
+    loadChildren: () => import('./pages/map/map.module').then( m => m.MapPageModule)
+  },
 ];
 
 @NgModule({
