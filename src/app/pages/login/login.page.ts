@@ -22,6 +22,7 @@ export class LoginPage implements OnInit {
   // }
 
   errorMsg = '';
+  private _storage: Storage | null = null;
 
   constructor(public fb: FormBuilder, 
               private menu: MenuController,
@@ -39,7 +40,7 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
-  iniciarSesion(){
+  async iniciarSesion(){
     //console.log(this.usuario);
     this.loginService.validateLogin(this.usuario.usuario, this.usuario.password).subscribe(
       (data:any)=>{

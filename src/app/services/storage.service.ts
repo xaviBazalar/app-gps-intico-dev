@@ -22,16 +22,18 @@ export class StorageService {
   }
     
   get getUser() {
+    console.log("data localUser",this._localUser)
     return [ ...this._localUser ];
   }
   
-  async saveRemoveUsuario( user: UserModel ) {
+  saveRemoveUsuario( user: UserModel ) {
     this._storage?.set('user', user);
   }
 
   async loadUser(){    
     const user = await this._storage?.get('user');
-    console.log('storageUser', user)
-    this._localUser = user;
+    //console.log('storageUser', user)
+    //this._localUser = user;
+    return user
   }
 }

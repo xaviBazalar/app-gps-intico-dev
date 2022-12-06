@@ -41,9 +41,10 @@ export class AsignaTareaPage implements OnInit {
     return this.storageService.getUser;
   }
 
-  ngAfterViewInit(): void {
+  async ngAfterViewInit(): Promise<void> {
     //this.idUser = '6380de2a43a95b03d1418337';
-
+    const dataNew:any=await this.storageService.getUser;
+    console.log("dataNew",dataNew)
     const dataUser = this.users;
     // console.log('localuser' ,dataUser);
     this.idUser = dataUser[0].uid;
