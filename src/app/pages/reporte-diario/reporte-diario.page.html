@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>reporte-diario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="cd-schedule loading">
+    <div class="timeline">
+      <ul>
+        <li><span>08:00</span></li>
+        <li><span>08:30</span></li>
+        <li><span>09:00</span></li>
+        <li><span>09:30</span></li>
+        <li><span>10:00</span></li>
+        <li><span>10:30</span></li>
+        <li><span>11:00</span></li>
+        <li><span>11:30</span></li>
+        <li><span>12:00</span></li>
+        <li><span>12:30</span></li>
+        <li><span>13:00</span></li>
+        <li><span>13:30</span></li>
+        <li><span>14:00</span></li>
+        <li><span>14:30</span></li>
+        <li><span>15:00</span></li>
+        <li><span>15:30</span></li>
+        <li><span>16:00</span></li>
+        <li><span>16:30</span></li>
+        <li><span>17:00</span></li>
+        <li><span>17:30</span></li>
+        <li><span>18:00</span></li>
+      </ul>
+    </div> <!-- .timeline -->
+  
+    <div class="events">
+      <ul class="wrap">
+        <li class="events-group">
+          <div class="top-info"><span>Monday</span></div>
+          <ul>
+            <li class="single-event" data-start="08:15" data-end="10:30" data-content="event-abs-circuit" data-event="event-1">
+              <a href="#0">
+                <em class="event-name">Abs Circuit</em>
+              </a>
+            </li>
+  
+            <li class="single-event" data-start="11:00" data-end="12:30" data-content="event-rowing-workout" data-event="event-2">
+              <a href="#0">
+                <em class="event-name">Rowing Workout</em>
+              </a>
+            </li>
+  
+            <li class="single-event" data-start="14:00" data-end="15:15"  data-content="event-yoga-1" data-event="event-3">
+              <a href="#0">
+                <em class="event-name">Yoga Level 1</em>
+              </a>
+            </li>
+          </ul>
+        </li>
+  
+      </ul>
+    </div>
+  
+    <div class="event-modal">
+      <header class="header">
+        <div class="content">
+          <span class="event-date"></span>
+          <h3 class="event-name"></h3>
+        </div>
+  
+        <div class="header-bg"></div>
+      </header>
+  
+      <div class="body">
+        <div class="event-info"></div>
+        <div class="body-bg"></div>
+      </div>
+  
+      <a href="#0" class="close">Close</a>
+    </div>
+  
+    <div class="cover-layer"></div>
+  </div> <!-- .cd-schedule -->
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
+  <script src='../../../assets/scripts/reportCalendar.js'></script>
+
+
+  <!-- <div class="calendar">
+    <div class="timeline">
+      <div class="spacer"></div>
+      <div class="time-marker">9 AM</div>
+      <div class="time-marker">10 AM</div>
+      <div class="time-marker">11 AM</div>
+      <div class="time-marker">12 PM</div>
+      <div class="time-marker">1 PM</div>
+      <div class="time-marker">2 PM</div>
+      <div class="time-marker">3 PM</div>
+      <div class="time-marker">4 PM</div>
+      <div class="time-marker">5 PM</div>
+      <div class="time-marker">6 PM</div>
+    </div>
+    <div class="days">
+      <div class="day mon">
+        <div class="events">
+          <div class="event start-9 end-12 securities">
+            <p class="title">Securities Regulation</p>
+            <p class="time">9 am - 12 PM</p>
+          </div>
+      <div class="event start-12 end-1 ent-law">
+            <p class="title">Securities Regulation</p>
+            <p class="time">12 PM - 1 PM</p>
+          </div>
+      <div class="event start-1 end-4 securities">
+            <p class="title">Securities Regulation</p>
+            <p class="time">1 PM - 4 PM</p>
+          </div>
+      <div class="event start-4 end-5 ent-law">
+            <p class="title">Securities Regulation</p>
+            <p class="time">4 PM - 5 PM</p>
+          </div>
+      <div class="event start-5 end-6 corp-fi">
+            <p class="title">Securities Regulation</p>
+            <p class="time">5 PM - 6 PM</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+</ion-content>

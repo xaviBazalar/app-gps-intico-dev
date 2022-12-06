@@ -7,19 +7,37 @@
 <ion-content color="tertiary">
   <ion-card>
     <ion-label>Botones a clasificar</ion-label>
-    <ion-select interface="popover" placeholder="--Seleccione--">
-      <ion-select-option value="apples">--Seleccione--</ion-select-option>
+    <ion-select interface="popover" placeholder="--Seleccione--" [(ngModel)]="motivo" >
+      <ion-select-option value="Operativo">Operativo</ion-select-option>
+      <ion-select-option value="Pausa">Pausa</ion-select-option>
+      <ion-select-option value="Detencion">Detencion</ion-select-option>
     </ion-select>
+
     <ion-label>Motivo</ion-label>
-    <ion-select interface="popover" placeholder="--Seleccione--">
-      <ion-select-option value="apples">--Seleccione--</ion-select-option>
+    
+    <ion-select *ngIf="motivo==='Operativo'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoOpe">
+      <ion-select-option value="Efectivo">Efectivo</ion-select-option>
+      <ion-select-option value="No Efectivo">No Efectivo</ion-select-option>
     </ion-select>
+
+    <ion-select *ngIf="motivo==='Pausa'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoPau">
+      <ion-select-option value="Desplazamiento">Desplazamiento</ion-select-option>
+      <ion-select-option value="Permiso">Permiso</ion-select-option>
+      <ion-select-option value="Colacion">Colación</ion-select-option>
+      <ion-select-option value="Chl Seguridad">Chl Seguridad</ion-select-option>
+    </ion-select>
+
+    <ion-select *ngIf="motivo==='Detencion'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoDet">
+      <ion-select-option value="Falla Mecanica">Falla Mecanica</ion-select-option>
+      <ion-select-option value="Condiciones Climaticas">Condiciones Climaticas</ion-select-option>
+    </ion-select>
+
     <ion-label>Fecha y Hora</ion-label><br /><br />
     <ion-label>Desde:</ion-label>
     <ion-datetime-button datetime="date"></ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime id="date" slot="date-target"></ion-datetime>
+        <ion-datetime id="date" slot="date-target"  ></ion-datetime>
       </ng-template>
     </ion-modal>
     
@@ -32,8 +50,24 @@
     </ion-modal>
     
   </ion-card>
+<!-- 
+  <ion-button (click)="mostrarMap()" expand="full" color="dark">
+    <ion-icon name="map"></ion-icon>
+  </ion-button> -->
 
-
+  <ion-card>
+    <ion-card-content>
+      <ion-button color="dark" (click)="mostrarReporte()" class="mitad">
+        Reporte
+        <ion-icon name="calendar-outline"></ion-icon>
+      </ion-button>
+      
+      <ion-button  color="dark" (click)="mostrarEvidencia()" class="mitad">
+        <ion-icon name="eye"></ion-icon>
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+  
   <ion-button (click)="aceptar()" expand="full" color="danger">
     ACEPTAR
   </ion-button>
