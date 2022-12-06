@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TaskService } from 'src/app/services/task.service';
+import { MaquinariaService } from 'src/app/services/maquinaria.service';
 
 declare var google;
 interface Marker {
@@ -22,10 +22,13 @@ export class MapPage implements OnInit {
   coor: {} = {}
   arrCoor: any[] = []
   // markers: Marker[] = [];
-  @Input() idTarea;
+  // idTarea: any;
   
-  constructor(private taskService: TaskService,
-              private _route: ActivatedRoute) { }
+  constructor(private taskService: MaquinariaService,
+              private _route: ActivatedRoute) {
+    // this.idTarea = this._route.snapshot.paramMap.get("idTarea");
+    // console.log('tarea', this.idTarea)
+               }
 
   loadMap() {
     // create a new map by passing HTMLElement
@@ -48,13 +51,14 @@ export class MapPage implements OnInit {
 
   async renderMarkers() {
     console.log('buscando ubicaciones')
-    // let idTarea = this._route.snapshot.paramMap.get("idTarea");
+    let idTarea = this._route.snapshot.paramMap.get("idTarea");
 
-    // if(!idTarea){
-    //   idTarea = ''
-    // }
-    this.idTarea = '637d1c9321c773c9052c9416';
-    await this.taskService.getTaskEvent(this.idTarea).subscribe((data: any) => {
+    if(!idTarea){
+      idTarea = '637d1c9321c773c9052c9416'
+    }
+    // this.idTarea = '637d1c9321c773c9052c9416';
+    console.log('tareaa',idTarea);
+    await this.taskService.obtenerHistorial(idTarea).subscribe((data: any) => {
       console.log(data);
       if(data.ok){
                 
@@ -67,7 +71,7 @@ export class MapPage implements OnInit {
           // console.log(lati)
           // console.log(long)
           this.coor = { lat: lati, lng: long };
-          console.log(this.coor)
+          // console.log(this.coor)
           this.arrCoor.push(this.coor);
         }
 
@@ -83,18 +87,8 @@ export class MapPage implements OnInit {
       }
     });
 
-    // this.markers.forEach(marker => {
-    //   this.addMarker(marker);
-    // });
   }
 
-  // addMarker(marker: Marker) {
-  //   return new google.maps.Marker({
-  //     position: marker.position,
-  //     map: this.map,
-  //     title: marker.title
-  //   });
-  // }
 
   ngOnInit() {
     this.loadMap();

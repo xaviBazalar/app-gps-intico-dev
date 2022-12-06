@@ -5,6 +5,7 @@ import { PhotoService } from '../../services/photo.service';
 import { EvidenceModel } from '../../models/evidence'
 import { environment } from 'src/environments/environment';
 import { EvidenceService } from 'src/app/services/evidence.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 declare let window: any;
 
@@ -24,7 +25,9 @@ export class TomarFotoPage implements OnInit {
   constructor(private camera: Camera, 
               private modalController: ModalController, 
               private photoService: PhotoService,
-              private evidenceService: EvidenceService
+              private evidenceService: EvidenceService,
+              private _route: ActivatedRoute,
+              private router: Router
               ) { }
 
   ngOnInit() {
@@ -32,6 +35,11 @@ export class TomarFotoPage implements OnInit {
 
   ngAfterViewInit(): void {
     // evidence
+    let _idTarea: String | null = this._route.snapshot.paramMap.get("idTarea");
+    if(!this.idTarea){
+      this.idTarea = _idTarea
+    }
+
     this.evidenceService.obtenerEvidence(this.idTarea).subscribe((data: any) => {
       if(data.ok){
         console.log(data);
@@ -107,13 +115,19 @@ export class TomarFotoPage implements OnInit {
   }
 
   cerrar(){
-    this.modalController.dismiss();
+    this.modalController.dismiss().then().catch(()=>{
+      console.log('error')
+      this.router.navigate(['/inicio']);
+    });;
     return true;
   }
 
   aceptar(){
     
-    this.modalController.dismiss();
+    this.modalController.dismiss().then().catch(()=>{
+      console.log('error')
+      this.router.navigate(['/inicio']);
+    });;
     return true;
   }
 

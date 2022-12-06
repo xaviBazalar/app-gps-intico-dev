@@ -120,6 +120,7 @@ export class MaquinaTareaPage implements OnInit {
       component: TomaTiempoPage,
       componentProps: {
         idTarea: this.idTarea,
+        idMaquinaInterna: this.idMaquinaInterna,
         idMaquina: this.idMaquina
       }
     });
@@ -217,7 +218,7 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Operativo';
     this.llenarDatos(tipo);
 
-    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
       console.log(data);
     });
   }
@@ -273,7 +274,7 @@ export class MaquinaTareaPage implements OnInit {
     this.llenarDatos(tipo);
     this.tipoPausa = this.taskEventsModel.subTipo;
     // console.log(this.tipoOperativo)
-    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
       console.log(data);
     });
 
@@ -292,7 +293,7 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Pausa';
     this.llenarDatos(tipo);
 
-    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
       console.log(data);
     });
   }
@@ -333,7 +334,7 @@ export class MaquinaTareaPage implements OnInit {
     this.llenarDatos(tipo);
     this.tipoDetencion = this.taskEventsModel.subTipo;
 
-    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
       console.log(data);
     });
   }
@@ -351,7 +352,7 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Detencion';
     this.llenarDatos(tipo);
 
-    this.taskServise.guardarTaskEvent(this.taskEventsModel).subscribe((data: any) => {
+    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
       console.log(data);
     });
   }
@@ -467,7 +468,7 @@ export class MaquinaTareaPage implements OnInit {
   async guardarTaskEvent(taskEventsModel: TaskEventsModel, tipo: Number) {
 
 
-    this.taskServise.guardarTaskEvent(taskEventsModel).subscribe(async (data: any) => {
+    (await this.taskServise.guardarTaskEvent(taskEventsModel)).subscribe(async (data: any) => {
       console.log(data);
       if(tipo === 1){
         await this.presentMessage(data.ok);

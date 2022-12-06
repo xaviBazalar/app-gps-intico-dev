@@ -35,7 +35,8 @@
               "src/theme/variables.scss",
               "src/global.scss"
             ],
-            "scripts": []
+            "scripts": ["node_modules/jquery/dist/jquery.min.js",
+            "src/assets/scripts/reportCalendar.js"]
           },
           "configurations": {
             "production": {
@@ -118,7 +119,10 @@
               "src/theme/variables.scss",
               "src/global.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "src/assets/scripts/reportCalendar.js"
+            ]
           },
           "configurations": {
             "ci": {

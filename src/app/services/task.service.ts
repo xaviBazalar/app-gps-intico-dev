@@ -15,7 +15,7 @@ export class TaskService {
     return this.http.get(`${this.baseUrl}/task?machine=${ machine }&fecha=${ fecha }&idUser=${ user }`)
   }
 
-  guardarTaskEvent(task: TaskEventsModel) {
+  async guardarTaskEvent(task: TaskEventsModel) {
     console.log(task);
 
     return this.http.post(`${ this.baseUrl }/task/event`, task)

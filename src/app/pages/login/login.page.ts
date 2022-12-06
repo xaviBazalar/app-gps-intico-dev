@@ -41,14 +41,23 @@ export class LoginPage implements OnInit {
 
   iniciarSesion(){
     //console.log(this.usuario);
+    if(this.usuario.password === ''){
+      this.errorMsg = 'Debe colocar una contraseña';
+      return;
+    }
+
+    if(this.usuario.usuario === ''){
+      this.errorMsg = 'Debe colocar un usuario';
+      return;
+    }    
+
     this.loginService.validateLogin(this.usuario.usuario, this.usuario.password).subscribe(
       async (data:any) => {
-        this.usuario = data.usuario;
-        console.log('rpta', this.usuario);
-        await this.storageService.saveRemoveUsuario(this.usuario);
+        console.log('rpta', data);
         
         if(data.ok){
-          console.log('paso');
+          this.usuario = data.usuario;
+          await this.storageService.saveRemoveUsuario(this.usuario);
           this.route.navigate(['./inicio']);
         }else{
           this.errorMsg = data.msg;

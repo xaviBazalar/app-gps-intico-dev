@@ -39,6 +39,10 @@ const routes: Routes = [
     path: 'map',
     loadChildren: () => import('./pages/map/map.module').then( m => m.MapPageModule)
   },
+  {
+    path: 'reporte-diario',
+    loadChildren: () => import('./pages/reporte-diario/reporte-diario.module').then( m => m.ReporteDiarioPageModule)
+  },
 ];
 
 @NgModule({
