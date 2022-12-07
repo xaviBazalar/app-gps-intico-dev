@@ -195,6 +195,7 @@ export class MaquinaTareaPage implements OnInit {
 
     const tipo = 'Operativo';
     this.llenarDatos(tipo);
+    this.taskEventsModel.nivel = 1;
     this.tipoOperativo = this.taskEventsModel.subTipo;
     if(this.tipoOperativo==='Efectivo'){
       this.operativo = true;

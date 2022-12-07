@@ -2,6 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import * as $ from 'jquery'
 import * as jQuery from 'jquery';
 import { DOCUMENT } from '@angular/common';
+import { TaskEventsModel } from '../../models/taskEvents'
+import { TaskService } from 'src/app/services/task.service';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 
 @Component({
@@ -11,32 +14,34 @@ import { DOCUMENT } from '@angular/common';
   
 })
 export class ReporteDiarioPage implements OnInit {
-  private window: any;
-  transitionEnd:string= 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
-  transitionsSupported:any
-  date: any;
-  element:any
-  timeline:any
-  timelineItems:any
-  timelineItemsNumber:any
-  timelineStart:any
-  timelineUnitDuration:any
-  eventsWrapper:any
-  eventsGroup:any
-  singleEvents:any
-  eventSlotHeight:any
-  modal:any
-  modalHeader:any
-  modalHeaderBg:any
-  modalBody:any
-  modalBodyBg:any
-  modalMaxWidth:any
-  modalMaxHeight:any
-  animating:any
-  objSchedulesPlan = []
+	private window: any;
+	transitionEnd:string= 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
+	transitionsSupported:any
+	date: any;
+	element:any
+	timeline:any
+	timelineItems:any
+	timelineItemsNumber:any
+	timelineStart:any
+	timelineUnitDuration:any
+	eventsWrapper:any
+	eventsGroup:any
+	singleEvents:any
+	eventSlotHeight:any
+	modal:any
+	modalHeader:any
+	modalHeaderBg:any
+	modalBody:any
+	modalBodyBg:any
+	modalMaxWidth:any
+	modalMaxHeight:any
+	animating:any
+	objSchedulesPlan = []
 	windowResize = false;
 
-  constructor(@Inject(DOCUMENT) private document: Document) { 
+	listaEventos: Array<TaskEventsModel> = []
+
+  constructor(@Inject(DOCUMENT) private document: Document, private taskService: TaskService, private route: ActivatedRoute) { 
     this.window = this.document.defaultView;
     this.date = new Date().toString();
     //this.transitionsSupported=( $('.csstransitions').length > 0 );
@@ -44,13 +49,37 @@ export class ReporteDiarioPage implements OnInit {
   }
 
   ngOnInit() {
-    
+	/*
+		<li *ngFor="let item of listaEventos"
+                class="single-event"
+                data-content="event-abs-circuit"
+                data-start="item.horaInicio"
+                data-end="item.horaFin"
+                data-event="item.tipoEstilo"
+                >
+            </li>
+	*/
+
+	let idTask = this.route.snapshot.paramMap.get("idTarea");
+	if(!idTask){
+		idTask = ''
+  	}
+	
+	let listaTarea: Array<TaskEventsModel> = [];
+	let tarea: TaskEventsModel;
+
+	this.taskService.getTaskEvent(idTask).subscribe((data: any) => {
+		const { taskEvent } = data;
+		listaTarea = taskEvent;
+
+		
+
+	})
+
   }
 
   ngAfterViewInit(): void {
     var self=this
-    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-    //Add 'implements AfterViewInit' to the class.
     this.transitionsSupported=( $('.csstransitions').length > 0 );
     var schedules:any = $('.cd-schedule');
     console.log(schedules)

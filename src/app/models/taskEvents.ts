@@ -9,6 +9,9 @@ export class TaskEventsModel {
     task: String;
     user: String;
     timpo: Number;
+    horaInicio: String | null;
+    horaFin: String | null;
+    tipoEstilo: String | null;
 
     constructor(){
         this.latitude = 0;
@@ -21,5 +24,8 @@ export class TaskEventsModel {
         this.task = '';
         this.user = '';
         this.timpo = 0;
+        this.horaInicio = '';
+        this.horaFin = '',
+        this.tipoEstilo = '';
     }
 }
