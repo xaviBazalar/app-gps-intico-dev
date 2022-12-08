@@ -10,6 +10,7 @@ import { MaquinariaModel } from '../../models/maquinaria'
 import { TaskEventsModel } from '../../models/taskEvents';
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StorageService } from 'src/app/services/storage.service';
 
 
 @Component({
@@ -45,7 +46,9 @@ export class MaquinaTareaPage implements OnInit {
   tipoOperativo: String = '';
   tipoPausa: String = '';
   tipoDetencion: String = '';
-  operativo:Boolean = false;
+
+  flagMaquinaria: boolean = false;  
+  flagMaquinaGps: boolean = false;  
 
   @Input() idMaquina;
   @Input() idUser;
@@ -60,7 +63,8 @@ export class MaquinaTareaPage implements OnInit {
               private taskServise: TaskService,
               private alertController: AlertController,
               private _route: ActivatedRoute,
-              private router: Router
+              private router: Router,
+              private storageService: StorageService
               ) {
     //this.menuController.enable(false);
 
@@ -145,15 +149,19 @@ export class MaquinaTareaPage implements OnInit {
 
     this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
     const result = data.result;
-    // console.log('--flespi--', result[0]);
+    console.log('--flespi--', result[0]);
     const { telemetry } = result[0];
-    const { 'device.name': nameMachine,'engine.ignition.status': status } = telemetry;
-    const { latitude, longitude, speed } = telemetry.position;
+    const { 'device.name': nameMachine,'engine.ignition.status': status, 'vehicle.mileage': mileage } = telemetry;
+    const { latitude, longitude, speed, altitude, direction } = telemetry.position;
     const coords = `${ latitude },${ longitude }`;
 
     this.maquinaModel.nombre = nameMachine;
     this.maquinaModel.latitude = latitude;
     this.maquinaModel.longitude = longitude;
+    this.maquinaModel.direction = direction;
+    this.maquinaModel.altitude = altitude;
+    this.maquinaModel.mileage = mileage;
+
     this.maquinaModel.coords = coords;
 
     if( speed === 0){
@@ -195,13 +203,12 @@ export class MaquinaTareaPage implements OnInit {
 
     const tipo = 'Operativo';
     this.llenarDatos(tipo);
-    this.taskEventsModel.nivel = 1;
+
+    const fechaActual: Date = new Date();
+    this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.horaFin = ''
+
     this.tipoOperativo = this.taskEventsModel.subTipo;
-    if(this.tipoOperativo==='Efectivo'){
-      this.operativo = true;
-    }else{
-      this.operativo = false;
-    }
 
     this.guardarTaskEvent(this.taskEventsModel, 1);
   }
@@ -219,9 +226,10 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Operativo';
     this.llenarDatos(tipo);
 
-    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
-      console.log(data);
-    });
+    const fechaActual: Date = new Date();
+    this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+
+    this.actualizarTaskEvent(this.taskEventsModel);
   }
 
   updateTimerOperativo(){
@@ -235,20 +243,20 @@ export class MaquinaTareaPage implements OnInit {
     const text = minutes + ':' + seconds;
     this.timeOperativo.next(text);
 
-    if(seconds === '00' && minutes !== '00'){
-      this.getGep(this.idMaquinaInterna);//'4656765'
+    // if(seconds === '00' && minutes !== '00'){
+    //   this.getGep(this.idMaquinaInterna);//'4656765'
 
-      this.taskEvent.user = this.idUser;
-      this.taskEvent.machine = this.idMaquina;
-      this.taskEvent.task = this.idTarea;
-      this.taskEvent.latitude = this.maquinaModel.latitude;
-      this.taskEvent.longitude = this.maquinaModel.longitude;
-      this.taskEvent.tipo = 'Ubicacion';
-      this.taskEvent.subTipo = 'Seguimiento'
-      this.taskEvent.fechaRegistro = new Date();
+    //   this.taskEvent.user = this.idUser;
+    //   this.taskEvent.machine = this.idMaquina;
+    //   this.taskEvent.task = this.idTarea;
+    //   this.taskEvent.latitude = this.maquinaModel.latitude;
+    //   this.taskEvent.longitude = this.maquinaModel.longitude;
+    //   this.taskEvent.tipo = 'Ubicacion';
+    //   this.taskEvent.subTipo = 'Seguimiento'
+    //   this.taskEvent.fechaRegistro = new Date();
 
-      this.guardarTaskEvent(this.taskEvent, 0);
-    }
+    //   this.guardarTaskEvent(this.taskEvent, 0);
+    // }
   }
   //#endregion "metodos cronometro"
 
@@ -274,11 +282,12 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Pausa';
     this.llenarDatos(tipo);
     this.tipoPausa = this.taskEventsModel.subTipo;
-    // console.log(this.tipoOperativo)
-    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
-      console.log(data);
-    });
 
+    const fechaActual: Date = new Date();
+    this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.horaFin = '';
+
+    this.guardarTaskEvent(this.taskEventsModel, 1);
   }
 
   async stopTimerPausa(){
@@ -294,9 +303,10 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Pausa';
     this.llenarDatos(tipo);
 
-    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
-      console.log(data);
-    });
+    const fechaActual: Date = new Date();
+    this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+
+    this.actualizarTaskEvent(this.taskEventsModel);
   }
 
   updateTimerPausa(){
@@ -333,11 +343,12 @@ export class MaquinaTareaPage implements OnInit {
 
     const tipo = 'Detencion';
     this.llenarDatos(tipo);
+    const fechaActual: Date = new Date();
+    this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.horaFin = ''
     this.tipoDetencion = this.taskEventsModel.subTipo;
 
-    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
-      console.log(data);
-    });
+    this.guardarTaskEvent(this.taskEventsModel, 1);
   }
 
   async stopTimerDetencion(){
@@ -353,9 +364,10 @@ export class MaquinaTareaPage implements OnInit {
     const tipo = 'Detencion';
     this.llenarDatos(tipo);
 
-    (await this.taskServise.guardarTaskEvent(this.taskEventsModel)).subscribe((data: any) => {
-      console.log(data);
-    });
+    const fechaActual: Date = new Date();
+    this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+
+    this.actualizarTaskEvent(this.taskEventsModel);
   }
 
   updateTimerDetencion(){
@@ -461,19 +473,54 @@ export class MaquinaTareaPage implements OnInit {
     this.taskEventsModel.longitude = this.maquinaModel.longitude;
     this.taskEventsModel.tipo = tipo;
     this.taskEventsModel.fechaRegistro = new Date();
-    // taskEventsModel.subTipo = 'Efectivo1';
-
-    // console.log('fechaCorta', taskEventsModel.fechaRegistro.toISOString().substring(0,10));
   }
 
+  mostrarOcultarMaq(){
+    if(this.flagMaquinaria){
+      this.flagMaquinaria = false;
+    }else{
+      this.flagMaquinaria = true;
+    }
+  }
+
+  mostrarOcultarGps(){
+    if(this.flagMaquinaGps){
+      this.flagMaquinaGps = false;
+    }else{
+      this.flagMaquinaGps = true;
+    }
+  }
   async guardarTaskEvent(taskEventsModel: TaskEventsModel, tipo: Number) {
-
-
     (await this.taskServise.guardarTaskEvent(taskEventsModel)).subscribe(async (data: any) => {
-      console.log(data);
+      console.log('guardado', data);
+      const { taskDB } = data;
+
+      if(data.ok){        
+        await this.storageService.saveTaskEvent(taskDB);
+      }
+
+
       if(tipo === 1){
         await this.presentMessage(data.ok);
       }
+    });
+  }
+
+  async actualizarTaskEvent(taskEventsModel: TaskEventsModel){
+    let taskData=this.storageService.loadTask();
+    const [task] = await Promise.all([taskData]);
+
+    taskEventsModel.uid = task.uid;
+
+    (await this.taskServise.actualizarTaskEvent(taskEventsModel)).subscribe(async (data: any) => {
+      console.log(data);
+      const { taskDB } = data;
+
+      if(data.ok){        
+        await this.storageService.saveTaskEvent(taskDB);
+      }
+
+        await this.presentMessage(data.ok);
     });
   }
   //#endregion "metodos cronometro operativo"

@@ -11,29 +11,48 @@
 <ion-content color="tertiary">
   <form>
     <fieldset>
-      <legend>Maquina: {{ maquinaModel.nombre }} </legend>
+      <legend>Maquina: {{ maquinaModel.nombre }} 
+        <ion-button color="tertiary" (click)="mostrarOcultarMaq()">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </ion-button>
+      </legend>
         <ion-label>Izaje500 toneladas</ion-label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <ion-label>5 Hrs SLA</ion-label>
-      
-        <br/>
+        <br>
         <ion-label>09-nov-2022 13:05 hrs</ion-label> &nbsp;&nbsp;&nbsp;
         <ion-label>Turno P.M</ion-label>
+
+        <div *ngIf="flagMaquinaria===true">
+        <br>
+        <ion-label>Gerencia: </ion-label> &nbsp;&nbsp;&nbsp;
+        <ion-label>Division: </ion-label>
+        <br>
+        <ion-label>Contrato: </ion-label> &nbsp;&nbsp;&nbsp;
+        <ion-label>Usuario: </ion-label>
+        </div>
     </fieldset>
 
     <fieldset>
-      <legend> GPS MAQUINARIA </legend>
+      <legend> GPS MAQUINARIA 
+        <ion-button color="tertiary" (click)="mostrarOcultarGps()">
+          <ion-icon name="caret-down-outline"></ion-icon>
+        </ion-button>
+      </legend>
       <ion-label>Encendido: {{ maquinaModel.encendido }}</ion-label>&nbsp;&nbsp;&nbsp;
       <ion-label>Pos: {{ maquinaModel.coords }} </ion-label>
       <ion-spinner name="lines-small"
-                   *ngIf="!cargandoGeo"></ion-spinner>
-      <!-- <ion-toggle slot="end"
-                  [(ngModel)]="post.posicion"
-                  (ionChange)="getGep()"
-                  *ngIf="!cargandoGeo"></ion-toggle> -->
-      <br />
-
+                   *ngIf="!cargandoGeo"></ion-spinner>      
+      <br>
       <ion-label>Movimiento: {{ maquinaModel.movimiento }}</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
       <ion-label>Velocidad: {{ maquinaModel.velocidad }} Km/h</ion-label>
+      
+      <div *ngIf="flagMaquinaGps===true">
+        <br>
+        <ion-label>Altitude: {{ maquinaModel.altitude }}</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
+        <ion-label>Direction: {{ maquinaModel.direction }}</ion-label>
+        <br>
+        <ion-label>Mileage: {{ maquinaModel.mileage }}</ion-label>&nbsp;&nbsp;&nbsp;&nbsp;
+      </div>
     </fieldset>
     
     <ion-card>

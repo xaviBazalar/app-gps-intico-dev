@@ -48,16 +48,69 @@ export class ReporteDiarioPage implements OnInit {
     if( !this.transitionsSupported ) this.transitionEnd = 'noTransition';
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
 	/*
-		<li *ngFor="let item of listaEventos"
-                class="single-event"
-                data-content="event-abs-circuit"
-                data-start="item.horaInicio"
-                data-end="item.horaFin"
-                data-event="item.tipoEstilo"
-                >
+		<ul class="wrap">
+        <li class="events-group">
+          <div class="top-info"><span>gps</span></div>
+          <ul>            
+            <li class="single-event" data-start="08:15" data-end="10:30" data-content="event-abs-circuit" data-event="event-5">
+              <ion-card>
+                <ion-card-content>
+                  <ion-label>GPS</ion-label><br>
+                  <ion-label>Uso:</ion-label><br>
+                  <ion-label>Distancia:</ion-label><br>
+                  <ion-label>Velocidad:</ion-label><br>
+                </ion-card-content>
+              </ion-card>
+            </li>  
+            <li class="single-event" data-start="11:00" data-end="12:30" data-content="event-rowing-workout" data-event="event-5">              
+            </li>  
+            <li class="single-event" data-start="14:00" data-end="15:15"  data-content="event-yoga-1" data-event="event-5">              
             </li>
+          </ul>
+        </li>
+        <li class="events-group">
+          <div class="top-info"><span>Eventos</span></div>
+          <ul>            
+            <li class="single-event" data-start="08:15" data-end="10:30" data-content="event-abs-circuit" data-event="event-1">
+              <!-- <a href="#0">
+                <em class="event-name">Abs Circuit</em>
+              </a> -->
+            </li>
+            <li class="single-event" data-start="11:00" data-end="12:30" data-content="event-rowing-workout" data-event="event-4">
+              <!-- <a href="#0">
+                <em class="event-name">Rowing Workout</em>
+              </a> -->
+            </li>
+            <li class="single-event" data-start="14:00" data-end="15:15"  data-content="event-yoga-1" data-event="event-3">
+              <!-- <a href="#0">
+                <em class="event-name">Yoga Level 1</em>
+              </a> -->
+            </li>
+          </ul>
+        </li>
+        <li class="events-group">
+          <div class="top-info"><span>Evidencias</span></div>
+          <ul>            
+            <li class="single-event" data-start="10:30" data-end="10:30" data-content="event-abs-circuit" data-event="event-3">
+              <!-- <a href="#0">
+                <em class="event-name">Abs Circuit</em>
+              </a> -->
+            </li>  
+            <li class="single-event" data-start="12:30" data-end="12:30" data-content="event-rowing-workout" data-event="event-3">
+              <!-- <a href="#0">
+                <em class="event-name">Rowing Workout</em>
+              </a> -->
+            </li>  
+            <li class="single-event" data-start="15:15" data-end="15:15"  data-content="event-yoga-1" data-event="event-3">
+              <!-- <a href="#0">
+                <em class="event-name">Yoga Level 1</em>
+              </a> -->
+            </li>
+          </ul>
+        </li>
+      </ul>
 	*/
 
 	let idTask = this.route.snapshot.paramMap.get("idTarea");
@@ -65,18 +118,32 @@ export class ReporteDiarioPage implements OnInit {
 		idTask = ''
   	}
 	
-	let listaTarea: Array<TaskEventsModel> = [];
-	let tarea: TaskEventsModel;
+	let html: string = '<ul class="wrap">';
 
-	this.taskService.getTaskEvent(idTask).subscribe((data: any) => {
-		const { taskEvent } = data;
-		listaTarea = taskEvent;
+	(await this.taskService.getTaskEvent(idTask)).subscribe((data: any) => {
+		  const { taskEvent } = data;
+		  html += '<li class="events-group"><div class="top-info"><span>Eventos</span></div><ul>';
 
-		
+		  //para los eventos
+		  for (let i = 0; i < taskEvent.length; i++) {
+			  html += `<li class="single-event" data-start="${taskEvent[i].horaInicio}" data-end="${taskEvent.horaFin}" data-content="event-abs-circuit" data-event="event-1">`;
+			  // <!-- <a href="#0">
+			  //   <em class="event-name">Abs Circuit</em>
+			  // </a> -->
+			  html += '</li>';
+		  }
 
-	})
+		  html += '</ul></li>'
+	  })
+
+	const div = document.getElementById('divEventos');
+	div!.innerHTML = html;
+
+	console.log(html)
 
   }
+
+
 
   ngAfterViewInit(): void {
     var self=this
@@ -95,6 +162,8 @@ export class ReporteDiarioPage implements OnInit {
     }
   }
 
+
+  //#region "jQuery"
   SchedulePlan( element:any ) {
 		this.element = $(element);
 		this.timeline = this.element.find('.timeline');
@@ -194,8 +263,6 @@ export class ReporteDiarioPage implements OnInit {
 
 		this.element.removeClass('loading');
   };
-
-  
   
   openModal = (event:any)=> {
 		var self = this;
@@ -444,6 +511,6 @@ export class ReporteDiarioPage implements OnInit {
 			'transform': value
 		});
 	}
-
+//#endregion
 
 }

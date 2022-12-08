@@ -14,9 +14,9 @@ export class InicioPage implements OnInit {
 
   item: any[] = []; 
 
-  get users(): UserModel[]{
-    return this.storageService.getUser;
-  }
+  // get users(): UserModel[]{
+  //   return this.storageService.getUser;
+  // }
 
   constructor(private menuController: MenuController,
               private storageService: StorageService,
@@ -30,11 +30,11 @@ export class InicioPage implements OnInit {
 
   async ngAfterViewInit(): Promise<void> {
     let idUser: String = '';
-    var userL=this.storageService.loadUser()
+    // var userL=this.storageService.loadUser()
 
 
     let userData=this.storageService.loadUser();
-    const [user] = await Promise.all([userData])
+    const [user] = await Promise.all([userData]);
 
     const dataUser = user;
     // console.log('localuser' ,dataUser);

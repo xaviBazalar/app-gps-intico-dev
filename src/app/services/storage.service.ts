@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
+import { TaskEventsModel } from '../models/taskEvents';
 
 import { UserModel } from '../models/user'
 
@@ -19,6 +20,7 @@ export class StorageService {
     this._storage = storage;
 
     this.loadUser();
+    this.loadTask();
   }
     
   get getUser() {
@@ -36,4 +38,14 @@ export class StorageService {
     //this._localUser = user;
     return user
   }
+
+  saveTaskEvent(taskEvent: TaskEventsModel){
+    this._storage?.set('task', taskEvent)
+  }
+
+  async loadTask(){    
+    const task = await this._storage?.get('task');
+    return task;
+  }
+
 }

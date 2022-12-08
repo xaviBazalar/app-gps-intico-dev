@@ -22,7 +22,14 @@ export class TaskService {
         
   }
 
-  getTaskEvent(idTask: String){
+  async actualizarTaskEvent(task: TaskEventsModel) {
+    console.log(task);
+
+    return this.http.put(`${ this.baseUrl }/task/event`, task)
+        
+  }  
+
+  async getTaskEvent(idTask: String){
     return this.http.get(`${ this.baseUrl }/task/event?task=${ idTask }`)
   }
 

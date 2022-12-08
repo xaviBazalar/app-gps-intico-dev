@@ -239,7 +239,7 @@
       width: 100%;
     }
     .cd-schedule .events .events-group {
-      width: 100%;
+      width: 33%;
       float: left;
       border: 1px solid #EAEAEA;
       /* reset style */
@@ -387,6 +387,15 @@
     background: #f7bd7f;
   }
   
+  .cd-schedule .single-event[data-event="event-5"],
+  .cd-schedule [data-event="event-5"] .header-bg {
+    background: #F4F6F6;
+  }
+  
+  .cd-schedule .single-event[data-event="event-5"]:hover {
+    background: #EAECEE;
+  }
+
   .cd-schedule .event-modal {
     position: fixed;
     z-index: 3;
