@@ -54,7 +54,7 @@ export class MaquinariaService {
     return  this.http.get(url, options)    
   }
 
-  async obtenerUbicaTiempo( id: String, desde: String, hasta: String){
+   obtenerUbicaTiempo( id: String, desde: String, hasta: String){
     const options = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',

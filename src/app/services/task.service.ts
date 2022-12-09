@@ -15,6 +15,10 @@ export class TaskService {
     return this.http.get(`${this.baseUrl}/task?machine=${ machine }&fecha=${ fecha }&idUser=${ user }`)
   }
 
+  getTaskId(id:String) {
+    return this.http.get(`${this.baseUrl}/task/id?id=${ id }`)
+  }
+
   async guardarTaskEvent(task: TaskEventsModel) {
     console.log(task);
 
@@ -30,7 +34,18 @@ export class TaskService {
   }  
 
   async getTaskEvent(idTask: String){
+    console.log('event', idTask)
     return this.http.get(`${ this.baseUrl }/task/event?task=${ idTask }`)
   }
 
+  async getTaskEventMap(idTask: String){
+    console.log('event', idTask)
+    return this.http.get(`${ this.baseUrl }/task/event?task_event=${ idTask }`)
+  }
+
+  getTaskEventReporte(fecha: any, machine: any){
+    
+    return this.http.get(`${ this.baseUrl }/task/report?fecha=${ fecha }&machine=${ machine }`)
+  }
+  
 }

@@ -24,6 +24,7 @@ export class TomaTiempoPage implements OnInit {
   task: TaskEventsModel = new TaskEventsModel;
   idUser: String = '';
   link: String = '';
+  idTareaEvent: String = '';
 
   @Input() idTarea;
   @Input() idMaquina;
@@ -145,6 +146,12 @@ export class TomaTiempoPage implements OnInit {
 
     (await this.taskService.guardarTaskEvent(this.task)).subscribe((data: any) => {
       console.log(data);
+      const { taskDB } = data;
+
+      if(data.ok){
+        this.idTareaEvent = taskDB.uid
+        this.storageService.saveTaskEvent(taskDB);
+      }
     });
 
     // this.modalController.dismiss();
@@ -158,12 +165,17 @@ export class TomaTiempoPage implements OnInit {
 
   mostrarReporte(){
     this.modalController.dismiss();
-    this.router.navigate(['/reporte-diario', { idTarea: this.idTarea }]);
+    this.router.navigate(['/reporte-diario', { idTarea: this.idTarea, machine: this.idMaquina }]);
   }
 
   mostrarEvidencia(){
+    if(!this.idTareaEvent){
+      this.alertMessage('Debe primero guardar el evento');
+      return;
+    }
+
     this.modalController.dismiss();
-    this.router.navigate(['/tomar-foto',  { idTarea: this.idTarea }])
+    this.router.navigate(['/tomar-foto',  { idTarea: this.idTareaEvent }])
   }
 
   async alertMessage(mensaje: string) {

@@ -145,7 +145,7 @@
     } */
   }
   
-  @media only screen and (min-width: 1000px) {
+  @media only screen and (max-width: 500px) {
     .cd-schedule .timeline li::after {
       width: calc(100% - 60px);
       left: 60px;
@@ -239,7 +239,7 @@
       width: 100%;
     }
     .cd-schedule .events .events-group {
-      width: 100%;
+      width: 33%;
       float: left;
       border: 1px solid #EAEAEA;
       /* reset style */
@@ -309,7 +309,7 @@
     }
   }
   
-  @media only screen and (min-width: 1000px) {
+  @media only screen and (max-width: 500px) {
     .cd-schedule .events {
       /* 60px is the .timeline element width */
       width: calc(100% - 60px);
@@ -609,7 +609,7 @@
     }
   }
   
-  @media only screen and (min-width: 1000px) {
+  @media only screen and (max-width: 500px) {
     .cd-schedule .event-modal .header .content {
       padding: 1.2em;
     }

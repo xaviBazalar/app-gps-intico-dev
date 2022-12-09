@@ -5,7 +5,10 @@ export class TaskModel {
     fechaTarea: Date | null;
     turno: String;
     user: String;
-
+    gerencia: String;
+    division: String;
+    contrato: String;
+    tiempoSLA: String;
 
     constructor(){
         this.planificacionTrabajo = '';
@@ -14,5 +17,9 @@ export class TaskModel {
         this.fechaTarea = null;
         this.turno = '';
         this.user = '';
+        this.gerencia = '';
+        this.division = '';
+        this.contrato = '';
+        this.tiempoSLA = '';
     }
 }

@@ -5,6 +5,7 @@ import { DOCUMENT } from '@angular/common';
 import { TaskEventsModel } from '../../models/taskEvents'
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
+import { parse } from 'path';
 
 
 @Component({
@@ -39,9 +40,13 @@ export class ReporteDiarioPage implements OnInit {
 	objSchedulesPlan = []
 	windowResize = false;
 
-	listaEventos: Array<TaskEventsModel> = []
+	listaEventos: Array<TaskEventsModel> = [];
+	idMachine: String | null = '';
 
-  constructor(@Inject(DOCUMENT) private document: Document, private taskService: TaskService, private route: ActivatedRoute) { 
+  constructor(@Inject(DOCUMENT) private document: Document, 
+  				private taskService: TaskService, 
+				private route: ActivatedRoute,
+				private router: Router,) { 
     this.window = this.document.defaultView;
     this.date = new Date().toString();
     //this.transitionsSupported=( $('.csstransitions').length > 0 );
@@ -50,100 +55,86 @@ export class ReporteDiarioPage implements OnInit {
 
   async ngOnInit():Promise<void> {
 	
-	/*
-		<ul class="wrap">
-        <li class="events-group">
-          <div class="top-info"><span>gps</span></div>
-          <ul>            
-            <li class="single-event" data-start="08:15" data-end="10:30" data-content="event-abs-circuit" data-event="event-5">
-              <ion-card>
-                <ion-card-content>
-                  <ion-label>GPS</ion-label><br>
-                  <ion-label>Uso:</ion-label><br>
-                  <ion-label>Distancia:</ion-label><br>
-                  <ion-label>Velocidad:</ion-label><br>
-                </ion-card-content>
-              </ion-card>
-            </li>  
-            <li class="single-event" data-start="11:00" data-end="12:30" data-content="event-rowing-workout" data-event="event-5">              
-            </li>  
-            <li class="single-event" data-start="14:00" data-end="15:15"  data-content="event-yoga-1" data-event="event-5">              
-            </li>
-          </ul>
-        </li>
-        <li class="events-group">
-          <div class="top-info"><span>Eventos</span></div>
-          <ul>            
-            <li class="single-event" data-start="08:15" data-end="10:30" data-content="event-abs-circuit" data-event="event-1">
-              <!-- <a href="#0">
-                <em class="event-name">Abs Circuit</em>
-              </a> -->
-            </li>
-            <li class="single-event" data-start="11:00" data-end="12:30" data-content="event-rowing-workout" data-event="event-4">
-              <!-- <a href="#0">
-                <em class="event-name">Rowing Workout</em>
-              </a> -->
-            </li>
-            <li class="single-event" data-start="14:00" data-end="15:15"  data-content="event-yoga-1" data-event="event-3">
-              <!-- <a href="#0">
-                <em class="event-name">Yoga Level 1</em>
-              </a> -->
-            </li>
-          </ul>
-        </li>
-        <li class="events-group">
-          <div class="top-info"><span>Evidencias</span></div>
-          <ul>            
-            <li class="single-event" data-start="10:30" data-end="10:30" data-content="event-abs-circuit" data-event="event-3">
-              <!-- <a href="#0">
-                <em class="event-name">Abs Circuit</em>
-              </a> -->
-            </li>  
-            <li class="single-event" data-start="12:30" data-end="12:30" data-content="event-rowing-workout" data-event="event-3">
-              <!-- <a href="#0">
-                <em class="event-name">Rowing Workout</em>
-              </a> -->
-            </li>  
-            <li class="single-event" data-start="15:15" data-end="15:15"  data-content="event-yoga-1" data-event="event-3">
-              <!-- <a href="#0">
-                <em class="event-name">Yoga Level 1</em>
-              </a> -->
-            </li>
-          </ul>
-        </li>
-      </ul>
-	*/
-  }
+}
 
-  async generarHtml() {
+  async generarHtml(fecha, machine) {
 	console.log('Armado del html')
-
-	let idTask = this.route.snapshot.paramMap.get("idTarea");
-	if(!idTask){
-		idTask = ''
-  	}
 	
 	let html: string = '<ul class="wrap">';
-
-	(await this.taskService.getTaskEvent(idTask)).subscribe((data: any) => {
+	console.log("fecha",fecha)
+	this.taskService.getTaskEventReporte(fecha, machine).subscribe((data: any) => {
 		const { taskEvent } = data;
-		html += '<li class="events-group"><div class="top-info"><span>Eventos</span></div><ul>';
-		console.log(taskEvent)
-		  //para los eventos
-		  for (let i = 0; i < taskEvent.length; i++) {
-			  html += `<li class="single-event" data-start="${taskEvent[i].horaInicio}" data-end="${taskEvent[i].horaFin}" data-content="event-abs-circuit" data-event="event-${i+1}">`;
-			  html +=`
-			  <a href="#0">
-			    <em class="event-name">Abs Circuit</em>
-			  </a>
-			  `
-			  // <!-- <a href="#0">
-			  //   <em class="event-name">Abs Circuit</em>
-			  // </a> -->
-			  html += '</li>';
-		  }
+		const div = document.getElementById('divEventos');
+		
+		if(data.ok==false){
+			div!.innerHTML = "";
+			return;
+		}
+		
+		//para los gps
+		html += `<li class="events-group">
+				<div class="top-info"><span>GPS</span></div>
+				<ul>`;
+		for (let i = 0; i < taskEvent.length; i++) {
+			let dataevent: string = 'event-5';
 
-		html += `</ul></li></ul>
+			if(taskEvent[i].tipo !== 'Detencion')
+			{
+				html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+				html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
+					</a></li>`
+			}
+		}
+		html += `</ul></li>`;
+
+
+		//para los eventos
+		html += `<li class="events-group">
+				<div class="top-info"><span>Eventos</span></div>
+				<ul>`;
+		for (let i = 0; i < taskEvent.length; i++) {
+		let dataevent: string = '';
+
+		switch(taskEvent[i].tipo){
+			case 'Operativo':
+				dataevent = 'event-1';
+				break;
+			case 'Pausa':
+				dataevent = 'event-4';
+				break;
+			case 'Detencion':
+				dataevent = 'event-3';
+				break;
+		}
+
+		if(taskEvent[i].tipo === 'Operativo'){
+			dataevent = 'event-1'
+		}
+
+		html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+		html +=`<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
+				</li>`
+		}
+		html += `</ul></li>`;
+		
+		//para las evidencias
+		html += `<li class="events-group">
+				<div class="top-info"><span>Evidencias</span></div>
+				<ul>`;
+		for (let i = 0; i < taskEvent.length; i++) {
+			let dataevent: string = 'event-2';
+			
+			html += `<li class="single-event" data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+			html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }">
+						<ion-button color="tertiary" >
+							<ion-icon name="caret-down-outline"></ion-icon>
+					  </ion-button>
+					  </a>
+					</li>`			
+		}
+		html += `</ul></li>`;
+
+		html += `</ul>
 		<style>
 		.codyhouse {
 			text-align: center;
@@ -292,7 +283,7 @@ export class ReporteDiarioPage implements OnInit {
 			} */
 		  }
 		  
-		  @media only screen and (min-width: 1000px) {
+		  @media only screen and (max-width: 500px) {
 			.cd-schedule .timeline li::after {
 			  width: calc(100% - 60px);
 			  left: 60px;
@@ -386,7 +377,7 @@ export class ReporteDiarioPage implements OnInit {
 			  width: 100%;
 			}
 			.cd-schedule .events .events-group {
-			  width: 100%;
+			  width: 44%;
 			  float: left;
 			  border: 1px solid #EAEAEA;
 			  /* reset style */
@@ -456,7 +447,7 @@ export class ReporteDiarioPage implements OnInit {
 			}
 		  }
 		  
-		  @media only screen and (min-width: 1000px) {
+		  @media only screen and (max-width: 500px) {
 			.cd-schedule .events {
 			  /* 60px is the .timeline element width */
 			  width: calc(100% - 60px);
@@ -756,7 +747,7 @@ export class ReporteDiarioPage implements OnInit {
 			}
 		  }
 		  
-		  @media only screen and (min-width: 1000px) {
+		  @media only screen and (max-width: 500px) {
 			.cd-schedule .event-modal .header .content {
 			  padding: 1.2em;
 			}
@@ -814,40 +805,88 @@ export class ReporteDiarioPage implements OnInit {
 			opacity: 1;
 			visibility: visible;
 		  }
+
+		  @media(max-width:500px){
+			.wrap>li:nth-child(3){
+				width:12% !important;
+				border:none !important;
+			}
+
+			.wrap>li:nth-child(3) .top-info{
+				opacity:0;
+			}
+
+			.wrap>li:nth-child(3)>ul>li>a{
+				display: inline !important;
+				padding: 0 !important;
+			}
+
+			.wrap>li:nth-child(3) ion-button{
+				transform:translateY(-94px);
+			}
+
+			.timeline>ul{
+				width:90% !important;
+			}
+		  }
 		</style>`
 
-		const div = document.getElementById('divEventos');
 		div!.innerHTML = html;
-		/*div!.innerHTML=`
-		<div _ngcontent-jlj-c146="" id="divEventos" class="events">
-			<ul _ngcontent-jlj-c146="" class="wrap">
-				<li _ngcontent-jlj-c146="" class="events-group">
-					<div _ngcontent-jlj-c146="" class="top-info">
-						<span _ngcontent-jlj-c146="">Monday</span>
-					</div>
-					<ul _ngcontent-jlj-c146="">
-						<li _ngcontent-jlj-c146="" data-start="08:15" data-end="10:30" data-content="event-abs-circuit" data-event="event-1" class="single-event" style="top: 24px; height: 226px;">
-							<a _ngcontent-jlj-c146="" href="#0"><span class="">08:15 - 10:30</span>
-							<em _ngcontent-jlj-c146="" class="">Abs Circuit</em>
-							</a>
-					</li><li _ngcontent-jlj-c146="" data-start="11:00" data-end="12:30" data-content="event-rowing-workout" data-event="event-2" class="single-event" style="top: 299px; height: 151px;"><a _ngcontent-jlj-c146="" href="#0"><span class="event-date">11:00 - 12:30</span><em _ngcontent-jlj-c146="" class="event-name">Rowing Workout</em></a></li><li _ngcontent-jlj-c146="" data-start="14:00" data-end="15:15" data-content="event-yoga-1" data-event="event-3" class="single-event" style="top: 599px; height: 126px;"><a _ngcontent-jlj-c146="" href="#0"><span class="event-date">14:00 - 15:15</span><em _ngcontent-jlj-c146="" class="event-name">Yoga Level 1</em></a></li></ul></li></ul></div>*/
-
-		//console.log('html', html)
-		//this.element = $($(".cd-schedule"));
-		//this.SchedulePlan( this.element )
-		//this.initSchedule()
+		this.RunSchedulePlan()
 	  })
   }
 
-  async ngAfterViewInit(): Promise<void> {
-	await this.generarHtml();
-	setTimeout(()=>{
-		this.RunSchedulePlan()
-	},4000)
+  openFotos(idTareaEvent: any){
+	console.log('entra al route')
+    this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent }])
   }
 
-  
+  changedReport() {
 
+	const dtime:any = document.getElementById('datetime');
+	const fecha = new Date(dtime.value);
+	fecha.setHours(0);
+	fecha.setMinutes(0);
+	fecha.setSeconds(0);
+	fecha.setMilliseconds(0);
+
+	let fechaSend:any=fecha.toLocaleDateString().split("/")
+	let anio:string=fechaSend[2]
+	let mes:string=(fechaSend[1].length==1)?"0"+fechaSend[1]:fechaSend[1]
+	let dia:string=(fechaSend[0].length==1)?"0"+fechaSend[0]:fechaSend[0]
+	fechaSend=anio+"-"+mes+"-"+dia
+
+
+	this.generarHtml(fechaSend, this.idMachine);
+	
+  }
+
+  async ngAfterViewInit(): Promise<void> {
+	let idTask = this.route.snapshot.paramMap.get("idTarea");
+	let idMachine = this.route.snapshot.paramMap.get("machine");
+	if(!idTask){
+		idTask = ''
+  	}
+
+	
+	if(idMachine){
+		this.idMachine = idMachine;
+  	}
+
+
+	const date = new Date().toLocaleDateString();
+	const fec = date.split('/');
+	const anio = fec[2];
+	const mes = fec[1].padStart(2, '0');
+	const dia = fec[0].padStart(2, '0');
+
+	const fecha = anio+'-'+mes+'-'+dia
+
+	//await this.generarHtml(fecha, this.idMachine);
+	
+  }
+
+  //#region "jQuery"
   RunSchedulePlan(){
 	var self=this
     this.transitionsSupported=( $('.csstransitions').length > 0 );
@@ -857,14 +896,13 @@ export class ReporteDiarioPage implements OnInit {
     if( schedules.length > 0 ) {
       schedules.each(function(this){
         //create SchedulePlan objects
-        console.log(this)
+        console.log("RunSchedulePlan",this)
         //objSchedulesPlan.push(self.SchedulePlan($(this)));
         self.SchedulePlan(this)
       });
     }
   }
 
-  //#region "jQuery"
   SchedulePlan( element:any ) {
 		this.element = $(element);
 		this.timeline = this.element.find('.timeline');
@@ -966,93 +1004,104 @@ export class ReporteDiarioPage implements OnInit {
   };
   
   openModal = (event:any)=> {
-		var self = this;
-		var mq = self.mq();
-		this.animating = true;
+		
+		let idTareaEvent=event[0].dataset.uid
 
-		//update event name and time
-		this.modalHeader.find('.event-name').text(event.find('.event-name').text());
-		this.modalHeader.find('.event-date').text(event.find('.event-date').text());
-		this.modal.attr('data-event', event.parent().attr('data-event'));
-
-		//update event content
-		this.modalBody.find('.event-info').load(event.parent().attr('data-content')+'.html .event-info > *', function(data){
-			//once the event content has been loaded
-			self.element.addClass('content-loaded');
-		});
-
-		this.element.addClass('modal-is-open');
-
-		setTimeout(function(){
-			//fixes a flash when an event is selected - desktop version only
-			event.parent('li').addClass('selected-event');
-		}, 10);
-
-		if( mq == 'mobile' ) {
-			self.modal.one(this.transitionEnd, function(this){
-				self.modal.off(this.transitionEnd);
-				self.animating = false;
-			});
-		} else {
-			var eventTop:any = event.offset().top - (this.window).scrollTop(),
-				eventLeft:any = event.offset().left,
-				eventHeight:any = event.innerHeight(),
-				eventWidth:any = event.innerWidth();
-
-			var windowWidth:number = this.window.innerWidth,//$(window).width(),
-				windowHeight:number = this.window.innerHeight//$(window).height();
-
-			var modalWidth:number = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
-				modalHeight:number = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
-        
-			var modalTranslateX:any = (windowWidth - modalWidth)/2 - eventLeft,
-				modalTranslateY:any = (windowHeight - modalHeight)/2 - eventTop; //parseInt
-			
-			var HeaderBgScaleY = modalHeight/eventHeight,
-				BodyBgScaleX = (modalWidth - eventWidth);
-
-			//change modal height/width and translate it
-			self.modal.css({
-				top: eventTop+'px',
-				left: eventLeft+'px',
-				height: modalHeight+'px',
-				width: modalWidth+'px',
-			});
-			self.transformElement(self.modal, 'translateY('+modalTranslateY+'px) translateX('+modalTranslateX+'px)');
-
-			//set modalHeader width
-			self.modalHeader.css({
-				width: eventWidth+'px',
-			});
-			//set modalBody left margin
-			self.modalBody.css({
-				marginLeft: eventWidth+'px',
-			});
-
-			//change modalBodyBg height/width ans scale it
-			self.modalBodyBg.css({
-				height: eventHeight+'px',
-				width: '1px',
-			});
-			self.transformElement(self.modalBodyBg, 'scaleY('+HeaderBgScaleY+') scaleX('+BodyBgScaleX+')');
-
-			//change modal modalHeaderBg height/width and scale it
-			self.modalHeaderBg.css({
-				height: eventHeight+'px',
-				width: eventWidth+'px',
-			});
-			self.transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
-			
-			self.modalHeaderBg.one(this.transitionEnd, function(){
-				//wait for the  end of the modalHeaderBg transformation and show the modal content
-				self.modalHeaderBg.off(self.transitionEnd);
-				self.animating = false;
-				self.element.addClass('animation-completed');
-			});
+		if(event[0].dataset.order==1){
+			this.router.navigate(['/map', { idTarea: idTareaEvent }]);
 		}
 
-		//if browser do not support transitions -> no need to wait for the end of it
-		if( !this.transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(this.transitionEnd);
+		if(event[0].dataset.order==3){
+			this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent, retorno: "reporte-diario" }])
+		}
+		
+		// var self = this;
+		// var mq = self.mq();
+		// this.animating = true;
+
+		// //update event name and time
+		// this.modalHeader.find('.event-name').text(event.find('.event-name').text());
+		// this.modalHeader.find('.event-date').text(event.find('.event-date').text());
+		// this.modal.attr('data-event', event.parent().attr('data-event'));
+
+		// //update event content
+		// this.modalBody.find('.event-info').load(event.parent().attr('data-content')+'.html .event-info > *', function(data){
+		// 	//once the event content has been loaded
+		// 	self.element.addClass('content-loaded');
+		// });
+
+		// this.element.addClass('modal-is-open');
+
+		// setTimeout(function(){
+		// 	//fixes a flash when an event is selected - desktop version only
+		// 	event.parent('li').addClass('selected-event');
+		// }, 10);
+
+		// if( mq == 'mobile' ) {
+		// 	self.modal.one(this.transitionEnd, function(this){
+		// 		self.modal.off(this.transitionEnd);
+		// 		self.animating = false;
+		// 	});
+		// } else {
+		// 	var eventTop:any = event.offset().top - (this.window).scrollTop(),
+		// 		eventLeft:any = event.offset().left,
+		// 		eventHeight:any = event.innerHeight(),
+		// 		eventWidth:any = event.innerWidth();
+
+		// 	var windowWidth:number = this.window.innerWidth,//$(window).width(),
+		// 		windowHeight:number = this.window.innerHeight//$(window).height();
+
+		// 	var modalWidth:number = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
+		// 		modalHeight:number = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
+        
+		// 	var modalTranslateX:any = (windowWidth - modalWidth)/2 - eventLeft,
+		// 		modalTranslateY:any = (windowHeight - modalHeight)/2 - eventTop; //parseInt
+			
+		// 	var HeaderBgScaleY = modalHeight/eventHeight,
+		// 		BodyBgScaleX = (modalWidth - eventWidth);
+
+		// 	//change modal height/width and translate it
+		// 	self.modal.css({
+		// 		top: eventTop+'px',
+		// 		left: eventLeft+'px',
+		// 		height: modalHeight+'px',
+		// 		width: modalWidth+'px',
+		// 	});
+		// 	self.transformElement(self.modal, 'translateY('+modalTranslateY+'px) translateX('+modalTranslateX+'px)');
+
+		// 	//set modalHeader width
+		// 	self.modalHeader.css({
+		// 		width: eventWidth+'px',
+		// 	});
+		// 	//set modalBody left margin
+		// 	self.modalBody.css({
+		// 		marginLeft: eventWidth+'px',
+		// 	});
+
+		// 	//change modalBodyBg height/width ans scale it
+		// 	self.modalBodyBg.css({
+		// 		height: eventHeight+'px',
+		// 		width: '1px',
+		// 	});
+		// 	self.transformElement(self.modalBodyBg, 'scaleY('+HeaderBgScaleY+') scaleX('+BodyBgScaleX+')');
+
+		// 	//change modal modalHeaderBg height/width and scale it
+		// 	self.modalHeaderBg.css({
+		// 		height: eventHeight+'px',
+		// 		width: eventWidth+'px',
+		// 	});
+		// 	self.transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
+			
+		// 	self.modalHeaderBg.one(this.transitionEnd, function(){
+		// 		//wait for the  end of the modalHeaderBg transformation and show the modal content
+		// 		self.modalHeaderBg.off(self.transitionEnd);
+		// 		self.animating = false;
+		// 		self.element.addClass('animation-completed');
+		// 	});
+		// }
+
+		// //if browser do not support transitions -> no need to wait for the end of it
+		// if( !this.transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(this.transitionEnd);
   };
   
   closeModal = (event) =>{

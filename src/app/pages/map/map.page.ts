@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
+import { TaskService } from 'src/app/services/task.service';
 
 declare var google;
 interface Marker {
@@ -19,12 +20,14 @@ interface Marker {
 export class MapPage implements OnInit {
 
   map = null;
-  coor: {} = {}
-  arrCoor: any[] = []
+  coor: {} = {};
+  arrCoor: any[] = [];
+  idTarea: String = '';
   // markers: Marker[] = [];
   // idTarea: any;
   
   constructor(private taskService: MaquinariaService,
+              private eventService: TaskService,
               private _route: ActivatedRoute) {
     // this.idTarea = this._route.snapshot.paramMap.get("idTarea");
     // console.log('tarea', this.idTarea)
@@ -51,41 +54,87 @@ export class MapPage implements OnInit {
 
   async renderMarkers() {
     console.log('buscando ubicaciones')
-    let idTarea = this._route.snapshot.paramMap.get("idTarea");
+    let idTarea: string | null = this._route.snapshot.paramMap.get("idTarea");
 
-    if(!idTarea){
-      idTarea = '637d1c9321c773c9052c9416'
-    }
-    // this.idTarea = '637d1c9321c773c9052c9416';
-    console.log('tareaa',idTarea);
-    await this.taskService.obtenerHistorial(idTarea).subscribe((data: any) => {
-      console.log(data);
+    if(idTarea)
+      this.idTarea = idTarea;
+
+    console.log('tareaa', idTarea);
+
+    (await this.eventService.getTaskEventMap(this.idTarea)).subscribe((data: any) =>{
+      console.log('task', data)
+
       if(data.ok){
-                
         const { taskEvent } = data;
-  
-        for(let i = 0; i < taskEvent.length; i++){
-          const lati: number = taskEvent[i].latitude;
-          const long: number = taskEvent[i].longitude;
+        
+        const { machine } = taskEvent[0]
+        const fecha: Date = new Date(taskEvent[0].fechaRegistro);
+        const horaIni = taskEvent[0].horaInicio;
+        const horaFin = taskEvent[0].horaFin;
 
-          // console.log(lati)
-          // console.log(long)
-          this.coor = { lat: lati, lng: long };
-          // console.log(this.coor)
-          this.arrCoor.push(this.coor);
-        }
+        const horIni = horaIni.split(':')
+        const hhIni = Number.parseInt(horIni[0])
+        const mmIni = Number.parseInt(horIni[1])
 
-        const flightPath = new google.maps.Polyline({
-          path: this.arrCoor,
-          geodesic: true,
-          strokeColor: "#FF0000",
-          strokeOpacity: 1.0,
-          strokeWeight: 2,
-        });
+        const horFin = horaFin.split(':')
+        const hhFin = Number.parseInt(horFin[0])
+        const mmFin = Number.parseInt(horFin[1])
+
+        console.log("fecha",fecha)
+        let fechaInicio = fecha;
+        fechaInicio.setHours(hhIni);
+        fechaInicio.setMinutes(mmIni);
+        fechaInicio.setSeconds(0);
+        fechaInicio.setMilliseconds(0);
+
+        const fechaDesdeTS = (fechaInicio).getTime() / 1000;
+
+        let fechaFin = fecha;
+        fechaFin.setHours(hhFin);
+        fechaFin.setMinutes(mmFin);
+        fechaFin.setSeconds(0);
+        fechaFin.setMilliseconds(0);
+
+        const fechaHastaTS = (fechaFin).getTime() / 1000;
+        
+        console.log('fechaDesdeTS',fechaDesdeTS)
+        console.log('fechaHastaTS',fechaHastaTS)
+
+        this.taskService.obtenerUbicaTiempo(machine.idInterno, fechaDesdeTS.toString(), fechaHastaTS.toString()).subscribe((data: any) => {
+          console.log('flespi',data)
+          const { result } = data
       
-        flightPath.setMap(this.map);
+          for(let i = 0; i < result.length; i++){
+
+            const {'position.latitude': _latitude, 'position.longitude': _longitude} = result[i]
+            
+            const lati: number = _latitude;
+            const long: number = _longitude;
+  
+            // console.log(lati)
+            // console.log(long)
+            this.coor = { lat: lati, lng: long };
+            // console.log(this.coor)
+            this.arrCoor.push(this.coor);
+          }
+  
+          const flightPath = new google.maps.Polyline({
+            path: this.arrCoor,
+            geodesic: true,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 2,
+          });
+        
+          flightPath.setMap(this.map);
+        })
       }
-    });
+    })
+
+    // await this.taskService.obtenerHistorial(idTarea).subscribe((data: any) => {
+    //   console.log(data);
+      
+    // });
 
   }
 

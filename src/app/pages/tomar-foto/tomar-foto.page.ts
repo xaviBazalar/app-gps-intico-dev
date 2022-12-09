@@ -20,6 +20,8 @@ export class TomarFotoPage implements OnInit {
   
   @Input() idTarea;
   @Input() idUser;
+  @Input() retorno;
+
   baseUrl:string = environment.url;
 
   constructor(private camera: Camera, 
@@ -39,6 +41,8 @@ export class TomarFotoPage implements OnInit {
     if(!this.idTarea){
       this.idTarea = _idTarea
     }
+
+    console.log('idTarea',this.idTarea);
 
     this.evidenceService.obtenerEvidence(this.idTarea).subscribe((data: any) => {
       if(data.ok){
@@ -116,8 +120,12 @@ export class TomarFotoPage implements OnInit {
 
   cerrar(){
     this.modalController.dismiss().then().catch(()=>{
-      console.log('error')
-      this.router.navigate(['/inicio']);
+      let _retorno: String | null = this._route.snapshot.paramMap.get("retorno");
+      if(!this.retorno){
+        this.retorno = _retorno
+      }
+
+      this.router.navigate(['/' + this.retorno]);
     });;
     return true;
   }
@@ -125,8 +133,12 @@ export class TomarFotoPage implements OnInit {
   aceptar(){
     
     this.modalController.dismiss().then().catch(()=>{
-      console.log('error')
-      this.router.navigate(['/inicio']);
+      let _retorno: String | null = this._route.snapshot.paramMap.get("retorno");
+      if(!this.retorno){
+        this.retorno = _retorno
+      }
+
+      this.router.navigate(['/' + this.retorno]);
     });;
     return true;
   }

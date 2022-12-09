@@ -11,7 +11,7 @@ import { TaskEventsModel } from '../../models/taskEvents';
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
-
+import { TaskModel } from 'src/app/models/task';
 
 @Component({
   selector: 'app-maquina-tarea',
@@ -22,6 +22,7 @@ export class MaquinaTareaPage implements OnInit {
   maquinaModel: MaquinariaModel = new MaquinariaModel;
   taskEventsModel: TaskEventsModel = new TaskEventsModel;
   taskEvent: TaskEventsModel = new TaskEventsModel;
+  taskModel: TaskModel = new TaskModel;
 
   cargandoGeo = false;
   flagOperativo = false;
@@ -49,6 +50,8 @@ export class MaquinaTareaPage implements OnInit {
 
   flagMaquinaria: boolean = false;  
   flagMaquinaGps: boolean = false;  
+
+  idTareaEvent: String = '';
 
   @Input() idMaquina;
   @Input() idUser;
@@ -96,6 +99,8 @@ export class MaquinaTareaPage implements OnInit {
       this.idMaquina = _idMaquina;
     }
 
+    this.obtenerTarea(this.idTarea);
+
     this.getGep(this.idMaquinaInterna);//'4656765'
   }
 
@@ -109,11 +114,17 @@ export class MaquinaTareaPage implements OnInit {
 
   //#region "submodulos"
   async abrirTomarFoto() {
+    if(!this.idTareaEvent){
+      this.alertMessage('Debe primero guardar un evento');
+      return;
+    }
+
     const modal = this.modalCtrl.create({
       component: TomarFotoPage,
       componentProps: {
-        idTarea: this.idTarea,
-        idUser: this.idUser
+        idTarea: this.idTareaEvent,
+        idUser: this.idUser,
+        retorno: 'maquina-tarea'
       }
     });
     (await modal).present();
@@ -475,6 +486,10 @@ export class MaquinaTareaPage implements OnInit {
     this.taskEventsModel.fechaRegistro = new Date();
   }
 
+  obtenerTarea(idTarea: string){
+    this.taskServise
+  }
+
   mostrarOcultarMaq(){
     if(this.flagMaquinaria){
       this.flagMaquinaria = false;
@@ -490,12 +505,14 @@ export class MaquinaTareaPage implements OnInit {
       this.flagMaquinaGps = true;
     }
   }
+  
   async guardarTaskEvent(taskEventsModel: TaskEventsModel, tipo: Number) {
     (await this.taskServise.guardarTaskEvent(taskEventsModel)).subscribe(async (data: any) => {
       console.log('guardado', data);
       const { taskDB } = data;
 
-      if(data.ok){        
+      if(data.ok){
+        this.idTareaEvent = taskDB.uid;
         await this.storageService.saveTaskEvent(taskDB);
       }
 
