@@ -48,7 +48,7 @@ export class ReporteDiarioPage implements OnInit {
     if( !this.transitionsSupported ) this.transitionEnd = 'noTransition';
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
 	/*
 		<ul class="wrap">
         <li class="events-group">
@@ -112,6 +112,10 @@ export class ReporteDiarioPage implements OnInit {
         </li>
       </ul>
 	*/
+  }
+
+  async generarHtml() {
+	console.log('Armado del html')
 
 	let idTask = this.route.snapshot.paramMap.get("idTarea");
 	if(!idTask){
@@ -121,31 +125,30 @@ export class ReporteDiarioPage implements OnInit {
 	let html: string = '<ul class="wrap">';
 
 	(await this.taskService.getTaskEvent(idTask)).subscribe((data: any) => {
-		  const { taskEvent } = data;
-		  html += '<li class="events-group"><div class="top-info"><span>Eventos</span></div><ul>';
-
+		const { taskEvent } = data;
+		html += '<li class="events-group"><div class="top-info"><span>Eventos</span></div><ul>';
+		console.log(taskEvent)
 		  //para los eventos
 		  for (let i = 0; i < taskEvent.length; i++) {
-			  html += `<li class="single-event" data-start="${taskEvent[i].horaInicio}" data-end="${taskEvent.horaFin}" data-content="event-abs-circuit" data-event="event-1">`;
+			  html += `<li class="single-event" data-start="${taskEvent[i].horaInicio}" data-end="${taskEvent[i].horaFin}" data-content="event-abs-circuit" data-event="event-1">`;
 			  // <!-- <a href="#0">
 			  //   <em class="event-name">Abs Circuit</em>
 			  // </a> -->
 			  html += '</li>';
 		  }
 
-		  html += '</ul></li>'
+		html += '</ul></li>'
+
+		const div = document.getElementById('divEventos');
+		div!.innerHTML = html;
+
+		console.log('html', html)
 	  })
-
-	const div = document.getElementById('divEventos');
-	div!.innerHTML = html;
-
-	console.log(html)
-
   }
 
-
-
   ngAfterViewInit(): void {
+	this.generarHtml();
+
     var self=this
     this.transitionsSupported=( $('.csstransitions').length > 0 );
     var schedules:any = $('.cd-schedule');
