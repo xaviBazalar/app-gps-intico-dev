@@ -111,7 +111,7 @@ export class TomaTiempoPage implements OnInit {
     const fechaDesdeATS = (fechaDesdeA).getTime() / 1000;
     const fechaHastaATS = (fechaHastaA).getTime() / 1000;
 
-    (await this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaDesdeTS.toString(), fechaDesdeATS.toString())).subscribe((data: any) => {
+    (this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaDesdeTS.toString(), fechaDesdeATS.toString())).subscribe((data: any) => {
       console.log('desde',data)
       const { result } = data;
       const i = result.length - 1;
@@ -123,14 +123,7 @@ export class TomaTiempoPage implements OnInit {
       }
     });
     
-    this.task.nivel = 0;
-    this.task.fechaRegistro = dateA.value;
-    
-    (await this.taskService.guardarTaskEvent(this.task)).subscribe((data: any) => {
-      console.log(data);
-    });
-
-    (await this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaHastaTS.toString(), fechaHastaATS.toString())).subscribe((data: any) => {
+    (this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaHastaTS.toString(), fechaHastaATS.toString())).subscribe((data: any) => {
       console.log('hasta', data)
       const { result } = data
       const i = result.length - 1;
@@ -141,8 +134,11 @@ export class TomaTiempoPage implements OnInit {
       }
     });
 
-    this.task.nivel = 1;
-    this.task.fechaRegistro = dateB.value;
+
+    this.task.nivel = 0;
+    this.task.fechaRegistro = new Date();
+    this.task.horaInicio = fechaDesde.getHours().toString().padStart(2,'0') + ':' + fechaDesde.getMinutes().toString().padStart(2,'0');
+    this.task.horaFin = fechaHasta.getHours().toString().padStart(2,'0') + ':' + fechaHasta.getMinutes().toString().padStart(2,'0');
 
     (await this.taskService.guardarTaskEvent(this.task)).subscribe((data: any) => {
       console.log(data);
