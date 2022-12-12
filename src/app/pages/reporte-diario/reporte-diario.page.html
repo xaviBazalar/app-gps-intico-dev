@@ -6,13 +6,24 @@
 
 <ion-content>
 
-  <ion-datetime-button datetime="datetime"></ion-datetime-button>
+  <ion-card>
+    <ion-card-content>
+      <ion-select  interface="popover" placeholder="--Seleccione--" id="cmbTarea">
+        <ion-select-option *ngFor="let c of item" detail
+                  [value]="c.value">
+          {{ c.nombre }}
+        </ion-select-option>
+      </ion-select>
 
-  <ion-modal [keepContentsMounted]="true" #popOverExample >
-    <ng-template>
-      <ion-datetime presentation="date" id="datetime" (ionChange)="changedReport(); popOverExample.dismiss();" on="true" ></ion-datetime>
-    </ng-template>
-  </ion-modal>
+      <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true" #modalTime >
+        <ng-template>
+          <ion-datetime presentation="date" id="datetime" (ionChange)="changedReport(); modalTime.dismiss();" on="true" ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-card-content>
+  </ion-card>
+
 
   <div class="cd-schedule loading">
     <div class="timeline">
@@ -70,46 +81,4 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js'></script>
   <script src='../../../assets/scripts/reportCalendar.js'></script>
 
-
-  <!-- <div class="calendar">
-    <div class="timeline">
-      <div class="spacer"></div>
-      <div class="time-marker">9 AM</div>
-      <div class="time-marker">10 AM</div>
-      <div class="time-marker">11 AM</div>
-      <div class="time-marker">12 PM</div>
-      <div class="time-marker">1 PM</div>
-      <div class="time-marker">2 PM</div>
-      <div class="time-marker">3 PM</div>
-      <div class="time-marker">4 PM</div>
-      <div class="time-marker">5 PM</div>
-      <div class="time-marker">6 PM</div>
-    </div>
-    <div class="days">
-      <div class="day mon">
-        <div class="events">
-          <div class="event start-9 end-12 securities">
-            <p class="title">Securities Regulation</p>
-            <p class="time">9 am - 12 PM</p>
-          </div>
-      <div class="event start-12 end-1 ent-law">
-            <p class="title">Securities Regulation</p>
-            <p class="time">12 PM - 1 PM</p>
-          </div>
-      <div class="event start-1 end-4 securities">
-            <p class="title">Securities Regulation</p>
-            <p class="time">1 PM - 4 PM</p>
-          </div>
-      <div class="event start-4 end-5 ent-law">
-            <p class="title">Securities Regulation</p>
-            <p class="time">4 PM - 5 PM</p>
-          </div>
-      <div class="event start-5 end-6 corp-fi">
-            <p class="title">Securities Regulation</p>
-            <p class="time">5 PM - 6 PM</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
 </ion-content>

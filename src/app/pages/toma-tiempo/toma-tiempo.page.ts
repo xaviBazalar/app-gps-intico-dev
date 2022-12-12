@@ -198,4 +198,10 @@ export class TomaTiempoPage implements OnInit {
 
     return true;
   }
+
+  cerrar()
+  {
+    this.modalController.dismiss();
+    return true;
+  }
 }

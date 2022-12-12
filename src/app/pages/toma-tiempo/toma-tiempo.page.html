@@ -53,22 +53,28 @@
 <!-- 
   <ion-button (click)="mostrarMap()" expand="full" color="dark">
     <ion-icon name="map"></ion-icon>
-  </ion-button> -->
+  </ion-button> 
+
+  <ion-button color="dark" (click)="mostrarReporte()" class="mitad">
+    Reporte
+    <ion-icon name="calendar-outline"></ion-icon>
+  </ion-button>
+-->
 
   <ion-card>
-    <ion-card-content>
-      <ion-button color="dark" (click)="mostrarReporte()" class="mitad">
-        Reporte
-        <ion-icon name="calendar-outline"></ion-icon>
-      </ion-button>
-      
-      <ion-button  color="dark" (click)="mostrarEvidencia()" class="mitad">
+    <ion-card-content>      
+      <ion-button  color="dark" (click)="mostrarEvidencia()" expand="block">
         <ion-icon name="eye"></ion-icon>
       </ion-button>
+
+      <ion-button (click)="aceptar()" expand="full" color="danger">
+        ACEPTAR
+      </ion-button>
+      
+      <ion-button (click)="cerrar()" expand="full" color="warning">
+        CERRAR
+      </ion-button>      
     </ion-card-content>
   </ion-card>
   
-  <ion-button (click)="aceptar()" expand="full" color="danger">
-    ACEPTAR
-  </ion-button>
 </ion-content>

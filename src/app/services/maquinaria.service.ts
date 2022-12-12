@@ -5,6 +5,7 @@ import { map, Observable, throwError } from 'rxjs';
 import { formatDate } from "@angular/common";
 
 const URL = environment.urlFlespi;
+const baseUrl = environment.url;
 
 @Injectable({
   providedIn: 'root'
@@ -65,5 +66,9 @@ export class MaquinariaService {
     const url = `${ URL }/${ id }/messages?data=%7B%22from%22%3A${ desde }%2C%22to%22%3A${ hasta }%7D`;//
     // console.log(url)
     return  this.http.get(url, options)    
-  }  
+  } 
+
+  getMachine(idUsuario: String){
+    return this.http.get(`${ baseUrl }/machine?idUser= ${ idUsuario }`)
+  }
 }

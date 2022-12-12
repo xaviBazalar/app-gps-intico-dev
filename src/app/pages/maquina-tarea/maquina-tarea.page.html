@@ -12,31 +12,39 @@
   <form>
     <fieldset>
       <legend>Maquina: {{ maquinaModel.nombre }} 
-        <ion-button color="tertiary" (click)="mostrarOcultarMaq()">
+        <ion-button *ngIf="flagMaquinaria===false" color="tertiary" (click)="mostrarOcultarMaq()">
           <ion-icon name="caret-down-outline"></ion-icon>
         </ion-button>
+        <ion-button *ngIf="flagMaquinaria===true" color="tertiary" (click)="mostrarOcultarMaq()">
+          <ion-icon name="caret-up-outline"></ion-icon>
+        </ion-button>        
       </legend>
-        <ion-label>Izaje500 toneladas</ion-label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <ion-label>5 Hrs SLA</ion-label>
+      <!-- Izaje500 toneladas -->
+        <ion-label> {{ tareaMaquinaria }}&nbsp;({{ planificacionTrabajo }}) </ion-label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <ion-label>{{ tiempoSLA }} Hrs SLA</ion-label>
         <br>
-        <ion-label>09-nov-2022 13:05 hrs</ion-label> &nbsp;&nbsp;&nbsp;
-        <ion-label>Turno P.M</ion-label>
+        <!-- 09-nov-2022 13:05 hrs -->
+        <ion-label>{{ fechaActual }}</ion-label> &nbsp;&nbsp;&nbsp;
+        <ion-label>Turno {{ turno }} </ion-label>
 
         <div *ngIf="flagMaquinaria===true">
         <br>
-        <ion-label>Gerencia: </ion-label> &nbsp;&nbsp;&nbsp;
-        <ion-label>Division: </ion-label>
+        <ion-label>Gerencia: {{ gerencia }}</ion-label> &nbsp;&nbsp;&nbsp;
+        <ion-label>Division: {{ division }}</ion-label>
         <br>
-        <ion-label>Contrato: </ion-label> &nbsp;&nbsp;&nbsp;
-        <ion-label>Usuario: </ion-label>
+        <ion-label>Contrato: {{ contrato }}</ion-label> &nbsp;&nbsp;&nbsp;
+        <ion-label>Usuario: {{ user }}</ion-label>
         </div>
     </fieldset>
 
     <fieldset>
       <legend> GPS MAQUINARIA 
-        <ion-button color="tertiary" (click)="mostrarOcultarGps()">
+        <ion-button *ngIf="flagMaquinaGps===false" color="tertiary" (click)="mostrarOcultarGps()">
           <ion-icon name="caret-down-outline"></ion-icon>
         </ion-button>
+        <ion-button  *ngIf="flagMaquinaGps===true" color="tertiary" (click)="mostrarOcultarGps()">
+          <ion-icon name="caret-up-outline"></ion-icon>
+        </ion-button>        
       </legend>
       <ion-label>Encendido: {{ maquinaModel.encendido }}</ion-label>&nbsp;&nbsp;&nbsp;
       <ion-label>Pos: {{ maquinaModel.coords }} </ion-label>

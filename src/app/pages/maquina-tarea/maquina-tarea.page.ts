@@ -53,6 +53,16 @@ export class MaquinaTareaPage implements OnInit {
 
   idTareaEvent: String = '';
 
+  fechaActual: String = '';
+  planificacionTrabajo: String | null = '';
+  turno: String | null = '';
+  gerencia: String | null = '';
+  division: String | null = '';
+  user: String | null = '';
+  contrato: String | null = '';
+  tiempoSLA: String | null = '';
+  tareaMaquinaria: String | null = '';
+
   @Input() idMaquina;
   @Input() idUser;
   @Input() idTarea;
@@ -70,7 +80,7 @@ export class MaquinaTareaPage implements OnInit {
               private storageService: StorageService
               ) {
     //this.menuController.enable(false);
-
+    this.fechaActual = new Date().toLocaleString()
   }
 
   ngOnInit() {
@@ -487,7 +497,26 @@ export class MaquinaTareaPage implements OnInit {
   }
 
   obtenerTarea(idTarea: string){
-    this.taskServise
+    this.taskServise.getTaskId(idTarea).subscribe((data: any) => {
+      if(data.ok){
+        // this.taskModel = data.task[0];
+        console.log('taskmodel', data.task[0]);
+        const { planificacionTrabajo } = data.task[0];
+        this.planificacionTrabajo = planificacionTrabajo.descripcion;
+        this.turno = data.task[0].turno
+        const { gerencia } = data.task[0];
+        this.gerencia = gerencia.descripcion;
+        const { division } = data.task[0];
+        this.division = division.descripcion;
+        const { user } = data.task[0];
+        this.user = user.nombre
+        const { contrato } = data.task[0];
+        this.contrato = contrato.descripcion        
+        this.tiempoSLA = data.task[0].tiempoSLA
+        this.tareaMaquinaria = data.task[0].tareaMaquinaria
+        
+      }
+    })
   }
 
   mostrarOcultarMaq(){

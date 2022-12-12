@@ -33,7 +33,7 @@ export class TaskService {
         
   }  
 
-  async getTaskEvent(idTask: String){
+  getTaskEvent(idTask: String){
     console.log('event', idTask)
     return this.http.get(`${ this.baseUrl }/task/event?task=${ idTask }`)
   }

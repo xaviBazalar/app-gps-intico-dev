@@ -6,6 +6,8 @@ import { TaskEventsModel } from '../../models/taskEvents'
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { parse } from 'path';
+import { StorageService } from 'src/app/services/storage.service';
+import { MaquinariaService } from 'src/app/services/maquinaria.service';
 
 
 @Component({
@@ -42,11 +44,14 @@ export class ReporteDiarioPage implements OnInit {
 
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
-
+	item: any[] = []; 
+	
   constructor(@Inject(DOCUMENT) private document: Document, 
   				private taskService: TaskService, 
+				private machineService: MaquinariaService,
 				private route: ActivatedRoute,
-				private router: Router,) { 
+				private router: Router,
+				private storageService: StorageService) { 
     this.window = this.document.defaultView;
     this.date = new Date().toString();
     //this.transitionsSupported=( $('.csstransitions').length > 0 );
@@ -54,7 +59,27 @@ export class ReporteDiarioPage implements OnInit {
   }
 
   async ngOnInit():Promise<void> {
-	
+	let idUser: String = '';
+	const userData=this.storageService.loadUser();
+	const [user] = await Promise.all([userData]);
+    const dataUser = user;
+	idUser = dataUser[0].uid;
+
+	console.log("iduser", idUser);
+
+	this.machineService.getMachine(idUser).subscribe((data:any) => {
+        // console.log('idUser', idUser);
+        const { machine } = data;
+		console.log(machine);
+        // console.log('tarea', task);
+        for (let index = 0; index < machine.length; index++) {
+          const _item = {nombre: machine[index].descripcion, 
+						 value: machine[index].uid
+          				};
+          // console.log(_item );
+          this.item.push( _item );        
+        }
+      });
 }
 
   async generarHtml(fecha, machine) {
@@ -86,7 +111,6 @@ export class ReporteDiarioPage implements OnInit {
 			}
 		}
 		html += `</ul></li>`;
-
 
 		//para los eventos
 		html += `<li class="events-group">
@@ -232,7 +256,7 @@ export class ReporteDiarioPage implements OnInit {
 			display: none;
 		  }
 		  
-		  @media only screen and (min-width: 380px) {
+		  @media only screen and (min-width: 200px) {
 			.cd-schedule {
 			  width: 90%;
 			  max-width: 1400px;
@@ -252,7 +276,7 @@ export class ReporteDiarioPage implements OnInit {
 			display: none;
 		  } */
 		  
-		  @media only screen and (min-width: 380px) {
+		  @media only screen and (min-width: 200px) {
 			.cd-schedule .timeline {
 			  display: block;
 			  position: absolute;
@@ -371,7 +395,7 @@ export class ReporteDiarioPage implements OnInit {
 			}
 		  } */
 		  
-		  @media only screen and (min-width: 380px) {
+		  @media only screen and (min-width: 200px) {
 			.cd-schedule .events {
 			  float: left;
 			  width: 100%;
@@ -474,7 +498,7 @@ export class ReporteDiarioPage implements OnInit {
 			font-size: 2.4rem;
 		  }
 		  
-		  @media only screen and (min-width: 380px) {
+		  @media only screen and (min-width: 200px) {
 			.cd-schedule .event-name {
 			  font-size: 2rem;
 			}
@@ -672,7 +696,7 @@ export class ReporteDiarioPage implements OnInit {
 			transition: none;
 		  }
 		  
-		  @media only screen and (min-width: 380px) {
+		  @media only screen and (min-width: 200px) {
 			.cd-schedule .event-modal {
 			  /* reset style */
 			  right: auto;
@@ -766,7 +790,7 @@ export class ReporteDiarioPage implements OnInit {
 			-webkit-overflow-scrolling: touch;
 		  }
 		  
-		  @media only screen and (min-width: 380px) {
+		  @media only screen and (min-width: 200px) {
 			.cd-schedule.animation-completed .event-modal .close,
 			.cd-schedule.content-loaded.animation-completed .event-modal .event-info {
 			  /* 	the .animation-completed class is added when the modal animation is completed
@@ -842,6 +866,10 @@ export class ReporteDiarioPage implements OnInit {
   }
 
   changedReport() {
+	const maquina = document.getElementById('cmbTarea');
+	const idMachine = (maquina as HTMLIonSelectElement).value;
+	console.log("idmachine", idMachine)
+	this.idMachine = idMachine;
 
 	const dtime:any = document.getElementById('datetime');
 	const fecha = new Date(dtime.value);
