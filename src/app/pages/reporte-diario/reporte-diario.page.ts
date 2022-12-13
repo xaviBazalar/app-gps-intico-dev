@@ -82,7 +82,7 @@ export class ReporteDiarioPage implements OnInit {
       });
 }
 
-  async generarHtml(fecha, machine) {
+async generarHtml(fecha, machine) {
 	console.log('Armado del html')
 	
 	let html: string = '<ul class="wrap">';
@@ -90,7 +90,7 @@ export class ReporteDiarioPage implements OnInit {
 	this.taskService.getTaskEventReporte(fecha, machine).subscribe((data: any) => {
 		const { taskEvent } = data;
 		const div = document.getElementById('divEventos');
-		
+		console.log(taskEvent)
 		if(data.ok==false){
 			div!.innerHTML = "";
 			return;
@@ -105,12 +105,34 @@ export class ReporteDiarioPage implements OnInit {
 
 			if(taskEvent[i].tipo !== 'Detencion')
 			{
+				let ini:any=taskEvent[i].horaInicio
+				let fin:any=taskEvent[i].horaFin
+				let dateA:any=new Date(`10/10/2022 ${ini}`)
+				let dateB:any=new Date(`10/10/2022 ${fin}`)
+				let diff=(dateA-dateB)*-1
+				let hora:any=String(diff/3600000)
+				
+				if(Number.isInteger(hora)){
+					//console.log("horas",hora)
+				}else{
+					let dataTime:any=hora.split(".")
+					let minTemp:any=parseFloat("0."+dataTime[1])
+					let minutos:any=minTemp*60
+					hora=dataTime[0]
+					//console.log("horas",dataTime[0])
+					//console.log("minutos",parseInt(minutos))
+				}
 				html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 				html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
+				GPS<br>
+				Uso: ${hora} Hrs
 					</a></li>`
 			}
+
+			
 		}
 		html += `</ul></li>`;
+
 
 		//para los eventos
 		html += `<li class="events-group">
@@ -136,9 +158,9 @@ export class ReporteDiarioPage implements OnInit {
 		}
 
 		html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-		html +=`<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
+		html +=`${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
 				</li>`
-		}
+		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
 		html += `</ul></li>`;
 		
 		//para las evidencias
@@ -160,6 +182,11 @@ export class ReporteDiarioPage implements OnInit {
 
 		html += `</ul>
 		<style>
+		.detalle-op{
+			display:block;
+			font-size:10px;
+		}
+
 		.codyhouse {
 			text-align: center;
 			margin: 40px 0;
@@ -256,7 +283,7 @@ export class ReporteDiarioPage implements OnInit {
 			display: none;
 		  }
 		  
-		  @media only screen and (min-width: 200px) {
+		  @media only screen and (max-width: 580px) {
 			.cd-schedule {
 			  width: 90%;
 			  max-width: 1400px;
@@ -276,7 +303,7 @@ export class ReporteDiarioPage implements OnInit {
 			display: none;
 		  } */
 		  
-		  @media only screen and (min-width: 200px) {
+		  @media only screen and (max-width: 580px) {
 			.cd-schedule .timeline {
 			  display: block;
 			  position: absolute;
@@ -330,6 +357,7 @@ export class ReporteDiarioPage implements OnInit {
 		  
 		  .cd-schedule .events .events-group {
 			margin-bottom: 30px;
+			padding:6px
 		  }
 		  
 		  .cd-schedule .events .top-info {
@@ -373,7 +401,7 @@ export class ReporteDiarioPage implements OnInit {
 			height: 150px;
 			width: 70%;
 			max-width: 300px;
-			box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+			/*box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2);*/
 			margin-right: 20px;
 			-webkit-transition: opacity .2s, background .2s;
 			transition: opacity .2s, background .2s;
@@ -386,7 +414,7 @@ export class ReporteDiarioPage implements OnInit {
 		  .cd-schedule .events .single-event a {
 			display: block;
 			height: 100%;
-			padding: .8em;
+			padding: 0px;
 		  }
 		  
 		  /* @media only screen and (min-width: 550px) {
@@ -395,7 +423,7 @@ export class ReporteDiarioPage implements OnInit {
 			}
 		  } */
 		  
-		  @media only screen and (min-width: 200px) {
+		  @media only screen and (max-width: 580px) {
 			.cd-schedule .events {
 			  float: left;
 			  width: 100%;
@@ -449,7 +477,7 @@ export class ReporteDiarioPage implements OnInit {
 			  /* top position and height will be set using js */
 			  width: calc(100% + 2px);
 			  left: -1px;
-			  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.2);
+			  /*box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), inset 0 -3px 0 rgba(0, 0, 0, 0.2);*/
 			  /* reset style */
 			  -ms-flex-negative: 1;
 				  flex-shrink: 1;
@@ -457,9 +485,14 @@ export class ReporteDiarioPage implements OnInit {
 			  max-width: none;
 			  margin-right: 0;
 			  opacity: 1 !important;
+			  border-radius: 20px;
+			  color: #fff;
+			  padding: 10px;
+			  line-height: 20px;
 			}
 			.cd-schedule .events .single-event a {
-			  padding: 1.2em;
+			  /*padding: 1.2em;*/
+			  
 			}
 			.cd-schedule .events .single-event:last-of-type {
 			  /* reset style */
@@ -498,7 +531,7 @@ export class ReporteDiarioPage implements OnInit {
 			font-size: 2.4rem;
 		  }
 		  
-		  @media only screen and (min-width: 200px) {
+		  @media only screen and (max-width: 580px) {
 			.cd-schedule .event-name {
 			  font-size: 2rem;
 			}
@@ -515,43 +548,61 @@ export class ReporteDiarioPage implements OnInit {
 		  .cd-schedule .single-event[data-event="event-1"],
 		  .cd-schedule [data-event="event-1"] .header-bg {
 			/* this is used to set a background color for the event and the modal window */
-			background: #577F92;
+			background: #599842;
+			color: #fff;
+			padding: 10px;
+			line-height: 20px;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-1"]:hover {
-			background: #618da1;
+			background: #599840;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-2"],
 		  .cd-schedule [data-event="event-2"] .header-bg {
-			background: #443453;
+			background: transparent;
+    		box-shadow: none;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-2"]:hover {
-			background: #513e63;
+			background: transparent;
+    		box-shadow: none;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-3"],
 		  .cd-schedule [data-event="event-3"] .header-bg {
-			background: #A2B9B2;
+			background: #900A0A;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-3"]:hover {
-			background: #b1c4be;
+			background: #900A0A;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-4"],
 		  .cd-schedule [data-event="event-4"] .header-bg {
-			background: #f6b067;
+			background: #C8B724;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-4"]:hover {
-			background: #f7bd7f;
+			background: #C8B724;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-5"],
 		  .cd-schedule [data-event="event-5"] .header-bg {
-			background: #F4F6F6;
+			background: #D9D9D9;
+		  }
+
+		  .cd-schedule .single-event[data-event="event-5"] span{
+			  display:none;
+		  }
+		  
+		  .cd-schedule .single-event[data-event="event-5"] a{
+			color:#000000;
+		  }
+
+		  .cd-schedule .single-event[data-event="event-5"],
+		  .cd-schedule [data-event="event-5"] .event-date{
+			color:#000 !important;
 		  }
 		  
 		  .cd-schedule .single-event[data-event="event-5"]:hover {
@@ -696,7 +747,7 @@ export class ReporteDiarioPage implements OnInit {
 			transition: none;
 		  }
 		  
-		  @media only screen and (min-width: 200px) {
+		  @media only screen and (max-width: 580px) {
 			.cd-schedule .event-modal {
 			  /* reset style */
 			  right: auto;
@@ -790,7 +841,7 @@ export class ReporteDiarioPage implements OnInit {
 			-webkit-overflow-scrolling: touch;
 		  }
 		  
-		  @media only screen and (min-width: 200px) {
+		  @media only screen and (max-width: 580px) {
 			.cd-schedule.animation-completed .event-modal .close,
 			.cd-schedule.content-loaded.animation-completed .event-modal .event-info {
 			  /* 	the .animation-completed class is added when the modal animation is completed
@@ -846,7 +897,12 @@ export class ReporteDiarioPage implements OnInit {
 			}
 
 			.wrap>li:nth-child(3) ion-button{
-				transform:translateY(-94px);
+				/*transform:translateY(-94px);*/
+				transform:translate(-18px,-52px)
+			}
+
+			.wrap>li:nth-child(3) .event-date{
+				display:none;
 			}
 
 			.timeline>ul{
@@ -964,27 +1020,27 @@ export class ReporteDiarioPage implements OnInit {
   };
   
   scheduleReset = ()=> {
-		var mq = this.mq();
-		if( mq == 'desktop' && !this.element.hasClass('js-full') ) {
-			//in this case you are on a desktop version (first load or resize from mobile)
-			this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-			this.element.addClass('js-full');
-			this.placeEvents();
-			this.element.hasClass('modal-is-open') && this.checkEventModal();
-		} else if(  mq == 'mobile' && this.element.hasClass('js-full') ) {
-			//in this case you are on a mobile version (first load or resize from desktop)
-			this.element.removeClass('js-full loading');
-			this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
-			this.eventsWrapper.children('.grid-line').remove();
-			this.element.hasClass('modal-is-open') && this.checkEventModal();
-		} else if( mq == 'desktop' && this.element.hasClass('modal-is-open')){
-			//on a mobile version with modal open - need to resize/move modal window
-      //this.checkEventModal('desktop');
-      this.checkEventModal();
-			this.element.removeClass('loading');
-		} else {
-			this.element.removeClass('loading');
-		}
+	var mq = this.mq();
+	if( mq == 'desktop' && !this.element.hasClass('js-full') ) {
+		//in this case you are on a desktop version (first load or resize from mobile)
+		this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+		//this.element.addClass('js-full');
+		this.placeEvents();
+		this.element.hasClass('modal-is-open') && this.checkEventModal();
+	} else if(  mq == 'mobile' && this.element.hasClass('js-full') ) {
+		//in this case you are on a mobile version (first load or resize from desktop)
+		//this.element.removeClass('js-full loading');
+		this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
+		this.eventsWrapper.children('.grid-line').remove();
+		this.element.hasClass('modal-is-open') && this.checkEventModal();
+	} else if( mq == 'desktop' && this.element.hasClass('modal-is-open')){
+		//on a mobile version with modal open - need to resize/move modal window
+  //this.checkEventModal('desktop');
+  this.checkEventModal();
+		//this.element.removeClass('loading');
+	} else {
+		//this.element.removeClass('loading');
+	}
   };
   
   initEvents = () =>{
