@@ -117,9 +117,10 @@ export class TomaTiempoPage implements OnInit {
       const i = result.length - 1;
 
       if(i>0){
-        const {'position.latitude': _latitude, 'position.longitude': _longitude} = result[i];        
+        const {'position.latitude': _latitude, 'position.longitude': _longitude, 'vehicle.mileage': _milage} = result[i];        
         this.task.latitude = _latitude;
         this.task.longitude = _longitude;
+        this.task.distanciaInicial = _milage;
       }
     });
     
@@ -128,9 +129,10 @@ export class TomaTiempoPage implements OnInit {
       const { result } = data
       const i = result.length - 1;
       if(i>0){
-        const {'position.latitude': _latitude, 'position.longitude': _longitude} = result[i]
+        const {'position.latitude': _latitude, 'position.longitude': _longitude, 'vehicle.mileage': _milage} = result[i]
         this.task.latitude = _latitude;
         this.task.longitude = _longitude;
+        this.task.distanciaInicial = _milage;
       }
     });
 

@@ -13,6 +13,8 @@ export class TaskEventsModel {
     horaFin: String | null;
     tipoEstilo: String | null;
     uid: String | null;
+    distanciaInicial: Number | null;
+    distanciaFinal: Number | null;
 
     constructor(){
         this.latitude = 0;
@@ -29,5 +31,7 @@ export class TaskEventsModel {
         this.horaFin = '',
         this.tipoEstilo = '';
         this.uid = null;
+        this.distanciaInicial = 0;
+        this.distanciaFinal = 0;
     }
 }

@@ -200,7 +200,6 @@ export class MaquinaTareaPage implements OnInit {
     }
     });
   }
-
   //#endregion "obtener ubicacion de la maquina"
 
   //#region "metodos cronometro operativo"
@@ -228,6 +227,8 @@ export class MaquinaTareaPage implements OnInit {
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
     this.taskEventsModel.horaFin = ''
+    this.taskEventsModel.distanciaInicial = this.maquinaModel.mileage;
+    this.taskEventsModel.distanciaFinal = 0;
 
     this.tipoOperativo = this.taskEventsModel.subTipo;
 
@@ -249,6 +250,7 @@ export class MaquinaTareaPage implements OnInit {
 
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.distanciaFinal = this.maquinaModel.mileage;
 
     this.actualizarTaskEvent(this.taskEventsModel);
   }
@@ -307,6 +309,8 @@ export class MaquinaTareaPage implements OnInit {
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
     this.taskEventsModel.horaFin = '';
+    this.taskEventsModel.distanciaInicial = this.maquinaModel.mileage;
+    this.taskEventsModel.distanciaFinal = 0;
 
     this.guardarTaskEvent(this.taskEventsModel, 1);
   }
@@ -326,6 +330,7 @@ export class MaquinaTareaPage implements OnInit {
 
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.distanciaFinal = this.maquinaModel.mileage;
 
     this.actualizarTaskEvent(this.taskEventsModel);
   }
@@ -367,6 +372,9 @@ export class MaquinaTareaPage implements OnInit {
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
     this.taskEventsModel.horaFin = ''
+    this.taskEventsModel.distanciaInicial = this.maquinaModel.mileage;
+    this.taskEventsModel.distanciaFinal = 0;
+
     this.tipoDetencion = this.taskEventsModel.subTipo;
 
     this.guardarTaskEvent(this.taskEventsModel, 1);
@@ -387,6 +395,7 @@ export class MaquinaTareaPage implements OnInit {
 
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.distanciaFinal = this.maquinaModel.mileage;
 
     this.actualizarTaskEvent(this.taskEventsModel);
   }
@@ -494,6 +503,7 @@ export class MaquinaTareaPage implements OnInit {
     this.taskEventsModel.longitude = this.maquinaModel.longitude;
     this.taskEventsModel.tipo = tipo;
     this.taskEventsModel.fechaRegistro = new Date();
+    
   }
 
   obtenerTarea(idTarea: string){
