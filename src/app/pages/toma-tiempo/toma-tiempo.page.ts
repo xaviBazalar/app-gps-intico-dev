@@ -127,7 +127,21 @@ export class TomaTiempoPage implements OnInit {
     const fechaDesdeATS = (fechaDesdeA).getTime() / 1000;
     const fechaHastaATS = (fechaHastaA).getTime() / 1000;
     
-    (this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaDesdeTS.toString(), fechaDesdeATS.toString())).subscribe((data: any) => {
+    let dataA:any=await this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaDesdeTS.toString(), fechaDesdeATS.toString()).toPromise()
+
+    const { result:resultA } = dataA;
+
+    if(resultA.length > 0){      
+        const {'position.latitude': _latitude, 'position.longitude': _longitude, 'vehicle.mileage': _milage} = resultA[0];        
+        this.task.latitude = _latitude;
+        this.task.longitude = _longitude;
+        this.task.distanciaInicial = _milage;
+
+        console.log('latitude',_latitude);
+        console.log('longitude',_longitude);
+        console.log('milage',_milage);
+    } 
+   /*(this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaDesdeTS.toString(), fechaDesdeATS.toString())).subscribe((data: any) => {
       console.log('desde',data)
       const { result } = data;
 
@@ -141,9 +155,22 @@ export class TomaTiempoPage implements OnInit {
         console.log('longitude',_longitude);
         console.log('milage',_milage);
       }
-    });
+    });*/
     
-    (this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaHastaTS.toString(), fechaHastaATS.toString())).subscribe((data: any) => {
+    let dataB:any= await this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaHastaTS.toString(), fechaHastaATS.toString()).toPromise()
+    const { result } = dataB
+
+    if(result.length > 0){
+        const {'position.latitude': _latitude, 'position.longitude': _longitude, 'vehicle.mileage': _milage} = result[0]
+        this.task.latitude = _latitude;
+        this.task.longitude = _longitude;
+        this.task.distanciaFinal = _milage;
+
+        console.log('latitude2',_latitude);
+        console.log('longitude2',_longitude);
+        console.log('milage2',_milage);
+    }
+    /*(this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaHastaTS.toString(), fechaHastaATS.toString())).subscribe((data: any) => {
       console.log('hasta', data)
       const { result } = data
 
@@ -157,7 +184,7 @@ export class TomaTiempoPage implements OnInit {
         console.log('longitude2',_longitude);
         console.log('milage2',_milage);
       }
-    });
+    });*/
 
     this.task.horaInicio = fechaDesde.getHours().toString().padStart(2,'0') + ':' + fechaDesde.getMinutes().toString().padStart(2,'0');
     this.task.horaFin = fechaHasta.getHours().toString().padStart(2,'0') + ':' + fechaHasta.getMinutes().toString().padStart(2,'0');
@@ -189,7 +216,7 @@ export class TomaTiempoPage implements OnInit {
 
     this.task.fechaRegistro = fechaDesde;//new Date();
 
-    (await this.taskService.guardarTaskEvent(this.task)).subscribe((data: any) => {
+    this.taskService.guardarTaskEvent(this.task).subscribe((data: any) => {
       console.log(data);
       const { taskDB } = data;
       console.log(taskDB)
