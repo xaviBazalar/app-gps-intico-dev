@@ -10,6 +10,19 @@
 
 <ion-content color="tertiary">
   <form>
+
+    <ion-card color="danger">
+      <ion-card-content>
+        <div class="mitad" style="float: left;">
+         <ion-label>{{ myDate }}</ion-label>       
+      </div>
+
+      <div class="mitad" style="float: right;">
+        <ion-label class="mitad">{{ titulo }}</ion-label>        
+      </div>       
+      </ion-card-content>     
+    </ion-card>
+
     <fieldset>
       <legend>Maquina: {{ maquinaModel.nombre }} 
         <ion-button *ngIf="flagMaquinaria===false" color="tertiary" (click)="mostrarOcultarMaq()">

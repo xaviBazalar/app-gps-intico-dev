@@ -62,6 +62,8 @@ export class MaquinaTareaPage implements OnInit {
   contrato: String | null = '';
   tiempoSLA: String | null = '';
   tareaMaquinaria: String | null = '';
+  myDate: String = (new Date).toLocaleDateString();
+  titulo:String = 'TAREA A REALIZAR'
 
   @Input() idMaquina;
   @Input() idUser;

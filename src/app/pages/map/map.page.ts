@@ -61,7 +61,7 @@ export class MapPage implements OnInit {
 
     console.log('tareaa', idTarea);
 
-    (await this.eventService.getTaskEventMap(this.idTarea)).subscribe((data: any) =>{
+    (await this.eventService.getTaskEventMap(this.idTarea)).subscribe(async (data: any) =>{
       console.log('task', data)
 
       if(data.ok){
@@ -98,9 +98,9 @@ export class MapPage implements OnInit {
         const fechaHastaTS = (fechaFin).getTime() / 1000;
         
         console.log('fechaDesdeTS',fechaDesdeTS)
-        console.log('fechaHastaTS',fechaHastaTS)
+        console.log('fechaHastaTS',fechaHastaTS);
 
-        this.taskService.obtenerUbicaTiempo(machine.idInterno, fechaDesdeTS.toString(), fechaHastaTS.toString()).subscribe((data: any) => {
+        (await this.taskService.obtenerUbicaTiempo(machine.idInterno, fechaDesdeTS.toString(), fechaHastaTS.toString())).subscribe((data: any) => {
           console.log('flespi',data)
           const { result } = data
       

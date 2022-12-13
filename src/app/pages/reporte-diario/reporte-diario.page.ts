@@ -65,12 +65,12 @@ export class ReporteDiarioPage implements OnInit {
     const dataUser = user;
 	idUser = dataUser[0].uid;
 
-	console.log("iduser", idUser);
+	// console.log("iduser", idUser);
 
 	this.machineService.getMachine(idUser).subscribe((data:any) => {
         // console.log('idUser', idUser);
         const { machine } = data;
-		console.log(machine);
+		// console.log(machine);
         // console.log('tarea', task);
         for (let index = 0; index < machine.length; index++) {
           const _item = {nombre: machine[index].descripcion, 
@@ -103,32 +103,28 @@ async generarHtml(fecha, machine) {
 		for (let i = 0; i < taskEvent.length; i++) {
 			let dataevent: string = 'event-5';
 
-			if(taskEvent[i].tipo !== 'Detencion')
-			{
-				let ini:any=taskEvent[i].horaInicio
-				let fin:any=taskEvent[i].horaFin
-				let dateA:any=new Date(`10/10/2022 ${ini}`)
-				let dateB:any=new Date(`10/10/2022 ${fin}`)
-				let diff=(dateA-dateB)*-1
-				let hora:any=String(diff/3600000)
-				
-				if(Number.isInteger(hora)){
-					//console.log("horas",hora)
-				}else{
-					let dataTime:any=hora.split(".")
-					let minTemp:any=parseFloat("0."+dataTime[1])
-					let minutos:any=minTemp*60
-					hora=dataTime[0]
-					//console.log("horas",dataTime[0])
-					//console.log("minutos",parseInt(minutos))
-				}
-				html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-				html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
-				GPS<br>
-				Uso: ${hora} Hrs
-					</a></li>`
+			let ini:any=taskEvent[i].horaInicio
+			let fin:any=taskEvent[i].horaFin
+			let dateA:any=new Date(`10/10/2022 ${ini}`)
+			let dateB:any=new Date(`10/10/2022 ${fin}`)
+			let diff=(dateA-dateB)*-1
+			let hora:any=String(diff/3600000)
+			
+			if(Number.isInteger(hora)){
+				//console.log("horas",hora)
+			}else{
+				let dataTime:any=hora.split(".")
+				let minTemp:any=parseFloat("0."+dataTime[1])
+				let minutos:any=minTemp*60
+				hora=dataTime[0]
+				//console.log("horas",dataTime[0])
+				//console.log("minutos",parseInt(minutos))
 			}
-
+			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+			html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
+			GPS<br>
+			Uso: ${hora} Hrs
+				</a></li>`
 			
 		}
 		html += `</ul></li>`;
