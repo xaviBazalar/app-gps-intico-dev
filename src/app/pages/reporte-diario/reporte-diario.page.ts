@@ -8,6 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { parse } from 'path';
 import { StorageService } from 'src/app/services/storage.service';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
+import { EvidenceService } from 'src/app/services/evidence.service';
 
 
 @Component({
@@ -54,7 +55,9 @@ export class ReporteDiarioPage implements OnInit {
 				private machineService: MaquinariaService,
 				private route: ActivatedRoute,
 				private router: Router,
-				private storageService: StorageService) { 
+				private storageService: StorageService,
+				private evidenceService:EvidenceService
+				) { 
     this.window = this.document.defaultView;
     this.date = new Date().toString();
     //this.transitionsSupported=( $('.csstransitions').length > 0 );
@@ -90,7 +93,7 @@ async generarHtml(fecha, machine) {
 	
 	let html: string = '<ul class="wrap">';
 	console.log("fecha",fecha)
-	this.taskService.getTaskEventReporte(fecha, machine).subscribe((data: any) => {
+	this.taskService.getTaskEventReporte(fecha, machine).subscribe(async (data: any) => {
 		const { taskEvent } = data;
 		const div = document.getElementById('divEventos');
 		console.log(taskEvent)
@@ -168,16 +171,18 @@ async generarHtml(fecha, machine) {
 				<ul>`;
 		for (let i = 0; i < taskEvent.length; i++) {
 			let dataevent: string = 'event-2';
-
-			
-			
-			html += `<li class="single-event" data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-			html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }">
-						<ion-button color="tertiary" >
-							<ion-icon name="caret-down-outline"></ion-icon>
-					  </ion-button>
-					  </a>
-					</li>`			
+			console.log(taskEvent[i].uid)
+			const data:any = await this.evidenceService.obtenerEvidence(taskEvent[i].uid).toPromise()
+			console.log("evidencia",data)
+			if(data.ok){			
+				html += `<li class="single-event" data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+				html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }">
+							<ion-button color="tertiary" >
+								<ion-icon name="caret-down-outline"></ion-icon>
+						</ion-button>
+						</a>
+						</li>`
+			}
 		}
 		html += `</ul></li>`;
 
