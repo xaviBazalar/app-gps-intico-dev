@@ -42,7 +42,13 @@ export class TomarFotoPage implements OnInit {
       this.idTarea = _idTarea
     }
 
+    let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
+    if(!this.idUser){
+      this.idUser = _idUser
+    }
+
     console.log('idTarea',this.idTarea);
+    console.log('idUser',this.idUser);
 
     this.evidenceService.obtenerEvidence(this.idTarea).subscribe((data: any) => {
       if(data.ok){

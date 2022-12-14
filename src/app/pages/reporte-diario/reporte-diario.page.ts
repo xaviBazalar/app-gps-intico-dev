@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import * as $ from 'jquery'
 import * as jQuery from 'jquery';
 import { DOCUMENT } from '@angular/common';
@@ -45,6 +45,9 @@ export class ReporteDiarioPage implements OnInit {
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
 	item: any[] = []; 
+
+	@Input() page;
+	idUser: String = '';
 	
   constructor(@Inject(DOCUMENT) private document: Document, 
   				private taskService: TaskService, 
@@ -59,15 +62,15 @@ export class ReporteDiarioPage implements OnInit {
   }
 
   async ngOnInit():Promise<void> {
-	let idUser: String = '';
+	
 	const userData=this.storageService.loadUser();
 	const [user] = await Promise.all([userData]);
     const dataUser = user;
-	idUser = dataUser[0].uid;
+	this.idUser = dataUser[0].uid;
 
 	// console.log("iduser", idUser);
 
-	this.machineService.getMachine(idUser).subscribe((data:any) => {
+	this.machineService.getMachine(this.idUser).subscribe((data:any) => {
         // console.log('idUser', idUser);
         const { machine } = data;
 		// console.log(machine);
@@ -135,26 +138,26 @@ async generarHtml(fecha, machine) {
 				<div class="top-info"><span>Eventos</span></div>
 				<ul>`;
 		for (let i = 0; i < taskEvent.length; i++) {
-		let dataevent: string = '';
+			let dataevent: string = '';
 
-		switch(taskEvent[i].tipo){
-			case 'Operativo':
-				dataevent = 'event-1';
-				break;
-			case 'Pausa':
-				dataevent = 'event-4';
-				break;
-			case 'Detencion':
-				dataevent = 'event-3';
-				break;
-		}
+			switch(taskEvent[i].tipo){
+				case 'Operativo':
+					dataevent = 'event-1';
+					break;
+				case 'Pausa':
+					dataevent = 'event-4';
+					break;
+				case 'Detencion':
+					dataevent = 'event-3';
+					break;
+			}
 
-		if(taskEvent[i].tipo === 'Operativo'){
-			dataevent = 'event-1'
-		}
+			if(taskEvent[i].tipo === 'Operativo'){
+				dataevent = 'event-1'
+			}
 
-		html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-		html +=`${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
+			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+			html +=`${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
 				</li>`
 		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
 		html += `</ul></li>`;
@@ -165,6 +168,8 @@ async generarHtml(fecha, machine) {
 				<ul>`;
 		for (let i = 0; i < taskEvent.length; i++) {
 			let dataevent: string = 'event-2';
+
+			
 			
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 			html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }">
@@ -966,6 +971,9 @@ async generarHtml(fecha, machine) {
 	
   }
 
+  atras(){
+	this.router.navigate(['/inicio']);
+  }
   //#region "jQuery"
   RunSchedulePlan(){
 	var self=this
@@ -1092,7 +1100,7 @@ async generarHtml(fecha, machine) {
 		}
 
 		if(event[0].dataset.order==3){
-			this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent, retorno: "reporte-diario" }])
+			this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent, retorno: "reporte-diario", idUser: this.idUser }])
 		}
 		
 		// var self = this;

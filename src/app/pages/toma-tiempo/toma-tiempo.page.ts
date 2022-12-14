@@ -128,7 +128,7 @@ export class TomaTiempoPage implements OnInit {
     const fechaHastaATS = (fechaHastaA).getTime() / 1000;
     
     let dataA:any=await this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaDesdeTS.toString(), fechaDesdeATS.toString()).toPromise()
-
+    console.log('desde',dataA)
     const { result:resultA } = dataA;
 
     if(resultA.length > 0){      
@@ -159,7 +159,7 @@ export class TomaTiempoPage implements OnInit {
     
     let dataB:any= await this.maquinaService.obtenerUbicaTiempo(this.idMaquinaInterna, fechaHastaTS.toString(), fechaHastaATS.toString()).toPromise()
     const { result } = dataB
-
+    console.log('hasta', dataB)
     if(result.length > 0){
         const {'position.latitude': _latitude, 'position.longitude': _longitude, 'vehicle.mileage': _milage} = result[0]
         this.task.latitude = _latitude;
@@ -216,15 +216,20 @@ export class TomaTiempoPage implements OnInit {
 
     this.task.fechaRegistro = fechaDesde;//new Date();
 
-    this.taskService.guardarTaskEvent(this.task).subscribe((data: any) => {
-      console.log(data);
-      const { taskDB } = data;
-      console.log(taskDB)
-      if(data.ok){
-        this.idTareaEvent = taskDB.uid
-        this.storageService.saveTaskEvent(taskDB);
-      }
-    });
+    this.taskService.guardarTaskEvent(this.task).subscribe(
+      (data: any) => {
+        console.log(data);
+        const { taskDB } = data;
+        console.log(taskDB)
+        if(data.ok){
+          this.idTareaEvent = taskDB.uid
+          this.storageService.saveTaskEvent(taskDB);
+        }else{
+          this.alertMessage(data.msg)
+        }
+      },
+      err => console.log('error',err)
+      );
 
     // this.modalController.dismiss();
     return true;
