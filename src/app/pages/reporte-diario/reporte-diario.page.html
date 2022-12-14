@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>reporte-diario</ion-title>
+    <ion-title>Reporte Diario</ion-title>
+    <!-- <ion-buttons slot="start">
+      <ion-back-button text="Atras"></ion-back-button>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -8,6 +11,10 @@
 
   <ion-card>
     <ion-card-content>
+      <ion-button (click)="atras()" expand="block" fill="clear" shape="round">
+        Regresar a las tareas
+      </ion-button> 
+
       <ion-select  interface="popover" placeholder="--Seleccione--" id="cmbTarea">
         <ion-select-option *ngFor="let c of item" detail
                   [value]="c.value">
@@ -21,6 +28,7 @@
           <ion-datetime presentation="date" id="datetime" (ionChange)="changedReport(); modalTime.dismiss();" on="true" ></ion-datetime>
         </ng-template>
       </ion-modal>
+      
     </ion-card-content>
   </ion-card>
 

@@ -94,7 +94,7 @@
     display: none;
   }
   
-  @media only screen and (min-width: 380px) {
+  @media only screen and (max-width: 580px) {
     .cd-schedule {
       width: 90%;
       max-width: 1400px;
@@ -114,7 +114,7 @@
     display: none;
   } */
   
-  @media only screen and (min-width: 380px) {
+  @media only screen and (max-width: 580px) {
     .cd-schedule .timeline {
       display: block;
       position: absolute;
@@ -233,7 +233,7 @@
     }
   } */
   
-  @media only screen and (min-width: 380px) {
+  @media only screen and (max-width: 580px) {
     .cd-schedule .events {
       float: left;
       width: 100%;
@@ -336,7 +336,7 @@
     font-size: 2.4rem;
   }
   
-  @media only screen and (min-width: 380px) {
+  @media only screen and (max-width: 580px) {
     .cd-schedule .event-name {
       font-size: 2rem;
     }
@@ -534,7 +534,7 @@
     transition: none;
   }
   
-  @media only screen and (min-width: 380px) {
+  @media only screen and (max-width: 580px) {
     .cd-schedule .event-modal {
       /* reset style */
       right: auto;
@@ -628,7 +628,7 @@
     -webkit-overflow-scrolling: touch;
   }
   
-  @media only screen and (min-width: 380px) {
+  @media only screen and (max-width: 580px) {
     .cd-schedule.animation-completed .event-modal .close,
     .cd-schedule.content-loaded.animation-completed .event-modal .event-info {
       /* 	the .animation-completed class is added when the modal animation is completed
