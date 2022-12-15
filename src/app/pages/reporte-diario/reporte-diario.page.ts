@@ -205,7 +205,7 @@ async generarHtml(fecha, machine) {
 					data-maquina="${taskEvent[i].machine._id}" 
 					data-uid="${ taskEvent[i].uid }">
 					${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
-					Uso: ${hora} Hrs
+					<span class="detalle-op">Uso: ${hora} Hrs</span>
 					</a>
 				</li>`
 		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
