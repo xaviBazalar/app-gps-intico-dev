@@ -15,9 +15,9 @@
         Regresar a las tareas
       </ion-button> 
 
-      <ion-select  interface="popover" placeholder="--Seleccione--" id="cmbTarea">
+      <ion-select  interface="popover" placeholder="--Seleccione--" id="cmbTarea" [(ngModel)]="cmbMaquina">
         <ion-select-option *ngFor="let c of item" detail
-                  [value]="c.value">
+                  [value]="c.value" >
           {{ c.nombre }}
         </ion-select-option>
       </ion-select>
@@ -51,7 +51,7 @@
         <li><span>14:00</span></li>
         <li><span>14:30</span></li>
         <li><span>15:00</span></li>
-        <li><span>15:30</span></li>
+        <li (click)="addDataReport()"><span>15:30</span></li>
         <li><span>16:00</span></li>
         <li><span>16:30</span></li>
         <li><span>17:00</span></li>

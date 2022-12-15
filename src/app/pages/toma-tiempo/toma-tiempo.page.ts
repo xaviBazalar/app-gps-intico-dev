@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
 import { UserModel } from 'src/app/models/user';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
@@ -26,6 +26,9 @@ export class TomaTiempoPage implements OnInit {
   link: String = '';
   idTareaEvent: String = '';
 
+  tiempoDesdeDefault:any=""
+  tiempoHastaDefault:any=""
+
   @Input() idTarea;
   @Input() idMaquina;
   @Input() idMaquinaInterna;
@@ -34,6 +37,7 @@ export class TomaTiempoPage implements OnInit {
               private taskService: TaskService,
               private storageService: StorageService,
               private router: Router,
+              private route: ActivatedRoute,
               private maquinaService: MaquinariaService,
               private alertController: AlertController
               ) {
@@ -42,6 +46,23 @@ export class TomaTiempoPage implements OnInit {
    }
 
   ngOnInit() {
+    this.idTarea= (this.route.snapshot.paramMap.get("idTarea")!=undefined)?this.route.snapshot.paramMap.get("idTarea"):this.idTarea;
+    this.idMaquina = (this.route.snapshot.paramMap.get("machine")!=undefined)?this.route.snapshot.paramMap.get("machine"):this.idMaquina;
+    this.idMaquinaInterna = (this.route.snapshot.paramMap.get("machineIdInterno")!=undefined)?this.route.snapshot.paramMap.get("machineIdInterno"):this.idMaquinaInterna;
+    
+    if(this.idMaquina!=""){
+      let fecha:any=this.route.snapshot.paramMap.get("fecha")
+      let uid:any=this.route.snapshot.paramMap.get("uid")
+      this.taskService.getTaskEventReporte(fecha,this.idMaquina).subscribe((data:any)=>{
+        let taskEvent:any=data.taskEvent.filter((data:any)=>{
+          return data.uid==uid
+        })
+        console.log(taskEvent)
+        this.tiempoDesdeDefault=`${fecha}T${taskEvent[0].horaInicio}:00.000`
+        this.tiempoHastaDefault=`${fecha}T${taskEvent[0].horaFin}:00.000`
+      })
+    }
+    
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -55,6 +76,23 @@ export class TomaTiempoPage implements OnInit {
     }
 
     this.link = `/map?idTarea=${ this.idTarea }`
+    if(this.route.snapshot.paramMap.get("tipo")!=undefined && this.route.snapshot.paramMap.get("tipo")!=""){
+      this.motivo=String(this.route.snapshot.paramMap.get("tipo"))
+    }
+
+    if(this.route.snapshot.paramMap.get("subtipo")!=undefined && this.route.snapshot.paramMap.get("subtipo")!=""){
+      if(this.route.snapshot.paramMap.get("tipo")=="Operativo"){
+        this.subMotivoOpe=String(this.route.snapshot.paramMap.get("subtipo"))
+      }
+
+      if(this.route.snapshot.paramMap.get("tipo")=="Pausa"){
+        this.subMotivoPau=String(this.route.snapshot.paramMap.get("subtipo"))
+      }
+
+      if(this.route.snapshot.paramMap.get("tipo")=="Detencion"){
+        this.subMotivoDet=String(this.route.snapshot.paramMap.get("subtipo"))
+      }
+    }
   }
 
   async aceptar(){
@@ -278,7 +316,14 @@ export class TomaTiempoPage implements OnInit {
 
   cerrar()
   {
-    this.modalController.dismiss();
+    let fecha:any=this.route.snapshot.paramMap.get("fecha")
+    if(fecha!=undefined && fecha!=""){
+      let params=`;idTarea=${this.idTarea};machine=${this.idMaquina};fecha=${this.route.snapshot.paramMap.get("fecha")}`
+      this.router.navigateByUrl(`/reporte-diario${params}`, { replaceUrl: true});
+    }else{
+      this.modalController.dismiss();
+    }
+    
     return true;
   }
 }

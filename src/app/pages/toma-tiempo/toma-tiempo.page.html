@@ -7,8 +7,8 @@
 <ion-content color="tertiary">
   <ion-card>
     <ion-label>Botones a clasificar</ion-label>
-    <ion-select interface="popover" placeholder="--Seleccione--" [(ngModel)]="motivo" >
-      <ion-select-option value="Operativo">Operativo</ion-select-option>
+    <ion-select interface="popover" placeholder="--Seleccione--" [(ngModel)]="motivo"  >
+      <ion-select-option value="Operativo" >Operativo</ion-select-option>
       <ion-select-option value="Pausa">Pausa</ion-select-option>
       <ion-select-option value="Detencion">Detencion</ion-select-option>
     </ion-select>
@@ -34,10 +34,10 @@
 
     <ion-label>Fecha y Hora</ion-label><br /><br />
     <ion-label>Desde:</ion-label>
-    <ion-datetime-button datetime="date"></ion-datetime-button>
+    <ion-datetime-button datetime="date" ></ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime id="date" slot="date-target"  ></ion-datetime>
+        <ion-datetime id="date" slot="date-target"  [value]="tiempoDesdeDefault"></ion-datetime>
       </ng-template>
     </ion-modal>
     
@@ -45,7 +45,7 @@
     <ion-datetime-button datetime="date1"></ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime id="date1" slot="date-target"></ion-datetime>
+        <ion-datetime id="date1" slot="date-target" [value]="tiempoHastaDefault"></ion-datetime>
       </ng-template>
     </ion-modal>
     

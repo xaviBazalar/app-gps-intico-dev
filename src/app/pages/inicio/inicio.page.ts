@@ -33,8 +33,8 @@ export class InicioPage implements OnInit {
     // var userL=this.storageService.loadUser()
 
 
-    let userData=this.storageService.loadUser();
-    const [user] = await Promise.all([userData]);
+    //let userData=this.storageService.loadUser();
+    const [user] = await Promise.all([this.storageService.loadUser()]);
 
     const dataUser = user;
     // console.log('localuser' ,dataUser);

@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, Input, OnInit } from '@angular/core';
 import * as $ from 'jquery'
 import * as jQuery from 'jquery';
 import { DOCUMENT } from '@angular/common';
@@ -42,6 +42,8 @@ export class ReporteDiarioPage implements OnInit {
 	animating:any
 	objSchedulesPlan = []
 	windowResize = false;
+	fechaSeleccionada:any=""
+	cmbMaquina:any
 
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
@@ -64,10 +66,17 @@ export class ReporteDiarioPage implements OnInit {
     if( !this.transitionsSupported ) this.transitionEnd = 'noTransition';
   }
 
+  @HostListener('unloaded')
+  ionViewWillLeave(){
+	  console.log("me movi")
+	  
+  }
+
+ 
+
   async ngOnInit():Promise<void> {
-	
-	const userData=this.storageService.loadUser();
-	const [user] = await Promise.all([userData]);
+	await this.storageService.init()
+	const [user] = await Promise.all([this.storageService.loadUser()]);
     const dataUser = user;
 	this.idUser = dataUser[0].uid;
 
@@ -86,11 +95,12 @@ export class ReporteDiarioPage implements OnInit {
           this.item.push( _item );        
         }
       });
-}
+  }
+  
 
 async generarHtml(fecha, machine) {
 	console.log('Armado del html')
-	
+	this.fechaSeleccionada=fecha
 	let html: string = '<ul class="wrap">';
 	console.log("fecha",fecha)
 	this.taskService.getTaskEventReporte(fecha, machine).subscribe(async (data: any) => {
@@ -123,8 +133,8 @@ async generarHtml(fecha, machine) {
 				let minTemp:any=parseFloat("0."+dataTime[1])
 				let minutos:any=minTemp*60
 				hora=dataTime[0]
-				//console.log("horas",dataTime[0])
-				//console.log("minutos",parseInt(minutos))
+				console.log("horas",dataTime[0])
+				console.log("minutos",parseInt(minutos))
 			}
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 			html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
@@ -155,12 +165,29 @@ async generarHtml(fecha, machine) {
 					break;
 			}
 
+			/*
+			componentProps: {
+				idTarea: this.idTarea,
+				idMaquinaInterna: this.idMaquinaInterna,
+				idMaquina: this.idMaquina
+			}
+			*/
+
 			if(taskEvent[i].tipo === 'Operativo'){
 				dataevent = 'event-1'
 			}
 
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-			html +=`${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
+			html +=`<a href="#0" 
+					data-order="2" 
+					data-tipo="${taskEvent[i].tipo}"
+					data-subtipo="${taskEvent[i].subTipo}"
+					data-tarea="${taskEvent[i].task}" 
+					data-maquinainterna="${taskEvent[i].machine.idInterno}" 
+					data-maquina="${taskEvent[i].machine._id}" 
+					data-uid="${ taskEvent[i].uid }">
+					${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
+					</a>
 				</li>`
 		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
 		html += `</ul></li>`;
@@ -914,12 +941,20 @@ async generarHtml(fecha, machine) {
 			.timeline>ul{
 				width:90% !important;
 			}
+
+			[data-order="2"]{
+				color:#fff !important;
+			}
 		  }
 		</style>`
 
 		div!.innerHTML = html;
 		this.RunSchedulePlan()
 	  })
+  }
+
+  addDataReport(){
+	  console.log("add data")
   }
 
   openFotos(idTareaEvent: any){
@@ -951,9 +986,11 @@ async generarHtml(fecha, machine) {
 	
   }
 
-  async ngAfterViewInit(): Promise<void> {
+   ngAfterViewInit(): void {
+
 	let idTask = this.route.snapshot.paramMap.get("idTarea");
 	let idMachine = this.route.snapshot.paramMap.get("machine");
+	let fechaR = this.route.snapshot.paramMap.get("fecha");
 	if(!idTask){
 		idTask = ''
   	}
@@ -961,6 +998,8 @@ async generarHtml(fecha, machine) {
 	
 	if(idMachine){
 		this.idMachine = idMachine;
+		this.cmbMaquina=idMachine
+		this.generarHtml(fechaR, this.idMachine);
   	}
 
 
@@ -1056,9 +1095,12 @@ async generarHtml(fecha, machine) {
 		var self = this;
 
 		this.singleEvents.each(function(this){
+			
 			//create the .event-date element for each event
 			var durationLabel = '<span class="event-date">'+$(this).data('start')+' - '+$(this).data('end')+'</span>';
-			$(this).children('a').prepend($(durationLabel));
+			if($(this)[0].dataset.event!="event-1" && $(this)[0].dataset.event!="event-3" && $(this)[0].dataset.event!="event-4"){
+				$(this).children('a').prepend($(durationLabel));
+			}
 
 			//detect click on the event and open the modal
 			$(this).on('click', 'a', function(event){
@@ -1102,6 +1144,20 @@ async generarHtml(fecha, machine) {
 
 		if(event[0].dataset.order==1){
 			this.router.navigate(['/map', { idTarea: idTareaEvent }]);
+		}
+
+		if(event[0].dataset.order==2){
+			let params=`;idTarea=${event[0].dataset.tarea};machine=${event[0].dataset.maquina};machineIdInterno=${event[0].dataset.maquinainterna};tipo=${event[0].dataset.tipo};subtipo=${event[0].dataset.subtipo};fecha=${this.fechaSeleccionada};uid=${idTareaEvent}`
+			this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
+			/*this.router.navigate(['/toma-tiempo',  {
+				idTarea: event[0].dataset.tarea ,
+				machine: event[0].dataset.maquina,
+				machineIdInterno:event[0].dataset.maquinainterna,
+				tipo:event[0].dataset.tipo,
+				subtipo:event[0].dataset.subtipo,
+				fecha:this.fechaSeleccionada,
+				uid:idTareaEvent
+			}])*/
 		}
 
 		if(event[0].dataset.order==3){
