@@ -26,12 +26,16 @@ export class TaskService {
         
   }
 
-  async actualizarTaskEvent(task: TaskEventsModel) {
+  actualizarTaskEvent(task: TaskEventsModel) {
     console.log(task);
 
     return this.http.put(`${ this.baseUrl }/task/event`, task)
         
   }  
+
+  deteleTaskEvent(params: any){
+    return this.http.delete(`${ this.baseUrl }/task/event`,{body: params} )
+  }
 
   getTaskEvent(idTask: String){
     console.log('event', idTask)

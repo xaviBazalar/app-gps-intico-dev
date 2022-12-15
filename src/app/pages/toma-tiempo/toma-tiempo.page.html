@@ -67,8 +67,12 @@
         <ion-icon name="eye"></ion-icon>
       </ion-button>
 
-      <ion-button (click)="aceptar()" expand="full" color="danger">
+      <ion-button *ngIf="!btnUpdate" (click)="aceptar()" expand="full" color="danger">
         ACEPTAR
+      </ion-button>
+
+      <ion-button *ngIf="btnUpdate" (click)="actualizar()" expand="full" color="danger">
+        ACTUALIZAR
       </ion-button>
       
       <ion-button (click)="cerrar()" expand="full" color="warning">

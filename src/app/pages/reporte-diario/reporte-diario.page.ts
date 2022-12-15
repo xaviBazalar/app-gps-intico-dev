@@ -9,6 +9,7 @@ import { parse } from 'path';
 import { StorageService } from 'src/app/services/storage.service';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
 import { EvidenceService } from 'src/app/services/evidence.service';
+import { AlertController } from '@ionic/angular';
 
 
 @Component({
@@ -58,7 +59,8 @@ export class ReporteDiarioPage implements OnInit {
 				private route: ActivatedRoute,
 				private router: Router,
 				private storageService: StorageService,
-				private evidenceService:EvidenceService
+				private evidenceService:EvidenceService,
+				public alertController: AlertController
 				) { 
     this.window = this.document.defaultView;
     this.date = new Date().toString();
@@ -221,8 +223,8 @@ async generarHtml(fecha, machine) {
 			const data:any = await this.evidenceService.obtenerEvidence(taskEvent[i].uid).toPromise()
 			console.log("evidencia",data)
 			if(data.ok){			
-				html += `<li class="single-event" data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-				html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }">
+				html += `<li class="single-event"  data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
+				html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }" >
 							<ion-button color="tertiary" >
 								<ion-icon name="caret-down-outline"></ion-icon>
 						</ion-button>
@@ -1019,6 +1021,7 @@ async generarHtml(fecha, machine) {
 		this.idMachine = idMachine;
 		this.cmbMaquina=idMachine
 		this.generarHtml(fechaR, this.idMachine);
+		this.fechaSeleccionada=fechaR
   	}
 
 
@@ -1157,6 +1160,41 @@ async generarHtml(fecha, machine) {
 		this.element.removeClass('loading');
   };
   
+  async presentAlertConfirm(params:any="",paramsDel:any="") {
+    const alert = await this.alertController.create({
+      header: 'Notificación',
+      message: '¿Que desea hacer con la actividad?',
+      buttons: [
+        {
+          text: 'Eliminar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+			console.log('Confirm Cancel: blah');
+			this.eliminarTaskEvent(paramsDel)
+          }
+        }, {
+          text: 'Actualizar',
+          handler: () => {
+			console.log('Actualizar');
+			this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  } 
+
+  eliminarTaskEvent(params){
+	  console.log(params)
+	this.taskService.deteleTaskEvent(params).subscribe((data:any)=>{
+		if(data.ok){
+			this.generarHtml(this.fechaSeleccionada, this.idMachine);
+		}
+	})
+  }
+
   openModal = (event:any)=> {
 		
 		let idTareaEvent=event[0].dataset.uid
@@ -1166,8 +1204,12 @@ async generarHtml(fecha, machine) {
 		}
 
 		if(event[0].dataset.order==2){
+			
 			let params=`;idTarea=${event[0].dataset.tarea};machine=${event[0].dataset.maquina};machineIdInterno=${event[0].dataset.maquinainterna};tipo=${event[0].dataset.tipo};subtipo=${event[0].dataset.subtipo};fecha=${this.fechaSeleccionada};uid=${idTareaEvent}`
-			this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
+			let paramsDel:any={
+				uid:event[0].dataset.uid
+			}
+			this.presentAlertConfirm(params,paramsDel)
 			/*this.router.navigate(['/toma-tiempo',  {
 				idTarea: event[0].dataset.tarea ,
 				machine: event[0].dataset.maquina,
