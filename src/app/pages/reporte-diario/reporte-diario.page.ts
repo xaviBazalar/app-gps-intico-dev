@@ -165,6 +165,24 @@ async generarHtml(fecha, machine) {
 					break;
 			}
 
+			let ini:any=taskEvent[i].horaInicio
+			let fin:any=taskEvent[i].horaFin
+			let dateA:any=new Date(`10/10/2022 ${ini}`)
+			let dateB:any=new Date(`10/10/2022 ${fin}`)
+			let diff=(dateA-dateB)*-1
+			let hora:any=String(diff/3600000)
+			
+			if(Number.isInteger(hora)){
+				//console.log("horas",hora)
+			}else{
+				let dataTime:any=hora.split(".")
+				let minTemp:any=parseFloat("0."+dataTime[1])
+				let minutos:any=minTemp*60
+				hora=dataTime[0]
+				console.log("horas",dataTime[0])
+				console.log("minutos",parseInt(minutos))
+			}
+
 			/*
 			componentProps: {
 				idTarea: this.idTarea,
@@ -187,6 +205,7 @@ async generarHtml(fecha, machine) {
 					data-maquina="${taskEvent[i].machine._id}" 
 					data-uid="${ taskEvent[i].uid }">
 					${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
+					Uso: ${hora} Hrs
 					</a>
 				</li>`
 		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
