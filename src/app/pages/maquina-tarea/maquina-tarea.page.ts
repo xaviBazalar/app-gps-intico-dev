@@ -65,6 +65,12 @@ export class MaquinaTareaPage implements OnInit {
   myDate: String = (new Date).toLocaleDateString();
   titulo:String = 'TAREA A REALIZAR'
   retornoMaquinaStorage:string=""
+  tiempoActualOpe:string=""
+  tiempoActualStandByOpe:string=""
+  tiempoActualPausa:string=""
+  tiempoActualStandByPausa:string=""
+  tiempoActualDetencion:string=""
+  tiempoActualStandByDetencion:string=""
 
   @Input() idMaquina;
   @Input() idUser;
@@ -98,6 +104,7 @@ export class MaquinaTareaPage implements OnInit {
 
   ngAfterViewInit(): void {
     // console.log('--->', this.idMaquinaInterna)
+    
     let _idMaquina: String | null = this._route.snapshot.paramMap.get("idMaquina");
     let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
     let _idTarea: String | null = this._route.snapshot.paramMap.get("idTarea");
@@ -214,6 +221,7 @@ export class MaquinaTareaPage implements OnInit {
 
   //#region "metodos cronometro operativo"
   async iniciarOperativo() {
+    
     if(this.flagDetencion || this.flagPausa){
       this.alertMessage('No se puede iniciar este proceso primero detenga el preceso en ejecucion')
       return;
@@ -236,6 +244,12 @@ export class MaquinaTareaPage implements OnInit {
 
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    if(this.tiempoActualOpe==""){
+      this.tiempoActualOpe=fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0');
+    }else{
+      let tiempoNuevoTemp:string=fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0')
+      this.tiempoActualOpe=this.substractTimes(tiempoNuevoTemp,this.tiempoActualStandByOpe)
+    }
     this.taskEventsModel.horaFin = ''
     this.taskEventsModel.distanciaInicial = this.maquinaModel.mileage;
     this.taskEventsModel.distanciaFinal = 0;
@@ -259,11 +273,41 @@ export class MaquinaTareaPage implements OnInit {
     this.llenarDatos(tipo);
 
     const fechaActual: Date = new Date();
-    this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    this.taskEventsModel.horaFin = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0');
     this.taskEventsModel.distanciaFinal = this.maquinaModel.mileage;
 
     this.actualizarTaskEvent(this.taskEventsModel);
   }
+
+  padNmb(nStr, nLen) {
+    var sRes = String(nStr);
+    var sCeros = "0000000000";
+    return sCeros.substr(0, nLen - sRes.length) + sRes;
+  }
+
+  stringToSeconds(tiempo) {
+      var sep1 = tiempo.indexOf(":");
+      var sep2 = tiempo.lastIndexOf(":");
+      var hor = tiempo.substr(0, sep1);
+      var min = tiempo.substr(sep1 + 1, sep2 - sep1 - 1);
+      var sec = tiempo.substr(sep2 + 1);
+      return (Number(sec) + (Number(min) * 60) + (Number(hor) * 3600));
+  }
+
+  secondsToTime(secs) {
+      var hor = Math.floor(secs / 3600);
+      var min = Math.floor((secs - (hor * 3600)) / 60);
+      var sec = secs - (hor * 3600) - (min * 60);
+      return this.padNmb(hor, 2) + ":" + this.padNmb(min, 2) + ":" + this.padNmb(sec, 2);
+  }
+
+  substractTimes(t1, t2) {
+      var secs1 = this.stringToSeconds(t1);
+      var secs2 = this.stringToSeconds(t2);
+      var secsDif = secs1 - secs2;
+      return this.secondsToTime(secsDif);
+  }
+   
 
   updateTimerOperativo(){
     this.timerOperativo++;
@@ -274,7 +318,22 @@ export class MaquinaTareaPage implements OnInit {
     seconds = String('0' + Math.floor(seconds)).slice(-2);
 
     const text = minutes + ':' + seconds;
-    this.timeOperativo.next(text);
+    //this.timeOperativo.next(text);
+
+    let fechaActualActualizado: Date = new Date();
+    let tiempoActualNuevo:string=fechaActualActualizado.getHours().toString().padStart(2,'0') + ':' + fechaActualActualizado.getMinutes().toString().padStart(2,'0')+ ":"+fechaActualActualizado.getSeconds().toString().padStart(2,'0');
+    this.tiempoActualStandByOpe=this.substractTimes(tiempoActualNuevo,this.tiempoActualOpe)
+    this.timeOperativo.next(this.substractTimes(tiempoActualNuevo,this.tiempoActualOpe));
+    /*if(this.tiempoActualStandByOpe!=""){
+      console.log("standby",this.tiempoActualStandByOpe+"  "+tiempoActualNuevo)
+      this.timeOperativo.next(this.substractTimes(tiempoActualNuevo,this.tiempoActualStandByOpe));
+    }else{
+      console.log("normal",this.tiempoActualOpe+"  "+tiempoActualNuevo)
+      this.timeOperativo.next(this.substractTimes(tiempoActualNuevo,this.tiempoActualOpe));
+    }*/
+    
+    
+    
 
     // if(seconds === '00' && minutes !== '00'){
     //   this.getGep(this.idMaquinaInterna);//'4656765'
@@ -318,6 +377,12 @@ export class MaquinaTareaPage implements OnInit {
 
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    if(this.tiempoActualPausa==""){
+      this.tiempoActualPausa=fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0');
+    }else{
+      let tiempoNuevoTemp:string=fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0')
+      this.tiempoActualPausa=this.substractTimes(tiempoNuevoTemp,this.tiempoActualStandByPausa)
+    }
     this.taskEventsModel.horaFin = '';
     this.taskEventsModel.distanciaInicial = this.maquinaModel.mileage;
     this.taskEventsModel.distanciaFinal = 0;
@@ -354,7 +419,11 @@ export class MaquinaTareaPage implements OnInit {
     seconds = String('0' + Math.floor(seconds)).slice(-2);
 
     const text = minutes + ':' + seconds;
-    this.timePausa.next(text);
+    //this.timePausa.next(text);
+    let fechaActualActualizado: Date = new Date();
+    let tiempoActualNuevo:string=fechaActualActualizado.getHours().toString().padStart(2,'0') + ':' + fechaActualActualizado.getMinutes().toString().padStart(2,'0')+ ":"+fechaActualActualizado.getSeconds().toString().padStart(2,'0');
+    this.tiempoActualStandByPausa=this.substractTimes(tiempoActualNuevo,this.tiempoActualPausa)
+    this.timePausa.next(this.substractTimes(tiempoActualNuevo,this.tiempoActualPausa));
   }
   //#endregion "metodos cronometro pausa"
 
@@ -381,6 +450,12 @@ export class MaquinaTareaPage implements OnInit {
     this.llenarDatos(tipo);
     const fechaActual: Date = new Date();
     this.taskEventsModel.horaInicio = fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0');
+    if(this.tiempoActualDetencion=""){
+      this.tiempoActualDetencion=fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0');
+    }else{
+      let tiempoNuevoTemp:string=fechaActual.getHours().toString().padStart(2,'0') + ':' + fechaActual.getMinutes().toString().padStart(2,'0')+ ":"+fechaActual.getSeconds().toString().padStart(2,'0')
+      this.tiempoActualDetencion=this.substractTimes(tiempoNuevoTemp,this.tiempoActualStandByDetencion)
+    }
     this.taskEventsModel.horaFin = ''
     this.taskEventsModel.distanciaInicial = this.maquinaModel.mileage;
     this.taskEventsModel.distanciaFinal = 0;
@@ -419,7 +494,11 @@ export class MaquinaTareaPage implements OnInit {
     seconds = String('0' + Math.floor(seconds)).slice(-2);
 
     const text = minutes + ':' + seconds;
-    this.timeDetencion.next(text);
+    //this.timeDetencion.next(text);
+    let fechaActualActualizado: Date = new Date();
+    let tiempoActualNuevo:string=fechaActualActualizado.getHours().toString().padStart(2,'0') + ':' + fechaActualActualizado.getMinutes().toString().padStart(2,'0')+ ":"+fechaActualActualizado.getSeconds().toString().padStart(2,'0');
+    this.tiempoActualStandByDetencion=this.substractTimes(tiempoActualNuevo,this.tiempoActualDetencion)
+    this.timeDetencion.next(this.substractTimes(tiempoActualNuevo,this.tiempoActualDetencion));
   }
   //#endregion "metodos cronometro detencion"
 
