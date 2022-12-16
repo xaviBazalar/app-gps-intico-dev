@@ -74,6 +74,7 @@ export class TomaTiempoPage implements OnInit {
   
         }else{
           console.log("no")
+          
           this.task.uid=uid
           this.tiempoDesdeDefault=`${fecha}T${horaIni}:00.000`
           this.tiempoHastaDefault=`${fecha}T${horaIni}:00.000`
@@ -422,6 +423,18 @@ export class TomaTiempoPage implements OnInit {
     this.task.nivel = 0;
 
     this.task.fechaRegistro = fechaDesde;//new Date();
+
+    let fecha:any=this.route.snapshot.paramMap.get("fecha")
+    let uid:any=this.route.snapshot.paramMap.get("uid")
+    if(fecha!=null && fecha!=undefined && fecha!=""){
+      let dataRetorno:string=`;idTarea=${this.idTarea};machine=${this.idMaquina};machineIdInterno=${this.idMaquinaInterna};tipo=${this.task.tipo};subtipo=${this.task.subTipo};fecha=${fecha};uid=${uid}`
+
+      this.storageService.saveDataRetorno(dataRetorno)
+      this.storageService.saveDataRetornoMaquina("")
+    }
+
+    
+    
 
     this.taskService.guardarTaskEvent(this.task).subscribe(
       (data: any) => {
