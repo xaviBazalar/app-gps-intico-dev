@@ -45,9 +45,15 @@ export class TomaTiempoPage implements OnInit {
     this.myDate = new Date().toString();
     this.storageService.saveDataRetorno("")
     console.log(this.myDate);
+    this.afterLoad()
    }
 
-  ngOnInit() {
+  async ngOnInit() :Promise<void>{
+    await this.afterLoad()
+    
+  }
+
+  async afterLoad():Promise<void>{
     this.idTarea= (this.route.snapshot.paramMap.get("idTarea")!=undefined)?this.route.snapshot.paramMap.get("idTarea"):this.idTarea;
     this.idMaquina = (this.route.snapshot.paramMap.get("machine")!=undefined)?this.route.snapshot.paramMap.get("machine"):this.idMaquina;
     this.idMaquinaInterna = (this.route.snapshot.paramMap.get("machineIdInterno")!=undefined)?this.route.snapshot.paramMap.get("machineIdInterno"):this.idMaquinaInterna;
@@ -56,16 +62,20 @@ export class TomaTiempoPage implements OnInit {
       let fecha:any=this.route.snapshot.paramMap.get("fecha")
       let uid:any=this.route.snapshot.paramMap.get("uid")
       let horaIni:any=this.route.snapshot.paramMap.get("horaInicio")
+      let horaFin:any=this.route.snapshot.paramMap.get("horaFin")
       this.taskService.getTaskEventReporte(fecha,this.idMaquina).subscribe((data:any)=>{
         let taskEvent:any=data.taskEvent.filter((data:any)=>{
           return data.uid==uid
         })
+        console.log(taskEvent)
+        console.log(taskEvent.length)
         console.log(horaIni)
         if(taskEvent.length>0 && (horaIni==null || horaIni=="")){
           console.log("si")
           this.task.uid=taskEvent[0].uid
           this.tiempoDesdeDefault=`${fecha}T${taskEvent[0].horaInicio}:00.000`
           this.tiempoHastaDefault=`${fecha}T${taskEvent[0].horaFin}:00.000`
+          //console.log(this.tiempoHastaDefault)
           this.btnUpdate=true
           this.idTareaEvent=taskEvent[0].uid
           let dataRetorno:string=`;idTarea=${this.idTarea};machine=${this.idMaquina};machineIdInterno=${this.idMaquinaInterna};tipo=${this.route.snapshot.paramMap.get("tipo")};subtipo=${this.route.snapshot.paramMap.get("subtipo")};fecha=${fecha};uid=${uid}`
@@ -82,7 +92,6 @@ export class TomaTiempoPage implements OnInit {
         }
       })
     }
-    
   }
 
   async loadUser(): Promise<void>{
@@ -123,6 +132,11 @@ export class TomaTiempoPage implements OnInit {
         this.subMotivoDet=String(this.route.snapshot.paramMap.get("subtipo"))
       }
     }
+    if(this.route.snapshot.paramMap.get("horaFin")!=undefined && this.route.snapshot.paramMap.get("horaFin")!=""){
+      //this.tiempoHastaDefault=this.route.snapshot.paramMap.get("horaFin")
+    }
+    
+    
   }
 
   
@@ -425,13 +439,7 @@ export class TomaTiempoPage implements OnInit {
     this.task.fechaRegistro = fechaDesde;//new Date();
 
     let fecha:any=this.route.snapshot.paramMap.get("fecha")
-    let uid:any=this.route.snapshot.paramMap.get("uid")
-    if(fecha!=null && fecha!=undefined && fecha!=""){
-      let dataRetorno:string=`;idTarea=${this.idTarea};machine=${this.idMaquina};machineIdInterno=${this.idMaquinaInterna};tipo=${this.task.tipo};subtipo=${this.task.subTipo};fecha=${fecha};uid=${uid}`
-
-      this.storageService.saveDataRetorno(dataRetorno)
-      this.storageService.saveDataRetornoMaquina("")
-    }
+    
 
     
     
@@ -442,6 +450,14 @@ export class TomaTiempoPage implements OnInit {
         const { taskDB } = data;
         console.log(taskDB)
         if(data.ok){
+          if(fecha!=null && fecha!=undefined && fecha!=""){
+            //this.tiempoDesdeDefault=`${fecha}T${this.task.horaInicio}:00.000`
+            //this.tiempoHastaDefault=`${fecha}T${this.task.horaFin}:00.000`
+            let dataRetorno:string=`;idTarea=${taskDB.task};machine=${taskDB.machine};machineIdInterno=${this.idMaquinaInterna};tipo=${this.task.tipo};subtipo=${this.task.subTipo};fecha=${fecha};uid=${taskDB.uid};`
+      
+            this.storageService.saveDataRetorno(dataRetorno)
+            this.storageService.saveDataRetornoMaquina("")
+          }
           this.alertMessage("Información Agregada!")
           this.idTareaEvent = taskDB.uid
           this.storageService.saveTaskEvent(taskDB);
@@ -472,8 +488,14 @@ export class TomaTiempoPage implements OnInit {
       return;
     }
 
-    this.modalController.dismiss();
-    this.router.navigate(['/tomar-foto',  { idTarea: this.idTareaEvent }])
+    let fecha:any=this.route.snapshot.paramMap.get("fecha")
+    if(fecha!=null && fecha!=undefined && fecha!=""){
+      console.log("byUrl")
+      this.router.navigateByUrl(`/tomar-foto;idTarea=${this.idTareaEvent}`,{replaceUrl:true})
+    }else{
+      this.modalController.dismiss();
+      this.router.navigate(['/tomar-foto',  { idTarea: this.idTareaEvent }])
+    }
   }
 
   async alertMessage(mensaje: string) {

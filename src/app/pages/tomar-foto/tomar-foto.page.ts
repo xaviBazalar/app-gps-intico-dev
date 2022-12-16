@@ -190,7 +190,7 @@ export class TomarFotoPage implements OnInit {
       }else if(dataRetorno==""){
         this.router.navigateByUrl('/' + this.retorno);
       }else{
-        this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno);
+        this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno,{replaceUrl:true});
       }
       
     });;
@@ -215,7 +215,7 @@ export class TomarFotoPage implements OnInit {
       }else if(dataRetorno==""){
         this.router.navigateByUrl('/' + this.retorno);
       }else{
-        this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno);
+        this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno,{replaceUrl:true});
       }
     });;
     return true;
