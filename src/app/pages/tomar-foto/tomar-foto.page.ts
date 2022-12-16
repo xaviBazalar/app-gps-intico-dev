@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 import { PhotoService } from '../../services/photo.service';
 import { EvidenceModel } from '../../models/evidence'
 import { environment } from 'src/environments/environment';
@@ -31,7 +31,8 @@ export class TomarFotoPage implements OnInit {
               private evidenceService: EvidenceService,
               private _route: ActivatedRoute,
               private router: Router,
-              private storageService: StorageService
+              private storageService: StorageService,
+              private alertController: AlertController
               ) { }
 
   ngOnInit() {
@@ -110,6 +111,27 @@ export class TomarFotoPage implements OnInit {
     this.procesarImagen(options);
   }
 
+  async alertMessage(mensaje: string) {
+    const head = mensaje
+
+    const alert = await this.alertController.create({
+      header: head,
+      cssClass: 'custom-alert',
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: 'Ok',
+          cssClass: 'alert-button-confirm',
+          role: '1',
+        },
+      ],
+    });
+
+    await alert.present();
+
+    return true;
+  }
+
   async procesarImagen(options: CameraOptions){
     
     const dataImg = await this.camera.getPicture(options).then((imageData) => { 
@@ -137,6 +159,7 @@ export class TomarFotoPage implements OnInit {
         if(!evi.ok){
           console.log(evi.msg)
         }else{
+          this.alertMessage("Imagen cargada!")
           console.log(evi.evidenceDB)
         }
       });
@@ -149,7 +172,7 @@ export class TomarFotoPage implements OnInit {
   async cerrar(){
     let dataRetorno=await this.storageService.loadDataRetorno()
     let dataRetornoMaquina=await this.storageService.loadDataRetornoMaquina()
-    console.log(dataRetornoMaquina)
+
     dataRetorno=(dataRetorno==null || dataRetorno==undefined || dataRetorno=="")?"":dataRetorno
     dataRetornoMaquina=(dataRetornoMaquina==null || dataRetornoMaquina==undefined || dataRetornoMaquina=="")?"":dataRetornoMaquina
     this.modalController.dismiss().then().catch(()=>{
@@ -169,15 +192,24 @@ export class TomarFotoPage implements OnInit {
     return true;
   }
 
-  aceptar(){
-    
+  async aceptar(){
+    let dataRetorno=await this.storageService.loadDataRetorno()
+    let dataRetornoMaquina=await this.storageService.loadDataRetornoMaquina()
+
+    dataRetorno=(dataRetorno==null || dataRetorno==undefined || dataRetorno=="")?"":dataRetorno
+    dataRetornoMaquina=(dataRetornoMaquina==null || dataRetornoMaquina==undefined || dataRetornoMaquina=="")?"":dataRetornoMaquina
     this.modalController.dismiss().then().catch(()=>{
       let _retorno: String | null = this._route.snapshot.paramMap.get("retorno");
       if(!this.retorno){
         this.retorno = _retorno
       }
 
-      this.router.navigate(['/' + this.retorno]);
+      this.retorno=(this.retorno==null || this.retorno=="")?dataRetornoMaquina:this.retorno
+      if(dataRetorno==""){
+        this.router.navigateByUrl('/' + this.retorno);
+      }else{
+        this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno);
+      }
     });;
     return true;
   }

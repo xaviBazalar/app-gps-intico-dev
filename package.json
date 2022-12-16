@@ -36,6 +36,7 @@
     "@ngx-translate/http-loader": "^7.0.0",
     "@types/jquery": "^3.5.14",
     "cordova-browser": "6.0.0",
+    "cordova-js": "^4.2.4",
     "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-camera": "^6.0.0",
     "cordova-plugin-file-transfer": "^1.7.1",
