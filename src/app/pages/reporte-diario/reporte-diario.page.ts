@@ -129,13 +129,13 @@ async generarHtml(fecha, machine) {
 			let dateB:any=new Date(`10/10/2022 ${fin}`)
 			let diff=(dateA-dateB)*-1
 			let hora:any=String(diff/3600000)
-			
+			let minutos:any="0"
 			if(Number.isInteger(hora)){
 				//console.log("horas",hora)
 			}else{
 				let dataTime:any=hora.split(".")
 				let minTemp:any=parseFloat("0."+dataTime[1])
-				let minutos:any=minTemp*60
+				minutos=minTemp*60
 				hora=dataTime[0]
 				console.log("horas",dataTime[0])
 				console.log("minutos",parseInt(minutos))
@@ -152,7 +152,7 @@ async generarHtml(fecha, machine) {
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 			html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
 			GPS<br>
-			Uso: ${hora} Hrs
+			<span class="detalle-op">Uso: ${hora} Hrs ${Math.ceil(minutos)} min</span>
 				</a></li>`
 			
 		}
@@ -184,13 +184,13 @@ async generarHtml(fecha, machine) {
 			let dateB:any=new Date(`10/10/2022 ${fin}`)
 			let diff=(dateA-dateB)*-1
 			let hora:any=String(diff/3600000)
-			
+			let minutos:any="0"
 			if(Number.isInteger(hora)){
 				//console.log("horas",hora)
 			}else{
 				let dataTime:any=hora.split(".")
 				let minTemp:any=parseFloat("0."+dataTime[1])
-				let minutos:any=minTemp*60
+				minutos=minTemp*60
 				hora=dataTime[0]
 				console.log("horas",dataTime[0])
 				console.log("minutos",parseInt(minutos))
@@ -217,8 +217,8 @@ async generarHtml(fecha, machine) {
 					data-maquinainterna="${taskEvent[i].machine.idInterno}" 
 					data-maquina="${taskEvent[i].machine._id}" 
 					data-uid="${ taskEvent[i].uid }">
-					${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo })</span>
-					<span class="detalle-op">Uso: ${hora} Hrs</span>
+					${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo }) ${hora} Hrs ${Math.ceil(minutos)} min</span>
+
 					</a>
 				</li>`
 		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
@@ -248,8 +248,9 @@ async generarHtml(fecha, machine) {
 		html += `</ul>
 		<style>
 		.detalle-op{
-			display:block;
+			display:block !important;
 			font-size:10px;
+			line-height: 12px;
 		}
 
 		.codyhouse {

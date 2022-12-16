@@ -67,6 +67,7 @@ export class TomaTiempoPage implements OnInit {
           this.tiempoDesdeDefault=`${fecha}T${taskEvent[0].horaInicio}:00.000`
           this.tiempoHastaDefault=`${fecha}T${taskEvent[0].horaFin}:00.000`
           this.btnUpdate=true
+          this.idTareaEvent=taskEvent[0].uid
         }else{
           console.log("no")
           this.task.uid=uid

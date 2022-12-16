@@ -6,6 +6,7 @@ import { EvidenceModel } from '../../models/evidence'
 import { environment } from 'src/environments/environment';
 import { EvidenceService } from 'src/app/services/evidence.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StorageService } from '../../services/storage.service';
 
 declare let window: any;
 
@@ -29,23 +30,37 @@ export class TomarFotoPage implements OnInit {
               private photoService: PhotoService,
               private evidenceService: EvidenceService,
               private _route: ActivatedRoute,
-              private router: Router
+              private router: Router,
+              private storageService: StorageService
               ) { }
 
   ngOnInit() {
+    this.loadUser()
+  }
+
+  async loadUser(): Promise<void>{
+    let userData = this.storageService.loadUser();
+    const [user] = await Promise.all([userData])
+
+    const dataUser = user;
+    console.log(dataUser)
+    if(dataUser){
+      this.idUser = dataUser[0].uid;
+    }
   }
 
   ngAfterViewInit(): void {
     // evidence
+    this.loadUser()
     let _idTarea: String | null = this._route.snapshot.paramMap.get("idTarea");
     if(!this.idTarea){
       this.idTarea = _idTarea
     }
 
-    let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
+    /*let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
     if(!this.idUser){
       this.idUser = _idUser
-    }
+    }*/
 
     console.log('idTarea',this.idTarea);
     console.log('idUser',this.idUser);
