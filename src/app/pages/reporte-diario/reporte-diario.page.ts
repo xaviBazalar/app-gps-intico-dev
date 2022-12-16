@@ -45,6 +45,7 @@ export class ReporteDiarioPage implements OnInit {
 	windowResize = false;
 	fechaSeleccionada:any=""
 	cmbMaquina:any
+	listaHorasActivas:any=[]
 
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
@@ -118,6 +119,7 @@ async generarHtml(fecha, machine) {
 		html += `<li class="events-group">
 				<div class="top-info"><span>GPS</span></div>
 				<ul>`;
+		this.listaHorasActivas=[]
 		for (let i = 0; i < taskEvent.length; i++) {
 			let dataevent: string = 'event-5';
 
@@ -138,6 +140,15 @@ async generarHtml(fecha, machine) {
 				console.log("horas",dataTime[0])
 				console.log("minutos",parseInt(minutos))
 			}
+			this.listaHorasActivas.push({
+				inicio:taskEvent[i].horaInicio.replace(":",""),
+				fin:taskEvent[i].horaFin.replace(":",""),
+				tarea:taskEvent[i].task,
+				maquinainterna:taskEvent[i].machine.idInterno,
+				maquina:taskEvent[i].machine._id,
+				fecha:taskEvent[i].fechaRegistro.substr(0,10),
+				uid:taskEvent[i].uid
+			})
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 			html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
 			GPS<br>
@@ -974,8 +985,26 @@ async generarHtml(fecha, machine) {
 	  })
   }
 
-  addDataReport(){
-	  console.log("add data")
+  addDataReport(time:number){
+
+	  let validation:boolean=true
+	  let dataFilter:any
+	  for(let hora of this.listaHorasActivas){
+		  if(parseInt(hora.inicio)<=time && time<=parseInt(hora.fin)){
+			validation=false
+			dataFilter=hora
+		  }else{
+			dataFilter=hora
+		  }
+		  
+	  }
+	  
+	  if(validation){
+		  //abrir toma de tiempo para agregar en hora no definida
+		  let horaInicio:string=(String(time).length<=3)?"0"+String(time).substr(0,1)+":"+String(time).substr(1,2):+String(time).substr(0,2)+":"+String(time).substr(2,2)
+		  let params=`;idTarea=${dataFilter.tarea};machine=${dataFilter.maquina};machineIdInterno=${dataFilter.maquinainterna};fecha=${dataFilter.fecha};horaInicio=${horaInicio};uid=${dataFilter.uid}`
+		  this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
+	  }
   }
 
   openFotos(idTareaEvent: any){
@@ -1170,13 +1199,11 @@ async generarHtml(fecha, machine) {
           role: 'cancel',
           cssClass: 'secondary',
           handler: (blah) => {
-			console.log('Confirm Cancel: blah');
 			this.eliminarTaskEvent(paramsDel)
           }
         }, {
           text: 'Actualizar',
           handler: () => {
-			console.log('Actualizar');
 			this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
           }
         }

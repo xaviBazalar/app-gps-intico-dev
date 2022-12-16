@@ -43,6 +43,7 @@ export class TomaTiempoPage implements OnInit {
               private alertController: AlertController
               ) {
     this.myDate = new Date().toString();
+    
     console.log(this.myDate);
    }
 
@@ -54,18 +55,39 @@ export class TomaTiempoPage implements OnInit {
     if(this.idMaquina!=""){
       let fecha:any=this.route.snapshot.paramMap.get("fecha")
       let uid:any=this.route.snapshot.paramMap.get("uid")
+      let horaIni:any=this.route.snapshot.paramMap.get("horaInicio")
       this.taskService.getTaskEventReporte(fecha,this.idMaquina).subscribe((data:any)=>{
         let taskEvent:any=data.taskEvent.filter((data:any)=>{
           return data.uid==uid
         })
-        console.log(taskEvent)
-        this.task.uid=taskEvent[0].uid
-        this.tiempoDesdeDefault=`${fecha}T${taskEvent[0].horaInicio}:00.000`
-        this.tiempoHastaDefault=`${fecha}T${taskEvent[0].horaFin}:00.000`
-        this.btnUpdate=true
+        console.log(horaIni)
+        if(taskEvent.length>0 && (horaIni==null || horaIni=="")){
+          console.log("si")
+          this.task.uid=taskEvent[0].uid
+          this.tiempoDesdeDefault=`${fecha}T${taskEvent[0].horaInicio}:00.000`
+          this.tiempoHastaDefault=`${fecha}T${taskEvent[0].horaFin}:00.000`
+          this.btnUpdate=true
+        }else{
+          console.log("no")
+          this.task.uid=uid
+          this.tiempoDesdeDefault=`${fecha}T${horaIni}:00.000`
+          this.tiempoHastaDefault=`${fecha}T${horaIni}:00.000`
+          this.loadUser()
+        }
       })
     }
     
+  }
+
+  async loadUser(): Promise<void>{
+    let userData = this.storageService.loadUser();
+    const [user] = await Promise.all([userData])
+
+    const dataUser = user;
+    console.log(dataUser)
+    if(dataUser){
+      this.idUser = dataUser[0].uid;
+    }
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -73,7 +95,6 @@ export class TomaTiempoPage implements OnInit {
     const [user] = await Promise.all([userData])
 
     const dataUser = user;
-
     if(dataUser){
       this.idUser = dataUser[0].uid;
     }
@@ -403,6 +424,7 @@ export class TomaTiempoPage implements OnInit {
         const { taskDB } = data;
         console.log(taskDB)
         if(data.ok){
+          this.alertMessage("Información Agregada!")
           this.idTareaEvent = taskDB.uid
           this.storageService.saveTaskEvent(taskDB);
         }else{
