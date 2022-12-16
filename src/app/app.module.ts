@@ -15,6 +15,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 
 export function HttpLoaderFactory(http: HttpClient){
   return new TranslateHttpLoader(http);
@@ -41,6 +42,7 @@ export function HttpLoaderFactory(http: HttpClient){
   providers: [Camera,
               Geolocation,
               FileTransfer,
+              BackgroundMode,
               { provide: RouteReuseStrategy,
                 useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
