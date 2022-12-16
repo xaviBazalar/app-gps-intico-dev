@@ -43,9 +43,27 @@ export class StorageService {
     this._storage?.set('task', taskEvent)
   }
 
+  saveDataRetorno(data: any){
+    this._storage?.set('dataRetorno', data)
+  }
+
+  saveDataRetornoMaquina(data: any){
+    this._storage?.set('dataRetornoMaquina', data)
+  }
+
   async loadTask(){    
     const task = await this._storage?.get('task');
     return task;
+  }
+
+  async loadDataRetorno(){    
+    const dataRetorno = await this._storage?.get('dataRetorno');
+    return dataRetorno
+  }
+
+  async loadDataRetornoMaquina(){    
+    const dataRetornoMaquina = await this._storage?.get('dataRetornoMaquina');
+    return dataRetornoMaquina
   }
 
 }

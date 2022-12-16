@@ -43,18 +43,25 @@ export class TomarFotoPage implements OnInit {
     const [user] = await Promise.all([userData])
 
     const dataUser = user;
-    console.log(dataUser)
     if(dataUser){
       this.idUser = dataUser[0].uid;
     }
   }
 
-  ngAfterViewInit(): void {
+  async ngAfterViewInit(): Promise<void> {
     // evidence
-    this.loadUser()
+    //this.loadUser()
     let _idTarea: String | null = this._route.snapshot.paramMap.get("idTarea");
     if(!this.idTarea){
       this.idTarea = _idTarea
+    }
+
+    let userData = this.storageService.loadUser();
+    const [user] = await Promise.all([userData])
+
+    const dataUser = user;
+    if(dataUser){
+      this.idUser = dataUser[0].uid;
     }
 
     /*let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
@@ -139,14 +146,25 @@ export class TomarFotoPage implements OnInit {
     this.templateImages.push(dataImg);
   }
 
-  cerrar(){
+  async cerrar(){
+    let dataRetorno=await this.storageService.loadDataRetorno()
+    let dataRetornoMaquina=await this.storageService.loadDataRetornoMaquina()
+    console.log(dataRetornoMaquina)
+    dataRetorno=(dataRetorno==null || dataRetorno==undefined || dataRetorno=="")?"":dataRetorno
+    dataRetornoMaquina=(dataRetornoMaquina==null || dataRetornoMaquina==undefined || dataRetornoMaquina=="")?"":dataRetornoMaquina
     this.modalController.dismiss().then().catch(()=>{
       let _retorno: String | null = this._route.snapshot.paramMap.get("retorno");
       if(!this.retorno){
         this.retorno = _retorno
       }
 
-      this.router.navigate(['/' + this.retorno]);
+      this.retorno=(this.retorno==null || this.retorno=="")?dataRetornoMaquina:this.retorno
+      if(dataRetorno==""){
+        this.router.navigateByUrl('/' + this.retorno);
+      }else{
+        this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno);
+      }
+      
     });;
     return true;
   }

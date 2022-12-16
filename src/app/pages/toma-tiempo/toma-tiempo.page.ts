@@ -43,7 +43,7 @@ export class TomaTiempoPage implements OnInit {
               private alertController: AlertController
               ) {
     this.myDate = new Date().toString();
-    
+    this.storageService.saveDataRetorno("")
     console.log(this.myDate);
    }
 
@@ -68,6 +68,8 @@ export class TomaTiempoPage implements OnInit {
           this.tiempoHastaDefault=`${fecha}T${taskEvent[0].horaFin}:00.000`
           this.btnUpdate=true
           this.idTareaEvent=taskEvent[0].uid
+          let dataRetorno:string=`;idTarea=${this.idTarea};machine=${this.idMaquina};machineIdInterno=${this.idMaquinaInterna};tipo=${this.route.snapshot.paramMap.get("tipo")};subtipo=${this.route.snapshot.paramMap.get("subtipo")};fecha=${fecha};uid=${uid}`
+          this.storageService.saveDataRetorno(dataRetorno)
         }else{
           console.log("no")
           this.task.uid=uid

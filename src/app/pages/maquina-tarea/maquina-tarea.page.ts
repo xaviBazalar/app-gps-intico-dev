@@ -64,6 +64,7 @@ export class MaquinaTareaPage implements OnInit {
   tareaMaquinaria: String | null = '';
   myDate: String = (new Date).toLocaleDateString();
   titulo:String = 'TAREA A REALIZAR'
+  retornoMaquinaStorage:string=""
 
   @Input() idMaquina;
   @Input() idUser;
@@ -85,7 +86,14 @@ export class MaquinaTareaPage implements OnInit {
     this.fechaActual = new Date().toLocaleString()
   }
 
-  ngOnInit() {
+  async ngOnInit():Promise<void>{
+    //:idMaquina/:idUser/:idTarea/:idMaquinaInterna
+    let _idMaquina: String | null = this._route.snapshot.paramMap.get("idMaquina");
+    let _idUser: String | null = this._route.snapshot.paramMap.get("idUser");
+    let _idTarea: String | null = this._route.snapshot.paramMap.get("idTarea");
+    let _idMaquinaInterna: String | null = this._route.snapshot.paramMap.get("idMaquinaInterna");
+
+    this.storageService.saveDataRetornoMaquina(`maquina-tarea/${_idMaquina}/${_idUser}/${_idTarea}/${_idMaquinaInterna}`)
   }
 
   ngAfterViewInit(): void {
