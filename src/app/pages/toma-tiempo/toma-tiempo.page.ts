@@ -7,6 +7,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { TaskService } from 'src/app/services/task.service';
 import { TaskEventsModel } from '../../models/taskEvents';
 import { MapPage } from '../map/map.page'
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-toma-tiempo',
@@ -40,13 +41,30 @@ export class TomaTiempoPage implements OnInit {
               private router: Router,
               private route: ActivatedRoute,
               private maquinaService: MaquinariaService,
-              private alertController: AlertController
+              private alertController: AlertController,
+              public loadingController: LoadingController
               ) {
     this.myDate = new Date().toString();
     this.storageService.saveDataRetorno("")
     console.log(this.myDate);
     this.afterLoad()
-   }
+  }
+
+  ShowLoading() {
+    this.loadingController.create({
+        message: 'Cargando...'
+    }).then((response) => {
+        response.present();
+    });
+  } 
+  
+  dismissLoading() {
+    this.loadingController.dismiss().then((response) => {
+        //console.log('Loader closed!', response);
+    }).catch((err) => {
+        console.log('Error occured : ', err);
+    });
+  }
 
   async ngOnInit() :Promise<void>{
     await this.afterLoad()
@@ -132,17 +150,14 @@ export class TomaTiempoPage implements OnInit {
         this.subMotivoDet=String(this.route.snapshot.paramMap.get("subtipo"))
       }
     }
-    if(this.route.snapshot.paramMap.get("horaFin")!=undefined && this.route.snapshot.paramMap.get("horaFin")!=""){
-      //this.tiempoHastaDefault=this.route.snapshot.paramMap.get("horaFin")
-    }
-    
-    
+  
+      
   }
 
   
 
   async actualizar(){
-    
+    this.ShowLoading()
     const dateA:any = document.getElementById('date')
     const dateB:any = document.getElementById('date1')
 
@@ -267,12 +282,16 @@ export class TomaTiempoPage implements OnInit {
       (data: any) => {
         const { taskEventActualizado } = data;
         if(data.ok){
+          this.dismissLoading()
           this.idTareaEvent = taskEventActualizado.uid
           //this.storageService.saveTaskEvent(taskEventActualizado);
           this.alertMessage("Información actualizada!")
         }
       },
-      err => console.log('error',err)
+      (err) => {
+        this.dismissLoading()
+        console.log('error',err)
+      }
       );
 
     // this.modalController.dismiss();
@@ -280,6 +299,7 @@ export class TomaTiempoPage implements OnInit {
   }
 
   async aceptar(){
+    this.ShowLoading()
     const dateA:any = document.getElementById('date')
     const dateB:any = document.getElementById('date1')
 
@@ -450,6 +470,7 @@ export class TomaTiempoPage implements OnInit {
         const { taskDB } = data;
         console.log(taskDB)
         if(data.ok){
+          this.dismissLoading()
           if(fecha!=null && fecha!=undefined && fecha!=""){
             //this.tiempoDesdeDefault=`${fecha}T${this.task.horaInicio}:00.000`
             //this.tiempoHastaDefault=`${fecha}T${this.task.horaFin}:00.000`
@@ -465,7 +486,10 @@ export class TomaTiempoPage implements OnInit {
           this.alertMessage(data.msg)
         }
       },
-      err => console.log('error',err)
+      (err) => {
+        this.dismissLoading()
+        console.log('error',err)
+      }
       );
 
     // this.modalController.dismiss();

@@ -12,6 +12,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
 import { TaskModel } from 'src/app/models/task';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-maquina-tarea',
@@ -86,10 +87,27 @@ export class MaquinaTareaPage implements OnInit {
               private alertController: AlertController,
               private _route: ActivatedRoute,
               private router: Router,
-              private storageService: StorageService
+              private storageService: StorageService,
+              public loadingController: LoadingController
               ) {
     //this.menuController.enable(false);
     this.fechaActual = new Date().toLocaleString()
+  }
+
+  ShowLoading() {
+    this.loadingController.create({
+        message: 'Cargando...'
+    }).then((response) => {
+        response.present();
+    });
+  } 
+  
+  dismissLoading() {
+    this.loadingController.dismiss().then((response) => {
+        //console.log('Loader closed!', response);
+    }).catch((err) => {
+        console.log('Error occured : ', err);
+    });
   }
 
   async ngOnInit():Promise<void>{
@@ -125,7 +143,7 @@ export class MaquinaTareaPage implements OnInit {
     if(!this.idMaquina){
       this.idMaquina = _idMaquina;
     }
-
+    this.ShowLoading()
     this.obtenerTarea(this.idTarea);
 
     this.getGep(this.idMaquinaInterna);//'4656765'
@@ -186,6 +204,7 @@ export class MaquinaTareaPage implements OnInit {
     //  });
 
     this.maquinariaSrv.obtenerUbicacion(idMachine).subscribe( (data:any) => {
+      
     const result = data.result;
     console.log('--flespi--', result[0]);
     const { telemetry } = result[0];
@@ -215,6 +234,7 @@ export class MaquinaTareaPage implements OnInit {
     }else{
       this.maquinaModel.encendido = 'OFF'
     }
+    this.dismissLoading()
     });
   }
   //#endregion "obtener ubicacion de la maquina"
@@ -598,6 +618,7 @@ export class MaquinaTareaPage implements OnInit {
   obtenerTarea(idTarea: string){
     this.taskServise.getTaskId(idTarea).subscribe((data: any) => {
       if(data.ok){
+        this.dismissLoading()
         // this.taskModel = data.task[0];
         console.log('taskmodel', data.task[0]);
         const { planificacionTrabajo } = data.task[0];
@@ -614,6 +635,8 @@ export class MaquinaTareaPage implements OnInit {
         this.tiempoSLA = data.task[0].tiempoSLA
         this.tareaMaquinaria = data.task[0].tareaMaquinaria
         
+      }else{
+        this.dismissLoading()
       }
     })
   }
