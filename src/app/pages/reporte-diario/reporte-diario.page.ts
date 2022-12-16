@@ -1072,7 +1072,7 @@ async generarHtml(fecha, machine) {
   }
 
   atras(){
-	this.router.navigate(['/inicio']);
+	this.router.navigateByUrl('/inicio');
   }
   //#region "jQuery"
   RunSchedulePlan(){
