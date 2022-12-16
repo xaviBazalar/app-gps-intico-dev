@@ -173,6 +173,9 @@ export class TomarFotoPage implements OnInit {
     let dataRetorno=await this.storageService.loadDataRetorno()
     let dataRetornoMaquina=await this.storageService.loadDataRetornoMaquina()
 
+    //console.log(dataRetorno)
+    //return
+
     dataRetorno=(dataRetorno==null || dataRetorno==undefined || dataRetorno=="")?"":dataRetorno
     dataRetornoMaquina=(dataRetornoMaquina==null || dataRetornoMaquina==undefined || dataRetornoMaquina=="")?"":dataRetornoMaquina
     this.modalController.dismiss().then().catch(()=>{
@@ -182,7 +185,9 @@ export class TomarFotoPage implements OnInit {
       }
 
       this.retorno=(this.retorno==null || this.retorno=="")?dataRetornoMaquina:this.retorno
-      if(dataRetorno==""){
+      if(_retorno!=null && _retorno!=undefined && _retorno!=""){
+        this.router.navigateByUrl('/' + _retorno+dataRetorno);
+      }else if(dataRetorno==""){
         this.router.navigateByUrl('/' + this.retorno);
       }else{
         this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno);
@@ -205,7 +210,9 @@ export class TomarFotoPage implements OnInit {
       }
 
       this.retorno=(this.retorno==null || this.retorno=="")?dataRetornoMaquina:this.retorno
-      if(dataRetorno==""){
+      if(_retorno!=null && _retorno!=undefined && _retorno!=""){
+        this.router.navigateByUrl('/' + _retorno+dataRetorno);
+      }else if(dataRetorno==""){
         this.router.navigateByUrl('/' + this.retorno);
       }else{
         this.router.navigateByUrl('/toma-tiempo' + this.retorno+dataRetorno);

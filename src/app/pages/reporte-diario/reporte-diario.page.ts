@@ -208,6 +208,9 @@ async generarHtml(fecha, machine) {
 				dataevent = 'event-1'
 			}
 
+			let dataRetorno:string=`;idTarea=${taskEvent[i].task};machine=${taskEvent[i].machine._id};fecha=${fecha};`
+			this.storageService.saveDataRetorno(dataRetorno)
+
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 			html +=`<a href="#0" 
 					data-order="2" 
@@ -1010,7 +1013,7 @@ async generarHtml(fecha, machine) {
 
   openFotos(idTareaEvent: any){
 	console.log('entra al route')
-    this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent }])
+    this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent,retorn:"reporte-diario" }])
   }
 
   changedReport() {
@@ -1032,6 +1035,7 @@ async generarHtml(fecha, machine) {
 	let dia:string=(fechaSend[0].length==1)?"0"+fechaSend[0]:fechaSend[0]
 	fechaSend=anio+"-"+mes+"-"+dia
 
+	
 
 	this.generarHtml(fechaSend, this.idMachine);
 	
