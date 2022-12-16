@@ -70,6 +70,8 @@ export class TomaTiempoPage implements OnInit {
           this.idTareaEvent=taskEvent[0].uid
           let dataRetorno:string=`;idTarea=${this.idTarea};machine=${this.idMaquina};machineIdInterno=${this.idMaquinaInterna};tipo=${this.route.snapshot.paramMap.get("tipo")};subtipo=${this.route.snapshot.paramMap.get("subtipo")};fecha=${fecha};uid=${uid}`
           this.storageService.saveDataRetorno(dataRetorno)
+          this.storageService.saveDataRetornoMaquina("")
+  
         }else{
           console.log("no")
           this.task.uid=uid

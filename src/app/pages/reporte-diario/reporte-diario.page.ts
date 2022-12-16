@@ -210,7 +210,7 @@ async generarHtml(fecha, machine) {
 
 			let dataRetorno:string=`;idTarea=${taskEvent[i].task};machine=${taskEvent[i].machine._id};fecha=${fecha};`
 			this.storageService.saveDataRetorno(dataRetorno)
-
+			this.storageService.saveDataRetornoMaquina("")
 			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 			html +=`<a href="#0" 
 					data-order="2" 
