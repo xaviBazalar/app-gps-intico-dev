@@ -9,6 +9,7 @@ export class TaskModel {
     division: String;
     contrato: String;
     tiempoSLA: String;
+    uid: String | null;
 
     constructor(){
         this.planificacionTrabajo = '';
@@ -21,5 +22,6 @@ export class TaskModel {
         this.division = '';
         this.contrato = '';
         this.tiempoSLA = '';
+        this.uid = null;
     }
 }
