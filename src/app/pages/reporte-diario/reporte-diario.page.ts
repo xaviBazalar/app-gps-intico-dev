@@ -10,6 +10,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
 import { EvidenceService } from 'src/app/services/evidence.service';
 import { AlertController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 
 
 @Component({
@@ -18,6 +19,7 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./reporte-diario.page.scss', '../../../assets/css/reportCalendar.css'],
   
 })
+
 export class ReporteDiarioPage implements OnInit {
 	private window: any;
 	transitionEnd:string= 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
@@ -61,7 +63,8 @@ export class ReporteDiarioPage implements OnInit {
 				private router: Router,
 				private storageService: StorageService,
 				private evidenceService:EvidenceService,
-				public alertController: AlertController
+				public alertController: AlertController,
+				public loadingController: LoadingController
 				) { 
     this.window = this.document.defaultView;
     this.date = new Date().toString();
@@ -75,7 +78,21 @@ export class ReporteDiarioPage implements OnInit {
 	  
   }
 
- 
+  ShowLoading() {
+    this.loadingController.create({
+        message: 'Cargando...'
+    }).then((response) => {
+        response.present();
+    });
+  } 
+  
+  dismissLoading() {
+    this.loadingController.dismiss().then((response) => {
+        //console.log('Loader closed!', response);
+    }).catch((err) => {
+        console.log('Error occured : ', err);
+    });
+  }
 
   async ngOnInit():Promise<void> {
 	await this.storageService.init()
@@ -112,6 +129,7 @@ async generarHtml(fecha, machine) {
 		console.log(taskEvent)
 		if(data.ok==false){
 			div!.innerHTML = "";
+			this.dismissLoading()
 			return;
 		}
 		
@@ -986,6 +1004,7 @@ async generarHtml(fecha, machine) {
 
 		div!.innerHTML = html;
 		this.RunSchedulePlan()
+		this.dismissLoading()
 	  })
   }
 
@@ -1017,6 +1036,7 @@ async generarHtml(fecha, machine) {
   }
 
   changedReport() {
+	this.ShowLoading()
 	const maquina = document.getElementById('cmbTarea');
 	const idMachine = (maquina as HTMLIonSelectElement).value;
 	console.log("idmachine", idMachine)
@@ -1054,6 +1074,7 @@ async generarHtml(fecha, machine) {
 	if(idMachine){
 		this.idMachine = idMachine;
 		this.cmbMaquina=idMachine
+		this.ShowLoading()
 		this.generarHtml(fechaR, this.idMachine);
 		this.fechaSeleccionada=fechaR
   	}
@@ -1201,7 +1222,6 @@ async generarHtml(fecha, machine) {
       buttons: [
         {
           text: 'Eliminar',
-          role: 'cancel',
           cssClass: 'secondary',
           handler: (blah) => {
 			this.eliminarTaskEvent(paramsDel)
@@ -1219,10 +1239,13 @@ async generarHtml(fecha, machine) {
   } 
 
   eliminarTaskEvent(params){
-	  console.log(params)
+	this.ShowLoading()
 	this.taskService.deteleTaskEvent(params).subscribe((data:any)=>{
 		if(data.ok){
+			this.dismissLoading()
 			this.generarHtml(this.fechaSeleccionada, this.idMachine);
+		}else{
+			this.dismissLoading()
 		}
 	})
   }

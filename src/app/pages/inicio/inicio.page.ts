@@ -4,6 +4,7 @@ import { StorageService } from 'src/app/services/storage.service';
 import { TaskService } from 'src/app/services/task.service';
 import { MaquinariaModel } from '../../models/maquinaria'
 import { UserModel } from '../../models/user'
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-inicio',
@@ -20,10 +21,27 @@ export class InicioPage implements OnInit {
 
   constructor(private menuController: MenuController,
               private storageService: StorageService,
-              private taskService: TaskService
+              private taskService: TaskService,
+              public loadingController: LoadingController
             ) {
     this.menuController.enable(true);
    }
+
+   ShowLoading() {
+    this.loadingController.create({
+        message: 'Cargando...'
+    }).then((response) => {
+        response.present();
+    });
+  } 
+  
+  dismissLoading() {
+    this.loadingController.dismiss().then((response) => {
+        //console.log('Loader closed!', response);
+    }).catch((err) => {
+        console.log('Error occured : ', err);
+    });
+  }
 
   ngOnInit() {
   }
@@ -35,12 +53,12 @@ export class InicioPage implements OnInit {
 
     //let userData=this.storageService.loadUser();
     const [user] = await Promise.all([this.storageService.loadUser()]);
-
+    console.log(user)
     const dataUser = user;
     // console.log('localuser' ,dataUser);
     if(dataUser){
       idUser = dataUser[0].uid;
-    
+      this.ShowLoading()
       this.taskService.getTask(idUser, null, null).subscribe((data:any) => {
         // console.log('idUser', idUser);
         const { task } = data;
@@ -53,6 +71,7 @@ export class InicioPage implements OnInit {
           // console.log(_item );
           this.item.push( _item );        
         }
+        this.dismissLoading()
       });
     }
   }
