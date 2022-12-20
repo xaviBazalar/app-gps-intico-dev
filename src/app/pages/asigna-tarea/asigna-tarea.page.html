@@ -11,11 +11,11 @@
 <ion-content color="tertiary">
   <form>
     
-    <ion-card>
+    <ion-card class="card-box">
       <ion-card-content>      
         <ion-label>Planificacion de Trabajo</ion-label>
         <ion-item>
-          <ion-select interface="popover" placeholder="--Seleccione--" >
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" >
             <ion-select-option *ngFor="let c of planTrabajo" 
                                 [value]="c"> {{ c }} </ion-select-option>
             <!-- <ion-select-option value="apples">{{ taskModel.planificacionTrabajo }}</ion-select-option>             -->
@@ -23,7 +23,7 @@
         </ion-item>
         <ion-label>Maquinaria</ion-label>
         <ion-item>
-          <ion-select interface="popover" placeholder="--Seleccione--" [(ngModel)]="idInterno">
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" [(ngModel)]="idInterno">
             <ion-select-option *ngFor="let c of machine" 
                                 [value]="c.id"> {{ c.des }} </ion-select-option>
             <!-- <ion-select-option value="apples">{{ taskModel.machine }}</ion-select-option> -->
@@ -31,7 +31,7 @@
         </ion-item>
         <ion-label>Tarea de la maquinaria</ion-label>
         <ion-item>
-          <ion-select interface="popover" placeholder="--Seleccione--">
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--">
             <ion-select-option *ngFor="let c of tareaMachine" 
                                 [value]="c"> {{ c }} </ion-select-option>
             <!-- <ion-select-option value="apples">{{ taskModel.tareaMaquinaria }}</ion-select-option> -->

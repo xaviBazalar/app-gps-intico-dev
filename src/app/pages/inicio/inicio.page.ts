@@ -58,7 +58,7 @@ export class InicioPage implements OnInit {
     // console.log('localuser' ,dataUser);
     if(dataUser){
       idUser = dataUser[0].uid;
-      this.ShowLoading()
+      //this.ShowLoading()
       this.taskService.getTask(idUser, null, null).subscribe((data:any) => {
         // console.log('idUser', idUser);
         const { task } = data;
@@ -71,7 +71,7 @@ export class InicioPage implements OnInit {
           // console.log(_item );
           this.item.push( _item );        
         }
-        this.dismissLoading()
+        //this.dismissLoading()
       });
     }
   }

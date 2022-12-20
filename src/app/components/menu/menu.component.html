@@ -8,19 +8,24 @@
 </ion-content> -->
 
 
-<ion-menu side="start" menuId="first" contentId="main-content">
+<ion-menu content-id="menu-app" side="start" menuId="first" contentId="main-content">
   <ion-header>
 
   </ion-header>
 
-  <ion-content>
-    <ion-list id="inbox-list">          
+  <ion-content id="menu-app" class="bg-menu">
+    <ion-list class="bg-menu" id="inbox-list">          
       <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-        <ion-item routerDirection="root" [routerLink]="p.url" lines="none" detail="false" routerLinkActive="selected">
+        <ion-item color="#FF2E00" class="bg-menu" routerDirection="root" [routerLink]="p.url" lines="none" detail="false" routerLinkActive="selected">
           <ion-icon slot="start" [ios]="p.icon" [md]="p.icon"></ion-icon>
-          <ion-label>{{ p.title }}</ion-label>
+          <!--<ion-label>{{ p.title }}</ion-label>-->
         </ion-item>
       </ion-menu-toggle>
     </ion-list>
   </ion-content>
 </ion-menu>
+<style>
+  .menu-inner {
+        background-color: #387ef5;
+    }
+</style>
