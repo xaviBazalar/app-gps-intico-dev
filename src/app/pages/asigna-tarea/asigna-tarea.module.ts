@@ -9,6 +9,7 @@ import { AsignaTareaPageRoutingModule } from './asigna-tarea-routing.module';
 import { AsignaTareaPage } from './asigna-tarea.page';
 import { MaquinaTareaPage } from '../maquina-tarea/maquina-tarea.page';
 import { MaquinaTareaPageModule } from '../maquina-tarea/maquina-tarea.module';
+import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   entryComponents: [
@@ -19,6 +20,7 @@ import { MaquinaTareaPageModule } from '../maquina-tarea/maquina-tarea.module';
     FormsModule,
     IonicModule,
     AsignaTareaPageRoutingModule,
+    ComponentsModule,
     MaquinaTareaPageModule
   ],
   declarations: [AsignaTareaPage]

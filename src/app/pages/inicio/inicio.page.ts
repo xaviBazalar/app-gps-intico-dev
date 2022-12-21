@@ -14,6 +14,7 @@ import { LoadingController } from '@ionic/angular';
 export class InicioPage implements OnInit {
 
   item: any[] = []; 
+  nombreUsuarioMenu:string=""
 
   // get users(): UserModel[]{
   //   return this.storageService.getUser;
@@ -25,6 +26,7 @@ export class InicioPage implements OnInit {
               public loadingController: LoadingController
             ) {
     this.menuController.enable(true);
+    
    }
 
    ShowLoading() {
@@ -43,7 +45,9 @@ export class InicioPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
+    const [user] = await Promise.all([this.storageService.loadUser()]);
+    this.nombreUsuarioMenu=user[0].nombre
   }
 
   async ngAfterViewInit(): Promise<void> {

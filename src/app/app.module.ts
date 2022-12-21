@@ -16,6 +16,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
+import { InfouserComponent } from './components/infouser/infouser.component';
 
 export function HttpLoaderFactory(http: HttpClient){
   return new TranslateHttpLoader(http);
@@ -37,7 +38,8 @@ export function HttpLoaderFactory(http: HttpClient){
                 }
               }
             ),
-            IonicStorageModule.forRoot()
+            IonicStorageModule.forRoot(),
+            
           ],
   providers: [Camera,
               Geolocation,

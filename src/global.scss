@@ -25,7 +25,19 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+.img-avatar{
+    width: 26px;
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
 
+.name-avatar-user{
+    position: absolute;
+    right: 68px;
+    font-size: 12px;
+    top: 22px;
+}
 
 @font-face {
     font-family: 'Montserrat';
