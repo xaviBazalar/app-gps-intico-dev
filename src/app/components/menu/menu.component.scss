@@ -24,11 +24,11 @@ ion-menu{
 }
 
 ion-menu::part(container){
-    width: 62px;
+    width: 222px;
 }
 
 ion-content::part(scroll){
-    width: 62px;
+    width: 222px;
     background:#e84b26;
 }
 
@@ -36,7 +36,6 @@ ion-content::part(scroll){
 .bg-menu{
     background: #e84b26 ;
     color: #fff;
-    width: 92px;
 }
 
 .bg-menu a{
@@ -48,21 +47,11 @@ ion-content::part(scroll){
     color:#fff;
 }
 
-.inner-scroll{
-    background: #e84b26;
-}
 
 ion-item {
     --ion-item-background: #ddd;
 }
 
-:-webkit-scrollbar {
-    background-color: white;
-}
-::-webkit-scrollbar-thumb {
-    background-color: #d33939 ;
-}
-
-:host{
-    --background:red !important;
+.txt-label{
+    font-size: 12px;
 }
