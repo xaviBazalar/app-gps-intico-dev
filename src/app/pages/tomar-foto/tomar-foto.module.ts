@@ -7,12 +7,14 @@ import { IonicModule } from '@ionic/angular';
 import { TomarFotoPageRoutingModule } from './tomar-foto-routing.module';
 
 import { TomarFotoPage } from './tomar-foto.page';
+import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    ComponentsModule,
     TomarFotoPageRoutingModule
   ],
   declarations: [TomarFotoPage]

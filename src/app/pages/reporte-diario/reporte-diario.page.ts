@@ -257,9 +257,9 @@ async generarHtml(fecha, machine) {
 			if(data.ok){			
 				html += `<li class="single-event"  data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
 				html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }" >
-							<ion-button color="tertiary" >
+							<ion-button fill="clear" class="btn-go-photo" >
 								<ion-icon name="caret-down-outline"></ion-icon>
-						</ion-button>
+							</ion-button>
 						</a>
 						</li>`
 			}
@@ -268,6 +268,16 @@ async generarHtml(fecha, machine) {
 
 		html += `</ul>
 		<style>
+		ion-icon {
+			color: #E7360F;
+			font-size:16px;
+		}
+
+		.button-native{
+			background: transparent;
+    		box-shadow: none;
+		}
+
 		.detalle-op{
 			display:block !important;
 			font-size:10px;
@@ -985,7 +995,7 @@ async generarHtml(fecha, machine) {
 
 			.wrap>li:nth-child(3) ion-button{
 				/*transform:translateY(-94px);*/
-				transform:translate(-18px,-52px)
+				transform:translate(-34px,-40px)
 			}
 
 			.wrap>li:nth-child(3) .event-date{

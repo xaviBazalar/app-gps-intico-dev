@@ -181,7 +181,8 @@ export class MaquinaTareaPage implements OnInit {
       componentProps: {
         idTarea: this.idTarea,
         idMaquinaInterna: this.idMaquinaInterna,
-        idMaquina: this.idMaquina
+        idMaquina: this.idMaquina,
+        loading:this.loadingController
       }
     });
     (await modal).present();

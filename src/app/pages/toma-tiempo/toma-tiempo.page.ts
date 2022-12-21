@@ -31,10 +31,12 @@ export class TomaTiempoPage implements OnInit {
 
   tiempoDesdeDefault:any=""
   tiempoHastaDefault:any=""
+  intervalDismiss:any
 
   @Input() idTarea;
   @Input() idMaquina;
   @Input() idMaquinaInterna;
+  @Input() loadingControllerParent; 
 
   constructor(private modalController: ModalController,
               private taskService: TaskService,
@@ -49,6 +51,9 @@ export class TomaTiempoPage implements OnInit {
     this.storageService.saveDataRetorno("")
     console.log(this.myDate);
     this.afterLoad()
+    if(this.loadingControllerParent!==null && this.loadingControllerParent!==undefined){
+      this.loadingController=this.loadingControllerParent;
+    }
   }
 
   ShowLoading() {
@@ -59,12 +64,18 @@ export class TomaTiempoPage implements OnInit {
     });
   } 
   
+
+  /*dismissLoading() {
+    this.loadingController.dismiss();
+  }*/
+
   dismissLoading() {
-    this.loadingController.dismiss().then((response) => {
+    this.intervalDismiss=setInterval(()=>{ this.loadingController.dismiss().then((response) => {
         //console.log('Loader closed!', response);
+        clearInterval(this.intervalDismiss)
     }).catch((err) => {
         console.log('Error occured : ', err);
-    });
+    })},1000);
   }
 
   async ngOnInit() :Promise<void>{
@@ -158,17 +169,19 @@ export class TomaTiempoPage implements OnInit {
   
 
   async actualizar(){
-    this.ShowLoading()
+    const loader= await this.ShowLoading()
     const dateA:any = document.getElementById('date')
     const dateB:any = document.getElementById('date1')
 
     if(!dateA.value){
       this.alertMessage('Debe cambiar la hora de inicio');
+      this.dismissLoading();
       return;
     }
 
     if(!dateB.value){
       this.alertMessage('Debe cambiar la hora de fin');
+      this.dismissLoading();
       return;
     }
 
@@ -185,25 +198,30 @@ export class TomaTiempoPage implements OnInit {
     //Las fechas deben ser diferentes
     if(fechaDesdeX === fechaHastaX){
       this.alertMessage('Las horas deben ser diferentes');
+      this.dismissLoading();
       return;
     }
     //La fecha desde debe ser menor a la fecha hasta
     if(fechaDesdeX > fechaHastaX){
       this.alertMessage('Las fecha de desde debe ser menor a la fecha hasta');
+      this.dismissLoading();
       return;
     }
     //la fecha debe ser menor a la fecha actual
     if(fechaDesdeX > fechaHoy){
       this.alertMessage( 'La fecha desde debe de ser menor o igual al día actual ' + fechaHoy.toLocaleDateString() );
+      this.dismissLoading();
       return;
     }
     if(fechaHastaX > fechaHoy){
       this.alertMessage( 'La fecha hasta debe de ser menor o igual al día actual ' + fechaHoy.toLocaleDateString() );
+      this.dismissLoading();
       return;
     }
 
     if(fechaDesdeX.toLocaleDateString() !== fechaHastaX.toLocaleDateString()){
       this.alertMessage('Las fechas deben de ser el mismo día ');// + fechaDesdeX.toString() + '|' + fechaHastaX.toString()
+      this.dismissLoading();
       return;
     }
 
@@ -300,17 +318,20 @@ export class TomaTiempoPage implements OnInit {
   }
 
   async aceptar(){
-    this.ShowLoading()
+    const loader= await this.ShowLoading()
+    
     const dateA:any = document.getElementById('date')
     const dateB:any = document.getElementById('date1')
 
     if(!dateA.value){
       this.alertMessage('Debe cambiar la hora de inicio');
+      this.dismissLoading();
       return;
     }
 
     if(!dateB.value){
       this.alertMessage('Debe cambiar la hora de fin');
+      this.dismissLoading();
       return;
     }
 
@@ -327,25 +348,30 @@ export class TomaTiempoPage implements OnInit {
     //Las fechas deben ser diferentes
     if(fechaDesdeX === fechaHastaX){
       this.alertMessage('Las horas deben ser diferentes');
+      this.dismissLoading();
       return;
     }
     //La fecha desde debe ser menor a la fecha hasta
     if(fechaDesdeX > fechaHastaX){
       this.alertMessage('Las fecha de desde debe ser menor a la fecha hasta');
+      this.dismissLoading();
       return;
     }
     //la fecha debe ser menor a la fecha actual
     if(fechaDesdeX > fechaHoy){
       this.alertMessage( 'La fecha desde debe de ser menor o igual al día actual ' + fechaHoy.toLocaleDateString() );
+      this.dismissLoading();
       return;
     }
     if(fechaHastaX > fechaHoy){
       this.alertMessage( 'La fecha hasta debe de ser menor o igual al día actual ' + fechaHoy.toLocaleDateString() );
+      this.dismissLoading();
       return;
     }
 
     if(fechaDesdeX.toLocaleDateString() !== fechaHastaX.toLocaleDateString()){
       this.alertMessage('Las fechas deben de ser el mismo día ');// + fechaDesdeX.toString() + '|' + fechaHastaX.toString()
+      this.dismissLoading();
       return;
     }
 
@@ -484,6 +510,7 @@ export class TomaTiempoPage implements OnInit {
           this.idTareaEvent = taskDB.uid
           this.storageService.saveTaskEvent(taskDB);
         }else{
+          this.dismissLoading();
           this.alertMessage(data.msg)
         }
       },
