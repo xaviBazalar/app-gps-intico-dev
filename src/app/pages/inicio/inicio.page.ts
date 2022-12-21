@@ -66,7 +66,8 @@ export class InicioPage implements OnInit {
         for (let index = 0; index < task.length; index++) {
           // console.log('task', task[index]);
           const { planificacionTrabajo, tareaMaquinaria, turno, uid='', machine, user } = task[index];
-          const _item = {nombre: machine.descripcion + "--" + planificacionTrabajo + '--' + tareaMaquinaria, 
+          //const _item = {nombre: machine.descripcion + "--" + planificacionTrabajo + '--' + tareaMaquinaria, 
+          const _item = {nombre: machine.descripcion +'-' + tareaMaquinaria, 
           redirect: `/maquina-tarea/${ machine._id }/${ idUser }/${ uid }/${ machine.idInterno }`};
           // console.log(_item );
           this.item.push( _item );        
