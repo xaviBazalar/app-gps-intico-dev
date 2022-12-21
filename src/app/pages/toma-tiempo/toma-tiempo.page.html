@@ -1,13 +1,13 @@
-<ion-header>
-  <ion-toolbar>
+<ion-header color="tertiary">
+  <ion-toolbar color="tertiary">
     <ion-title>Toma de Tiempo</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content color="tertiary">
-  <ion-card>
+  <ion-card class="card-tiempo">
     <ion-label>Botones a clasificar</ion-label>
-    <ion-select interface="popover" placeholder="--Seleccione--" [(ngModel)]="motivo"  >
+    <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" [(ngModel)]="motivo"  >
       <ion-select-option value="Operativo" >Operativo</ion-select-option>
       <ion-select-option value="Pausa">Pausa</ion-select-option>
       <ion-select-option value="Detencion">Detencion</ion-select-option>
@@ -15,24 +15,24 @@
 
     <ion-label>Motivo</ion-label>
     
-    <ion-select *ngIf="motivo==='Operativo'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoOpe">
+    <ion-select class="select-ttiempo" *ngIf="motivo==='Operativo'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoOpe">
       <ion-select-option value="Efectivo">Efectivo</ion-select-option>
       <ion-select-option value="No Efectivo">No Efectivo</ion-select-option>
     </ion-select>
 
-    <ion-select *ngIf="motivo==='Pausa'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoPau">
+    <ion-select class="select-ttiempo" *ngIf="motivo==='Pausa'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoPau">
       <ion-select-option value="Desplazamiento">Desplazamiento</ion-select-option>
       <ion-select-option value="Permiso">Permiso</ion-select-option>
       <ion-select-option value="Colacion">Colación</ion-select-option>
       <ion-select-option value="Chl Seguridad">Chl Seguridad</ion-select-option>
     </ion-select>
 
-    <ion-select *ngIf="motivo==='Detencion'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoDet">
+    <ion-select class="select-ttiempo" *ngIf="motivo==='Detencion'" interface="popover" placeholder="--Seleccione--" [(ngModel)]="subMotivoDet">
       <ion-select-option value="Falla Mecanica">Falla Mecanica</ion-select-option>
       <ion-select-option value="Condiciones Climaticas">Condiciones Climaticas</ion-select-option>
     </ion-select>
-
-    <ion-label>Fecha y Hora</ion-label><br /><br />
+    <hr/>
+    <ion-label class="center-txt-lbl">Fecha y Hora</ion-label><br />
     <ion-label>Desde:</ion-label>
     <ion-datetime-button datetime="date" ></ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">

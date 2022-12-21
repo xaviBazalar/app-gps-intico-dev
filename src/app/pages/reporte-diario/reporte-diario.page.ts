@@ -572,7 +572,7 @@ async generarHtml(fecha, machine) {
 			  max-width: none;
 			  margin-right: 0;
 			  opacity: 1 !important;
-			  border-radius: 20px;
+			  border-radius: 10px;
 			  color: #fff;
 			  padding: 10px;
 			  line-height: 20px;
@@ -595,7 +595,7 @@ async generarHtml(fecha, machine) {
 			.cd-schedule .events {
 			  /* 60px is the .timeline element width */
 			  width: calc(100% - 60px);
-			  margin-left: 60px;
+			  margin-left: 76;
 			}
 		  }
 		  
@@ -993,7 +993,7 @@ async generarHtml(fecha, machine) {
 			}
 
 			.timeline>ul{
-				width:90% !important;
+				width:100% !important;
 			}
 
 			[data-order="2"]{
@@ -1207,8 +1207,8 @@ async generarHtml(fecha, machine) {
 				eventHeight = self.eventSlotHeight*duration/self.timelineUnitDuration;
 			
 			$(this).css({
-				top: (eventTop -1) +'px',
-				height: (eventHeight+1)+'px'
+				top: (eventTop +12) +'px',
+				height: (eventHeight-3)+'px'
 			});
 		});
 

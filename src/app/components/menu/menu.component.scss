@@ -1,7 +1,68 @@
 page-side-menu {
     ion-content{
-        background: #2BC0E4;  /* fallback for old browsers */
-        background: -webkit-linear-gradient(to bottom, #EAECC6, #2BC0E4);  /* Chrome 10-25, Safari 5.1-6 */
-        background: linear-gradient(to bottom, #EAECC6, #2BC0E4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        --background: none;
+        --ion-background-color:#e84b26;
+        background:#e84b26;
+        color:#fff;
+        ion-menu::part(scroll) {
+            --background:#e84b26;
+            background:#e84b26;
+        }
+        /* background: #2BC0E4;  fallback for old browsers */
+         /* background: -webkit-linear-gradient(to bottom, #EAECC6, #2BC0E4);  /* Chrome 10-25, Safari 5.1-6 */
+        /* background: linear-gradient(to bottom, #EAECC6, #2BC0E4); W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     }
-  }
+}
+
+#menu-app .inner-scroll{
+    background: #e84b26 ;
+}
+
+
+ion-menu{
+    --background:#e84b26;
+}
+
+ion-menu::part(container){
+    width: 62px;
+}
+
+ion-content::part(scroll){
+    width: 62px;
+    background:#e84b26;
+}
+
+
+.bg-menu{
+    background: #e84b26 ;
+    color: #fff;
+    width: 92px;
+}
+
+.bg-menu a{
+    background: #e84b26 ;
+}
+
+.item-native{
+    background: #e84b26 ;
+    color:#fff;
+}
+
+.inner-scroll{
+    background: #e84b26;
+}
+
+ion-item {
+    --ion-item-background: #ddd;
+}
+
+:-webkit-scrollbar {
+    background-color: white;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #d33939 ;
+}
+
+:host{
+    --background:red !important;
+}
