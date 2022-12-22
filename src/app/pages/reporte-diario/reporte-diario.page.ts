@@ -1105,6 +1105,7 @@ async generarHtml(fecha, machine) {
   atras(){
 	this.router.navigateByUrl('/inicio');
   }
+  
   //#region "jQuery"
   RunSchedulePlan(){
 	var self=this

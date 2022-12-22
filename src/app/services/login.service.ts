@@ -11,7 +11,18 @@ export class LoginService {
   constructor(private http: HttpClient) { }
 
   validateLogin(user:String|null,pass:String|null){
-    return this.http.get(`${this.baseUrl}/user?user=${ user }&pass=${ pass }`)
+    return this.http.get(`${ this.baseUrl }/user?user=${ user }&pass=${ pass }`)
   }
 
+  enviarCodigo(email: String){
+    return this.http.get(`${ this.baseUrl }/login?email=${ email }`)
+  }
+
+  validacionCodigo(codigo: String, email: String){
+    return this.http.get(`${ this.baseUrl }/login/recovery?codigo=${ codigo }&email=${ email }`)
+  }
+
+  actualizarPassword(recovery: any){
+    return this.http.put(`${ this.baseUrl }/login`, recovery)
+  }
 }
