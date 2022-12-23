@@ -63,10 +63,25 @@ export class AsignaTareaPage implements OnInit {
           this.idUser = user;
         }
 
-        console.log(this.planTrabajo);
+        this.planTrabajo=this.removeDuplicates(this.planTrabajo)
+        this.machine=this.removeDuplicates(this.machine)
       });
     }
   }
+
+  removeDuplicates(arrayIn) {
+    var arrayOut:any = [];
+    arrayIn.forEach(item=> {
+      try {
+        if (JSON.stringify(arrayOut[arrayOut.length-1]._id) !== JSON.stringify(item._id)) {
+          arrayOut.push(item);
+        }
+      } catch(err) {
+        arrayOut.push(item);
+       }
+    })
+    return arrayOut;
+}
 
  async abrirMaquinaTrabajo() {
   // console.log('idmaquina',this.idInterno.idInter);

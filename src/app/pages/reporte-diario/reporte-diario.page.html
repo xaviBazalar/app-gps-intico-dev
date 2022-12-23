@@ -19,7 +19,7 @@
       <ion-datetime-button datetime="datetime"></ion-datetime-button>
       <ion-modal [keepContentsMounted]="true" #modalTime >
         <ng-template>
-          <ion-datetime presentation="date" id="datetime" (ionChange)="changedReport(); modalTime.dismiss();" on="true" ></ion-datetime>
+          <ion-datetime presentation="date" id="datetime" (ionChange)="changedReport(); modalTime.dismiss();" on="true" [value]="tiempoDefault" ></ion-datetime>
         </ng-template>
       </ion-modal>
       

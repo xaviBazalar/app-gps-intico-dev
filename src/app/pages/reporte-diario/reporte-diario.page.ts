@@ -22,6 +22,7 @@ import { LoadingController } from '@ionic/angular';
 
 export class ReporteDiarioPage implements OnInit {
 	private window: any;
+	tiempoDefault:any=""
 	transitionEnd:string= 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
 	transitionsSupported:any
 	date: any;
@@ -1087,6 +1088,9 @@ async generarHtml(fecha, machine) {
 		this.ShowLoading()
 		this.generarHtml(fechaR, this.idMachine);
 		this.fechaSeleccionada=fechaR
+		let cmbTarea:any=document.getElementById('cmbTarea')
+		cmbTarea.value=idTask
+		this.tiempoDefault=fechaR+"T00:01:00.000"
   	}
 
 

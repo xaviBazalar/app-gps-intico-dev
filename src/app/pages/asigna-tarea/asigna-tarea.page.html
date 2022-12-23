@@ -10,7 +10,7 @@
         <ion-item>
           <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" >
             <ion-select-option *ngFor="let c of planTrabajo" 
-                                [value]="c"> {{ c }} </ion-select-option>
+                                [value]="c._id"> {{ c.descripcion }} </ion-select-option>
             <!-- <ion-select-option value="apples">{{ taskModel.planificacionTrabajo }}</ion-select-option>             -->
           </ion-select>
         </ion-item>
