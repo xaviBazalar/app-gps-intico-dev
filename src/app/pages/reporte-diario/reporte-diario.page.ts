@@ -296,10 +296,7 @@ export class ReporteDiarioPage implements OnInit {
 
 			html += `</ul>
 		<style>
-		ion-icon {
-			color: #E7360F;
-			font-size:16px;
-		}
+		
 
 		.button-native{
 			background: transparent;
@@ -1110,7 +1107,7 @@ export class ReporteDiarioPage implements OnInit {
 		console.log("idMachine", idMachine)
 		setTimeout(()=>{
 			$("ion-select").click()
-		},1200)
+		},1000)
 		let fechaR = this.route.snapshot.paramMap.get("fecha");
 		if (!idTask) {
 			idTask = ''
