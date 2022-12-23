@@ -185,8 +185,10 @@ export class TomarFotoPage implements OnInit {
       }
 
       this.retorno=(this.retorno==null || this.retorno=="")?dataRetornoMaquina:this.retorno
+      console.log(this.retorno)
       if(_retorno!=null && _retorno!=undefined && _retorno!=""){
-        this.router.navigateByUrl('/' + _retorno+dataRetorno);
+        this.router.navigateByUrl('/' + _retorno+dataRetorno,{replaceUrl:true});
+        //this.router.navigate(['/' + _retorno]);
       }else if(dataRetorno==""){
         this.router.navigateByUrl('/' + this.retorno);
       }else{

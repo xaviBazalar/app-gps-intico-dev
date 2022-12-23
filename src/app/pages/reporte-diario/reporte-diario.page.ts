@@ -50,6 +50,7 @@ export class ReporteDiarioPage implements OnInit {
 	cmbMaquina: any = ''
 	listaHorasActivas: any = []
 	intervalDismiss: any
+	serviceMaquinaria:any
 
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
@@ -77,17 +78,15 @@ export class ReporteDiarioPage implements OnInit {
 		//this.cmbMaquina.detail.value=String(idMachine)
 		//this.transitionsSupported=( $('.csstransitions').length > 0 );
 		if (!this.transitionsSupported) this.transitionEnd = 'noTransition';
+		
 	}
 
 	@HostListener('unloaded')
 	ionViewWillLeave() {
 		console.log("me movi")
-
+		this.serviceMaquinaria.unsubscribe()
 	}
 
-	triggerEvent(e:any){
-		console.log("change",e)
-	}
 
 	ShowLoading() {
 		/*this.loadingController.create({
@@ -109,6 +108,12 @@ export class ReporteDiarioPage implements OnInit {
 		}, 1000);*/
 	}
 
+	ngOnDestroy(): void {
+		//Called once, before the instance is destroyed.
+		//Add 'implements OnDestroy' to the class.
+		
+	}
+
 	async ngOnInit(): Promise<void> {
 		
 		await this.storageService.init()
@@ -118,10 +123,16 @@ export class ReporteDiarioPage implements OnInit {
 
 		// console.log("iduser", idUser);
 
-		this.machineService.getMachine(this.idUser).subscribe((data: any) => {
+		
+	}
+
+	loadMachines(id:any){
+		if(id=="") return
+		
+		this.serviceMaquinaria=this.machineService.getMachine(id).subscribe((data: any) => {
 			// console.log('idUser', idUser);
 			const { machine } = data;
-			// console.log(machine);
+			console.log("llamando getMachine");
 			// console.log('tarea', task);
 			for (let index = 0; index < machine.length; index++) {
 				const _item = {
@@ -141,8 +152,6 @@ export class ReporteDiarioPage implements OnInit {
 			doc.innerHTML=option
 
 		});
-
-		
 	}
 
 
@@ -1097,17 +1106,26 @@ export class ReporteDiarioPage implements OnInit {
 
 	
 
-	ngAfterViewInit(): void {
-		console.log(this.cdr)
+	async ngAfterViewInit():  Promise<void> {
+
+		await this.storageService.init()
+		const [user] = await Promise.all([this.storageService.loadUser()]);
+		const dataUser = user;
+		this.idUser = dataUser[0].uid;
+		console.log(this.item.length)
+		if(this.item.length==0){
+			this.loadMachines(this.idUser)
+		}
+
+
 		let idTask = this.route.snapshot.paramMap.get("idTarea");
 		let idMachine = this.route.snapshot.paramMap.get("machine");
 		this.cmbMaquina = String(idMachine)
 		
-
-		console.log("idMachine", idMachine)
 		setTimeout(()=>{
+			//console.log($("ion-select"))
 			$("ion-select").click()
-		},1000)
+		},500)
 		let fechaR = this.route.snapshot.paramMap.get("fecha");
 		if (!idTask) {
 			idTask = ''
@@ -1319,7 +1337,9 @@ export class ReporteDiarioPage implements OnInit {
 		}
 
 		if (event[0].dataset.order == 3) {
-			this.router.navigate(['/tomar-foto', { idTarea: idTareaEvent, retorno: "reporte-diario", idUser: this.idUser }])
+			//this.router.navigate(['/tomar-foto', { idTarea: idTareaEvent, retorno: "reporte-diario", idUser: this.idUser }])
+			let paramsFoto:string=`;idTarea=${idTareaEvent};retorno=reporte-diario;idUser=${this.idUser}`
+			this.router.navigateByUrl('/tomar-foto'+paramsFoto,{replaceUrl:true})
 		}
 
 		// var self = this;
