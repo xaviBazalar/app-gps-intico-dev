@@ -1,0 +1,40 @@
+<app-infouser></app-infouser>
+
+
+<ion-content color="tertiary">
+  <form>
+    
+    <ion-card class="card-box">
+      <ion-card-content>      
+        <ion-label>Planificacion de Trabajo</ion-label>
+        <ion-item>
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" >
+            <ion-select-option *ngFor="let c of planTrabajo" 
+                                [value]="c._id"> {{ c.descripcion }} </ion-select-option>
+            <!-- <ion-select-option value="apples">{{ taskModel.planificacionTrabajo }}</ion-select-option>             -->
+          </ion-select>
+        </ion-item>
+        <ion-label>Maquinaria</ion-label>
+        <ion-item>
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" [(ngModel)]="idInterno">
+            <ion-select-option *ngFor="let c of machine" 
+                                [value]="c.id"> {{ c.des }} </ion-select-option>
+            <!-- <ion-select-option value="apples">{{ taskModel.machine }}</ion-select-option> -->
+          </ion-select>
+        </ion-item>
+        <ion-label>Tarea de la maquinaria</ion-label>
+        <ion-item>
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--">
+            <ion-select-option *ngFor="let c of tareaMachine" 
+                                [value]="c"> {{ c }} </ion-select-option>
+            <!-- <ion-select-option value="apples">{{ taskModel.tareaMaquinaria }}</ion-select-option> -->
+          </ion-select>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-button color="success" expand="full" (click)="abrirMaquinaTrabajo()">Agregar a lista de Trabajo</ion-button>
+    </ion-card>
+  </form>
+</ion-content>

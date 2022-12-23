@@ -19,6 +19,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/asigna-tarea/asigna-tarea.module').then( m => m.AsignaTareaPageModule)
   },
   {
+    path: 'configuracion-tarea',
+    loadChildren: () => import('./pages/configuracion-tarea/configuracion-tarea.module').then( m => m.ConfiguracionTareaPageModule)
+  },
+  {
     path: 'maquina-tarea/:idMaquina/:idUser/:idTarea/:idMaquinaInterna',
     loadChildren: () => import('./pages/maquina-tarea/maquina-tarea.module').then( m => m.MaquinaTareaPageModule)
   },
@@ -42,6 +46,10 @@ const routes: Routes = [
   {
     path: 'reporte-diario',
     loadChildren: () => import('./pages/reporte-diario/reporte-diario.module').then( m => m.ReporteDiarioPageModule)
+  },
+  {
+    path: 'configuracion-tarea',
+    loadChildren: () => import('./pages/configuracion-tarea/configuracion-tarea.module').then( m => m.ConfiguracionTareaPageModule)
   },
 ];
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
 import { TaskModel } from 'src/app/models/task';
@@ -64,7 +64,6 @@ export class TomaTiempoPage implements OnInit {
     });
   } 
   
-
   /*dismissLoading() {
     this.loadingController.dismiss();
   }*/
@@ -531,7 +530,8 @@ export class TomaTiempoPage implements OnInit {
 
   mostrarReporte(){
     this.modalController.dismiss();
-    this.router.navigate(['/reporte-diario', { idTarea: this.idTarea, machine: this.idMaquina }]);
+    let dataReporte:any=`idTarea=${this.idTarea};machine=${this.idMaquina}`
+    this.router.navigateByUrl('/reporte-diario'+dataReporte, { replaceUrl:true });
   }
 
   mostrarEvidencia(){
@@ -571,16 +571,17 @@ export class TomaTiempoPage implements OnInit {
     return true;
   }
 
-  cerrar()
-  {
+  cerrar(){
+    
     let fecha:any=this.route.snapshot.paramMap.get("fecha")
     if(fecha!=undefined && fecha!=""){
       let params=`;idTarea=${this.idTarea};machine=${this.idMaquina};fecha=${this.route.snapshot.paramMap.get("fecha")}`
       this.router.navigateByUrl(`/reporte-diario${params}`, { replaceUrl: true});
+      
     }else{
       this.modalController.dismiss();
     }
     
-    return true;
+    ///return true;
   }
 }

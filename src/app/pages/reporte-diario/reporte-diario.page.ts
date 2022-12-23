@@ -1,4 +1,4 @@
-import { Component, HostListener, Inject, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, Input, OnInit,ChangeDetectorRef } from '@angular/core';
 import * as $ from 'jquery'
 import * as jQuery from 'jquery';
 import { DOCUMENT } from '@angular/common';
@@ -14,260 +14,287 @@ import { LoadingController } from '@ionic/angular';
 
 
 @Component({
-  selector: 'app-reporte-diario',
-  templateUrl: './reporte-diario.page.html',
-  styleUrls: ['./reporte-diario.page.scss', '../../../assets/css/reportCalendar.css'],
-  
+	selector: 'app-reporte-diario',
+	templateUrl: './reporte-diario.page.html',
+	styleUrls: ['./reporte-diario.page.scss', '../../../assets/css/reportCalendar.css'],
+
 })
 
 export class ReporteDiarioPage implements OnInit {
 	private window: any;
-	tiempoDefault:any=""
-	transitionEnd:string= 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
-	transitionsSupported:any
+	tiempoDefault: any = ""
+	transitionEnd: string = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
+	transitionsSupported: any
 	date: any;
-	element:any
-	timeline:any
-	timelineItems:any
-	timelineItemsNumber:any
-	timelineStart:any
-	timelineUnitDuration:any
-	eventsWrapper:any
-	eventsGroup:any
-	singleEvents:any
-	eventSlotHeight:any
-	modal:any
-	modalHeader:any
-	modalHeaderBg:any
-	modalBody:any
-	modalBodyBg:any
-	modalMaxWidth:any
-	modalMaxHeight:any
-	animating:any
+	element: any
+	timeline: any
+	timelineItems: any
+	timelineItemsNumber: any
+	timelineStart: any
+	timelineUnitDuration: any
+	eventsWrapper: any
+	eventsGroup: any
+	singleEvents: any
+	eventSlotHeight: any
+	modal: any
+	modalHeader: any
+	modalHeaderBg: any
+	modalBody: any
+	modalBodyBg: any
+	modalMaxWidth: any
+	modalMaxHeight: any
+	animating: any
 	objSchedulesPlan = []
 	windowResize = false;
-	fechaSeleccionada:any=""
-	cmbMaquina:any
-	listaHorasActivas:any=[]
+	fechaSeleccionada: any = ""
+	cmbMaquina: any = ''
+	listaHorasActivas: any = []
+	intervalDismiss: any
 
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
-	item: any[] = []; 
+	item: any[] = [];
 
 	@Input() page;
 	idUser: String = '';
-	
-  constructor(@Inject(DOCUMENT) private document: Document, 
-  				private taskService: TaskService, 
-				private machineService: MaquinariaService,
-				private route: ActivatedRoute,
-				private router: Router,
-				private storageService: StorageService,
-				private evidenceService:EvidenceService,
-				public alertController: AlertController,
-				public loadingController: LoadingController
-				) { 
-    this.window = this.document.defaultView;
-    this.date = new Date().toString();
-    //this.transitionsSupported=( $('.csstransitions').length > 0 );
-    if( !this.transitionsSupported ) this.transitionEnd = 'noTransition';
-  }
 
-  @HostListener('unloaded')
-  ionViewWillLeave(){
-	  console.log("me movi")
-	  
-  }
-
-  ShowLoading() {
-    this.loadingController.create({
-        message: 'Cargando...'
-    }).then((response) => {
-        response.present();
-    });
-  } 
-  
-  dismissLoading() {
-    this.loadingController.dismiss().then((response) => {
-        //console.log('Loader closed!', response);
-    }).catch((err) => {
-        console.log('Error occured : ', err);
-    });
-  }
-
-  async ngOnInit():Promise<void> {
-	await this.storageService.init()
-	const [user] = await Promise.all([this.storageService.loadUser()]);
-    const dataUser = user;
-	this.idUser = dataUser[0].uid;
-
-	// console.log("iduser", idUser);
-
-	this.machineService.getMachine(this.idUser).subscribe((data:any) => {
-        // console.log('idUser', idUser);
-        const { machine } = data;
-		// console.log(machine);
-        // console.log('tarea', task);
-        for (let index = 0; index < machine.length; index++) {
-          const _item = {nombre: machine[index].descripcion, 
-						 value: machine[index].uid
-          				};
-          // console.log(_item );
-          this.item.push( _item );        
-        }
-      });
-  }
-  
-
-async generarHtml(fecha, machine) {
-	console.log('Armado del html')
-	this.fechaSeleccionada=fecha
-	let html: string = '<ul class="wrap">';
-	console.log("fecha",fecha)
-	this.taskService.getTaskEventReporte(fecha, machine).subscribe(async (data: any) => {
-		const { taskEvent } = data;
-		const div = document.getElementById('divEventos');
-		console.log(taskEvent)
-		if(data.ok==false){
-			div!.innerHTML = "";
-			this.dismissLoading()
-			return;
-		}
+	constructor(@Inject(DOCUMENT) private document: Document,
+		private taskService: TaskService,
+		private machineService: MaquinariaService,
+		private route: ActivatedRoute,
+		private router: Router,
+		private storageService: StorageService,
+		private evidenceService: EvidenceService,
+		public alertController: AlertController,
+		public loadingController: LoadingController,
+		public cdr: ChangeDetectorRef
+	) {
+		this.window = this.document.defaultView;
+		this.date = new Date().toString();
+		let idMachine = this.route.snapshot.paramMap.get("machine");
 		
-		//para los gps
-		html += `<li class="events-group">
+		this.cmbMaquina = String(idMachine)
+		//this.cmbMaquina.detail.value=String(idMachine)
+		//this.transitionsSupported=( $('.csstransitions').length > 0 );
+		if (!this.transitionsSupported) this.transitionEnd = 'noTransition';
+	}
+
+	@HostListener('unloaded')
+	ionViewWillLeave() {
+		console.log("me movi")
+
+	}
+
+	triggerEvent(e:any){
+		console.log("change",e)
+	}
+
+	ShowLoading() {
+		/*this.loadingController.create({
+			message: 'Cargando...'
+		}).then((response) => {
+			response.present();
+		});*/
+	}
+
+	dismissLoading() {
+		/*this.intervalDismiss = setInterval(() => {
+			this.loadingController.dismiss().then((response) => {
+				//console.log('Loader closed!', response);
+				clearInterval(this.intervalDismiss)
+			}).catch((err) => {
+				console.log(this.loadingController.create())
+				console.log('Error occured : ', err);
+			})
+		}, 1000);*/
+	}
+
+	async ngOnInit(): Promise<void> {
+		
+		await this.storageService.init()
+		const [user] = await Promise.all([this.storageService.loadUser()]);
+		const dataUser = user;
+		this.idUser = dataUser[0].uid;
+
+		// console.log("iduser", idUser);
+
+		this.machineService.getMachine(this.idUser).subscribe((data: any) => {
+			// console.log('idUser', idUser);
+			const { machine } = data;
+			// console.log(machine);
+			// console.log('tarea', task);
+			for (let index = 0; index < machine.length; index++) {
+				const _item = {
+					nombre: machine[index].descripcion,
+					value: machine[index].uid
+				};
+				// console.log(_item );
+				this.item.push(_item);
+			}
+			let doc:any=document.querySelector("#cmbMaquina")
+			//console.log(doc.value)
+			let option:any=""
+			option=`<ion-select-option value="">--Seleccione--</ion-select-option>`
+			for(let _machine of this.item){
+				option=option+`<ion-select-option value="${_machine.value}">${_machine.nombre}</ion-select-option>`
+			}
+			doc.innerHTML=option
+
+		});
+
+		
+	}
+
+
+	async generarHtml(fecha, machine) {
+		console.log('Armado del html')
+		this.fechaSeleccionada = fecha
+		let html: string = '<ul class="wrap">';
+		console.log("fecha", fecha)
+		this.taskService.getTaskEventReporte(fecha, machine).subscribe(async (data: any) => {
+			const { taskEvent } = data;
+			const div = document.getElementById('divEventos');
+			console.log(taskEvent)
+			if (data.ok == false) {
+				div!.innerHTML = "";
+				this.dismissLoading()
+				return;
+			}
+
+			//para los gps
+			html += `<li class="events-group">
 				<div class="top-info"><span>GPS</span></div>
 				<ul>`;
-		this.listaHorasActivas=[]
-		for (let i = 0; i < taskEvent.length; i++) {
-			let dataevent: string = 'event-5';
+			this.listaHorasActivas = []
+			for (let i = 0; i < taskEvent.length; i++) {
+				let dataevent: string = 'event-5';
 
-			let ini:any=taskEvent[i].horaInicio
-			let fin:any=taskEvent[i].horaFin
-			let dateA:any=new Date(`10/10/2022 ${ini}`)
-			let dateB:any=new Date(`10/10/2022 ${fin}`)
-			let diff=(dateA-dateB)*-1
-			let hora:any=String(diff/3600000)
-			let minutos:any="0"
-			if(Number.isInteger(hora)){
-				//console.log("horas",hora)
-			}else{
-				let dataTime:any=hora.split(".")
-				let minTemp:any=parseFloat("0."+dataTime[1])
-				minutos=minTemp*60
-				hora=dataTime[0]
-				console.log("horas",dataTime[0])
-				console.log("minutos",parseInt(minutos))
-			}
-			this.listaHorasActivas.push({
-				inicio:taskEvent[i].horaInicio.replace(":",""),
-				fin:taskEvent[i].horaFin.replace(":",""),
-				tarea:taskEvent[i].task,
-				maquinainterna:taskEvent[i].machine.idInterno,
-				maquina:taskEvent[i].machine._id,
-				fecha:taskEvent[i].fechaRegistro.substr(0,10),
-				uid:taskEvent[i].uid
-			})
-			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-			html +=`<a href="#0" data-order="1" data-uid="${ taskEvent[i].uid }">
+				let ini: any = taskEvent[i].horaInicio
+				let fin: any = taskEvent[i].horaFin
+				let dateA: any = new Date(`10/10/2022 ${ini}`)
+				let dateB: any = new Date(`10/10/2022 ${fin}`)
+				let diff = (dateA - dateB) * -1
+				let hora: any = String(diff / 3600000)
+				let minutos: any = "0"
+				if (Number.isInteger(hora)) {
+					//console.log("horas",hora)
+				} else {
+					let dataTime: any = hora.split(".")
+					let minTemp: any = parseFloat("0." + dataTime[1])
+					minutos = minTemp * 60
+					hora = dataTime[0]
+					console.log("horas", dataTime[0])
+					console.log("minutos", parseInt(minutos))
+				}
+				this.listaHorasActivas.push({
+					inicio: taskEvent[i].horaInicio.replace(":", ""),
+					fin: taskEvent[i].horaFin.replace(":", ""),
+					tarea: taskEvent[i].task,
+					maquinainterna: taskEvent[i].machine.idInterno,
+					maquina: taskEvent[i].machine._id,
+					fecha: taskEvent[i].fechaRegistro.substr(0, 10),
+					uid: taskEvent[i].uid
+				})
+				html += `<li class="single-event" data-start="${taskEvent[i].horaInicio}" data-end="${taskEvent[i].horaFin}" data-content="event-abs-circuit" data-event="${dataevent}">`;
+				html += `<a href="#0" data-order="1" data-uid="${taskEvent[i].uid}">
 			GPS<br>
 			<span class="detalle-op">Uso: ${hora} Hrs ${Math.ceil(minutos)} min</span>
 				</a></li>`
-			
-		}
-		html += `</ul></li>`;
+
+			}
+			html += `</ul></li>`;
 
 
-		//para los eventos
-		html += `<li class="events-group">
+			//para los eventos
+			html += `<li class="events-group">
 				<div class="top-info"><span>Eventos</span></div>
 				<ul>`;
-		for (let i = 0; i < taskEvent.length; i++) {
-			let dataevent: string = '';
+			for (let i = 0; i < taskEvent.length; i++) {
+				let dataevent: string = '';
 
-			switch(taskEvent[i].tipo){
-				case 'Operativo':
-					dataevent = 'event-1';
-					break;
-				case 'Pausa':
-					dataevent = 'event-4';
-					break;
-				case 'Detencion':
-					dataevent = 'event-3';
-					break;
-			}
+				switch (taskEvent[i].tipo) {
+					case 'Operativo':
+						dataevent = 'event-1';
+						break;
+					case 'Pausa':
+						dataevent = 'event-4';
+						break;
+					case 'Detencion':
+						dataevent = 'event-3';
+						break;
+				}
 
-			let ini:any=taskEvent[i].horaInicio
-			let fin:any=taskEvent[i].horaFin
-			let dateA:any=new Date(`10/10/2022 ${ini}`)
-			let dateB:any=new Date(`10/10/2022 ${fin}`)
-			let diff=(dateA-dateB)*-1
-			let hora:any=String(diff/3600000)
-			let minutos:any="0"
-			if(Number.isInteger(hora)){
-				//console.log("horas",hora)
-			}else{
-				let dataTime:any=hora.split(".")
-				let minTemp:any=parseFloat("0."+dataTime[1])
-				minutos=minTemp*60
-				hora=dataTime[0]
-				console.log("horas",dataTime[0])
-				console.log("minutos",parseInt(minutos))
-			}
+				let ini: any = taskEvent[i].horaInicio
+				let fin: any = taskEvent[i].horaFin
+				let dateA: any = new Date(`10/10/2022 ${ini}`)
+				let dateB: any = new Date(`10/10/2022 ${fin}`)
+				let diff = (dateA - dateB) * -1
+				let hora: any = String(diff / 3600000)
+				let minutos: any = "0"
+				if (Number.isInteger(hora)) {
+					//console.log("horas",hora)
+				} else {
+					let dataTime: any = hora.split(".")
+					let minTemp: any = parseFloat("0." + dataTime[1])
+					minutos = minTemp * 60
+					hora = dataTime[0]
+					console.log("horas", dataTime[0])
+					console.log("minutos", parseInt(minutos))
+				}
 
-			/*
-			componentProps: {
-				idTarea: this.idTarea,
-				idMaquinaInterna: this.idMaquinaInterna,
-				idMaquina: this.idMaquina
-			}
-			*/
+				/*
+				componentProps: {
+					idTarea: this.idTarea,
+					idMaquinaInterna: this.idMaquinaInterna,
+					idMaquina: this.idMaquina
+				}
+				*/
 
-			if(taskEvent[i].tipo === 'Operativo'){
-				dataevent = 'event-1'
-			}
+				if (taskEvent[i].tipo === 'Operativo') {
+					dataevent = 'event-1'
+				}
 
-			let dataRetorno:string=`;idTarea=${taskEvent[i].task};machine=${taskEvent[i].machine._id};fecha=${fecha};`
-			this.storageService.saveDataRetorno(dataRetorno)
-			this.storageService.saveDataRetornoMaquina("")
-			html += `<li class="single-event" data-start="${ taskEvent[i].horaInicio }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-			html +=`<a href="#0" 
+				let dataRetorno: string = `;idTarea=${taskEvent[i].task};machine=${taskEvent[i].machine._id};fecha=${fecha};`
+				this.storageService.saveDataRetorno(dataRetorno)
+				this.storageService.saveDataRetornoMaquina("")
+				html += `<li class="single-event" data-start="${taskEvent[i].horaInicio}" data-end="${taskEvent[i].horaFin}" data-content="event-abs-circuit" data-event="${dataevent}">`;
+				html += `<a href="#0" 
 					data-order="2" 
 					data-tipo="${taskEvent[i].tipo}"
 					data-subtipo="${taskEvent[i].subTipo}"
 					data-tarea="${taskEvent[i].task}" 
 					data-maquinainterna="${taskEvent[i].machine.idInterno}" 
 					data-maquina="${taskEvent[i].machine._id}" 
-					data-uid="${ taskEvent[i].uid }">
-					${ taskEvent[i].tipo }<span class="detalle-op">(${ taskEvent[i].subTipo }) ${hora} Hrs ${Math.ceil(minutos)} min</span>
+					data-uid="${taskEvent[i].uid}">
+					${taskEvent[i].tipo}<span class="detalle-op">(${taskEvent[i].subTipo}) ${hora} Hrs ${Math.ceil(minutos)} min</span>
 
 					</a>
 				</li>`
-		}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
-		html += `</ul></li>`;
-		
-		//para las evidencias
-		html += `<li class="events-group">
+			}//<br><em class="event-name">&emsp;${ taskEvent[i].tipo }</em><br>&emsp;${ taskEvent[i].subTipo }
+			html += `</ul></li>`;
+
+			//para las evidencias
+			html += `<li class="events-group">
 				<div class="top-info"><span>Evidencias</span></div>
 				<ul>`;
-		for (let i = 0; i < taskEvent.length; i++) {
-			let dataevent: string = 'event-2';
-			console.log(taskEvent[i].uid)
-			const data:any = await this.evidenceService.obtenerEvidence(taskEvent[i].uid).toPromise()
-			console.log("evidencia",data)
-			if(data.ok){			
-				html += `<li class="single-event"  data-start="${ taskEvent[i].horaFin }" data-end="${ taskEvent[i].horaFin }" data-content="event-abs-circuit" data-event="${ dataevent }">`;
-				html +=`<a href="#2" data-order="3" data-uid="${ taskEvent[i].uid }" >
+			for (let i = 0; i < taskEvent.length; i++) {
+				let dataevent: string = 'event-2';
+				console.log(taskEvent[i].uid)
+				const data: any = await this.evidenceService.obtenerEvidence(taskEvent[i].uid).toPromise()
+				console.log("evidencia", data)
+				if (data.ok) {
+					html += `<li class="single-event"  data-start="${taskEvent[i].horaFin}" data-end="${taskEvent[i].horaFin}" data-content="event-abs-circuit" data-event="${dataevent}">`;
+					html += `<a href="#2" data-order="3" data-uid="${taskEvent[i].uid}" >
 							<ion-button fill="clear" class="btn-go-photo" >
 								<ion-icon name="caret-down-outline"></ion-icon>
 							</ion-button>
 						</a>
 						</li>`
+				}
 			}
-		}
-		html += `</ul></li>`;
+			html += `</ul></li>`;
 
-		html += `</ul>
+			html += `</ul>
 		<style>
 		ion-icon {
 			color: #E7360F;
@@ -1013,121 +1040,124 @@ async generarHtml(fecha, machine) {
 		  }
 		</style>`
 
-		div!.innerHTML = html;
-		this.RunSchedulePlan()
-		this.dismissLoading()
-	  })
-  }
+			div!.innerHTML = html;
+			this.RunSchedulePlan()
+			this.dismissLoading()
+		})
+	}
 
-  addDataReport(time:number){
+	addDataReport(time: number) {
 
-	  let validation:boolean=true
-	  let dataFilter:any
-	  for(let hora of this.listaHorasActivas){
-		  if(parseInt(hora.inicio)<=time && time<=parseInt(hora.fin)){
-			validation=false
-			dataFilter=hora
-		  }else{
-			dataFilter=hora
-		  }
-		  
-	  }
-	  
-	  if(validation){
-		  //abrir toma de tiempo para agregar en hora no definida
-		  let horaInicio:string=(String(time).length<=3)?"0"+String(time).substr(0,1)+":"+String(time).substr(1,2):+String(time).substr(0,2)+":"+String(time).substr(2,2)
-		  let params=`;idTarea=${dataFilter.tarea};machine=${dataFilter.maquina};machineIdInterno=${dataFilter.maquinainterna};fecha=${dataFilter.fecha};horaInicio=${horaInicio};uid=${dataFilter.uid}`
-		  this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
-	  }
-  }
+		let validation: boolean = true
+		let dataFilter: any
+		for (let hora of this.listaHorasActivas) {
+			if (parseInt(hora.inicio) <= time && time <= parseInt(hora.fin)) {
+				validation = false
+				dataFilter = hora
+			} else {
+				dataFilter = hora
+			}
 
-  openFotos(idTareaEvent: any){
-	console.log('entra al route')
-    this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent,retorn:"reporte-diario" }])
-  }
+		}
 
-  changedReport() {
-	this.ShowLoading()
-	const maquina = document.getElementById('cmbTarea');
-	const idMachine = (maquina as HTMLIonSelectElement).value;
-	console.log("idmachine", idMachine)
-	this.idMachine = idMachine;
+		if (validation) {
+			//abrir toma de tiempo para agregar en hora no definida
+			let horaInicio: string = (String(time).length <= 3) ? "0" + String(time).substr(0, 1) + ":" + String(time).substr(1, 2) : +String(time).substr(0, 2) + ":" + String(time).substr(2, 2)
+			let params = `;idTarea=${dataFilter.tarea};machine=${dataFilter.maquina};machineIdInterno=${dataFilter.maquinainterna};fecha=${dataFilter.fecha};horaInicio=${horaInicio};uid=${dataFilter.uid}`
+			this.router.navigateByUrl(`/toma-tiempo${params}`, { replaceUrl: true })
+		}
+	}
 
-	const dtime:any = document.getElementById('datetime');
-	const fecha = new Date(dtime.value);
-	fecha.setHours(0);
-	fecha.setMinutes(0);
-	fecha.setSeconds(0);
-	fecha.setMilliseconds(0);
+	openFotos(idTareaEvent: any) {
+		console.log('entra al route')
+		this.router.navigate(['/tomar-foto', { idTarea: idTareaEvent, retorn: "reporte-diario" }])
+	}
 
-	let fechaSend:any=fecha.toLocaleDateString().split("/")
-	let anio:string=fechaSend[2]
-	let mes:string=(fechaSend[1].length==1)?"0"+fechaSend[1]:fechaSend[1]
-	let dia:string=(fechaSend[0].length==1)?"0"+fechaSend[0]:fechaSend[0]
-	fechaSend=anio+"-"+mes+"-"+dia
-
-	
-
-	this.generarHtml(fechaSend, this.idMachine);
-	
-  }
-
-   ngAfterViewInit(): void {
-
-	let idTask = this.route.snapshot.paramMap.get("idTarea");
-	let idMachine = this.route.snapshot.paramMap.get("machine");
-	let fechaR = this.route.snapshot.paramMap.get("fecha");
-	if(!idTask){
-		idTask = ''
-  	}
-
-	
-	if(idMachine){
-		this.idMachine = idMachine;
-		this.cmbMaquina=idMachine
+	changedReport() {
 		this.ShowLoading()
-		this.generarHtml(fechaR, this.idMachine);
-		this.fechaSeleccionada=fechaR
-		let cmbTarea:any=document.getElementById('cmbTarea')
-		cmbTarea.value=idTask
-		this.tiempoDefault=fechaR+"T00:01:00.000"
-  	}
+		//const maquina = document.getElementById('cmbTarea');
+		const idMachine = this.cmbMaquina//(maquina as HTMLIonSelectElement).value;
+		console.log("idmachine", idMachine)
+		this.idMachine = idMachine;
+
+		const dtime: any = document.getElementById('datetime');
+		const fecha = new Date(dtime.value);
+		fecha.setHours(0);
+		fecha.setMinutes(0);
+		fecha.setSeconds(0);
+		fecha.setMilliseconds(0);
+
+		let fechaSend: any = fecha.toLocaleDateString().split("/")
+		let anio: string = fechaSend[2]
+		let mes: string = (fechaSend[1].length == 1) ? "0" + fechaSend[1] : fechaSend[1]
+		let dia: string = (fechaSend[0].length == 1) ? "0" + fechaSend[0] : fechaSend[0]
+		fechaSend = anio + "-" + mes + "-" + dia
 
 
-	const date = new Date().toLocaleDateString();
-	const fec = date.split('/');
-	const anio = fec[2];
-	const mes = fec[1].padStart(2, '0');
-	const dia = fec[0].padStart(2, '0');
+		this.generarHtml(fechaSend, this.idMachine);
 
-	const fecha = anio+'-'+mes+'-'+dia
+	}
 
-	//await this.generarHtml(fecha, this.idMachine);
 	
-  }
 
-  atras(){
-	this.router.navigateByUrl('/inicio');
-  }
-  
-  //#region "jQuery"
-  RunSchedulePlan(){
-	var self=this
-    this.transitionsSupported=( $('.csstransitions').length > 0 );
-    var schedules:any = $('.cd-schedule');
-    var objSchedulesPlan:any = [];
-    
-    if( schedules.length > 0 ) {
-      schedules.each(function(this){
-        //create SchedulePlan objects
-        console.log("RunSchedulePlan",this)
-        //objSchedulesPlan.push(self.SchedulePlan($(this)));
-        self.SchedulePlan(this)
-      });
-    }
-  }
+	ngAfterViewInit(): void {
+		console.log(this.cdr)
+		let idTask = this.route.snapshot.paramMap.get("idTarea");
+		let idMachine = this.route.snapshot.paramMap.get("machine");
+		this.cmbMaquina = String(idMachine)
+		
 
-  SchedulePlan( element:any ) {
+		console.log("idMachine", idMachine)
+		setTimeout(()=>{
+			$("ion-select").click()
+		},1200)
+		let fechaR = this.route.snapshot.paramMap.get("fecha");
+		if (!idTask) {
+			idTask = ''
+		}
+
+
+		if (idMachine) {
+			this.idMachine = idMachine;
+			this.ShowLoading()
+			this.generarHtml(fechaR, this.idMachine);
+			this.fechaSeleccionada = fechaR
+			this.tiempoDefault = fechaR + "T00:01:00.000"
+		}
+
+
+		const date = new Date().toLocaleDateString();
+		const fec = date.split('/');
+		const anio = fec[2];
+		const mes = fec[1].padStart(2, '0');
+		const dia = fec[0].padStart(2, '0');
+
+		const fecha = anio + '-' + mes + '-' + dia
+
+	}
+
+	atras() {
+		this.router.navigateByUrl('/inicio');
+	}
+
+	//#region "jQuery"
+	RunSchedulePlan() {
+		var self = this
+		this.transitionsSupported = ($('.csstransitions').length > 0);
+		var schedules: any = $('.cd-schedule');
+		var objSchedulesPlan: any = [];
+
+		if (schedules.length > 0) {
+			schedules.each(function (this) {
+				//create SchedulePlan objects
+				console.log("RunSchedulePlan", this)
+				//objSchedulesPlan.push(self.SchedulePlan($(this)));
+				self.SchedulePlan(this)
+			});
+		}
+	}
+
+	SchedulePlan(element: any) {
 		this.element = $(element);
 		this.timeline = this.element.find('.timeline');
 		this.timelineItems = this.timeline.find('li');
@@ -1144,142 +1174,142 @@ async generarHtml(fecha, machine) {
 		this.modal = this.element.find('.event-modal');
 		this.modalHeader = this.modal.find('.header');
 		this.modalHeaderBg = this.modal.find('.header-bg');
-		this.modalBody = this.modal.find('.body'); 
-		this.modalBodyBg = this.modal.find('.body-bg'); 
+		this.modalBody = this.modal.find('.body');
+		this.modalBodyBg = this.modal.find('.body-bg');
 		this.modalMaxWidth = 800;
 		this.modalMaxHeight = 480;
 
 		this.animating = false;
 
 		this.initSchedule();
-  }
-  
-  initSchedule = () =>{
+	}
+
+	initSchedule = () => {
 		this.scheduleReset();
 		this.initEvents();
-  };
-  
-  scheduleReset = ()=> {
-	var mq = this.mq();
-	if( mq == 'desktop' && !this.element.hasClass('js-full') ) {
-		//in this case you are on a desktop version (first load or resize from mobile)
-		this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-		//this.element.addClass('js-full');
-		this.placeEvents();
-		this.element.hasClass('modal-is-open') && this.checkEventModal();
-	} else if(  mq == 'mobile' && this.element.hasClass('js-full') ) {
-		//in this case you are on a mobile version (first load or resize from desktop)
-		//this.element.removeClass('js-full loading');
-		this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
-		this.eventsWrapper.children('.grid-line').remove();
-		this.element.hasClass('modal-is-open') && this.checkEventModal();
-	} else if( mq == 'desktop' && this.element.hasClass('modal-is-open')){
-		//on a mobile version with modal open - need to resize/move modal window
-  //this.checkEventModal('desktop');
-  this.checkEventModal();
-		//this.element.removeClass('loading');
-	} else {
-		//this.element.removeClass('loading');
-	}
-  };
-  
-  initEvents = () =>{
+	};
+
+	scheduleReset = () => {
+		var mq = this.mq();
+		if (mq == 'desktop' && !this.element.hasClass('js-full')) {
+			//in this case you are on a desktop version (first load or resize from mobile)
+			this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+			//this.element.addClass('js-full');
+			this.placeEvents();
+			this.element.hasClass('modal-is-open') && this.checkEventModal();
+		} else if (mq == 'mobile' && this.element.hasClass('js-full')) {
+			//in this case you are on a mobile version (first load or resize from desktop)
+			//this.element.removeClass('js-full loading');
+			this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
+			this.eventsWrapper.children('.grid-line').remove();
+			this.element.hasClass('modal-is-open') && this.checkEventModal();
+		} else if (mq == 'desktop' && this.element.hasClass('modal-is-open')) {
+			//on a mobile version with modal open - need to resize/move modal window
+			//this.checkEventModal('desktop');
+			this.checkEventModal();
+			//this.element.removeClass('loading');
+		} else {
+			//this.element.removeClass('loading');
+		}
+	};
+
+	initEvents = () => {
 		var self = this;
 
-		this.singleEvents.each(function(this){
-			
+		this.singleEvents.each(function (this) {
+
 			//create the .event-date element for each event
-			var durationLabel = '<span class="event-date">'+$(this).data('start')+' - '+$(this).data('end')+'</span>';
-			if($(this)[0].dataset.event!="event-1" && $(this)[0].dataset.event!="event-3" && $(this)[0].dataset.event!="event-4"){
+			var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
+			if ($(this)[0].dataset.event != "event-1" && $(this)[0].dataset.event != "event-3" && $(this)[0].dataset.event != "event-4") {
 				$(this).children('a').prepend($(durationLabel));
 			}
 
 			//detect click on the event and open the modal
-			$(this).on('click', 'a', function(event){
+			$(this).on('click', 'a', function (event) {
 				event.preventDefault();
-				if( !self.animating ) self.openModal($(this));
+				if (!self.animating) self.openModal($(this));
 			});
 		});
 
 		//close modal window
-		this.modal.on('click', '.close', function(event){
+		this.modal.on('click', '.close', function (event) {
 			event.preventDefault();
-			if( !self.animating ) self.closeModal(self.eventsGroup.find('.selected-event'));
+			if (!self.animating) self.closeModal(self.eventsGroup.find('.selected-event'));
 		});
-		this.element.on('click', '.cover-layer', function(event){
-			if( !self.animating && self.element.hasClass('modal-is-open') ) self.closeModal(self.eventsGroup.find('.selected-event'));
+		this.element.on('click', '.cover-layer', function (event) {
+			if (!self.animating && self.element.hasClass('modal-is-open')) self.closeModal(self.eventsGroup.find('.selected-event'));
 		});
-  };
-  
-  placeEvents = ()=> {
+	};
+
+	placeEvents = () => {
 		var self = this;
-		this.singleEvents.each(function(this){
+		this.singleEvents.each(function (this) {
 			//place each event in the grid -> need to set top position and height
 			var start = self.getScheduleTimestamp($(this).attr('data-start')),
 				duration = self.getScheduleTimestamp($(this).attr('data-end')) - start;
 
-			var eventTop = self.eventSlotHeight*(start - self.timelineStart)/self.timelineUnitDuration,
-				eventHeight = self.eventSlotHeight*duration/self.timelineUnitDuration;
-			
+			var eventTop = self.eventSlotHeight * (start - self.timelineStart) / self.timelineUnitDuration,
+				eventHeight = self.eventSlotHeight * duration / self.timelineUnitDuration;
+
 			$(this).css({
-				top: (eventTop +12) +'px',
-				height: (eventHeight-3)+'px'
+				top: (eventTop + 12) + 'px',
+				height: (eventHeight - 3) + 'px'
 			});
 		});
 
 		this.element.removeClass('loading');
-  };
-  
-  async presentAlertConfirm(params:any="",paramsDel:any="") {
-    const alert = await this.alertController.create({
-      header: 'Notificación',
-      message: '¿Que desea hacer con la actividad?',
-      buttons: [
-        {
-          text: 'Eliminar',
-          cssClass: 'secondary',
-          handler: (blah) => {
-			this.eliminarTaskEvent(paramsDel)
-          }
-        }, {
-          text: 'Actualizar',
-          handler: () => {
-			this.router.navigateByUrl(`/toma-tiempo${params}`,  {replaceUrl:true})
-          }
-        }
-      ]
-    });
+	};
 
-    await alert.present();
-  } 
+	async presentAlertConfirm(params: any = "", paramsDel: any = "") {
+		const alert = await this.alertController.create({
+			header: 'Notificación',
+			message: '¿Que desea hacer con la actividad?',
+			buttons: [
+				{
+					text: 'Eliminar',
+					cssClass: 'secondary',
+					handler: (blah) => {
+						this.eliminarTaskEvent(paramsDel)
+					}
+				}, {
+					text: 'Actualizar',
+					handler: () => {
+						this.router.navigateByUrl(`/toma-tiempo${params}`, { replaceUrl: true })
+					}
+				}
+			]
+		});
 
-  eliminarTaskEvent(params){
-	this.ShowLoading()
-	this.taskService.deteleTaskEvent(params).subscribe((data:any)=>{
-		if(data.ok){
-			this.dismissLoading()
-			this.generarHtml(this.fechaSeleccionada, this.idMachine);
-		}else{
-			this.dismissLoading()
-		}
-	})
-  }
+		await alert.present();
+	}
 
-  openModal = (event:any)=> {
-		
-		let idTareaEvent=event[0].dataset.uid
+	eliminarTaskEvent(params) {
+		this.ShowLoading()
+		this.taskService.deteleTaskEvent(params).subscribe((data: any) => {
+			if (data.ok) {
+				this.dismissLoading()
+				this.generarHtml(this.fechaSeleccionada, this.idMachine);
+			} else {
+				this.dismissLoading()
+			}
+		})
+	}
 
-		if(event[0].dataset.order==1){
+	openModal = (event: any) => {
+
+		let idTareaEvent = event[0].dataset.uid
+
+		if (event[0].dataset.order == 1) {
 			this.router.navigate(['/map', { idTarea: idTareaEvent }]);
 		}
 
-		if(event[0].dataset.order==2){
-			
-			let params=`;idTarea=${event[0].dataset.tarea};machine=${event[0].dataset.maquina};machineIdInterno=${event[0].dataset.maquinainterna};tipo=${event[0].dataset.tipo};subtipo=${event[0].dataset.subtipo};fecha=${this.fechaSeleccionada};uid=${idTareaEvent}`
-			let paramsDel:any={
-				uid:event[0].dataset.uid
+		if (event[0].dataset.order == 2) {
+
+			let params = `;idTarea=${event[0].dataset.tarea};machine=${event[0].dataset.maquina};machineIdInterno=${event[0].dataset.maquinainterna};tipo=${event[0].dataset.tipo};subtipo=${event[0].dataset.subtipo};fecha=${this.fechaSeleccionada};uid=${idTareaEvent}`
+			let paramsDel: any = {
+				uid: event[0].dataset.uid
 			}
-			this.presentAlertConfirm(params,paramsDel)
+			this.presentAlertConfirm(params, paramsDel)
 			/*this.router.navigate(['/toma-tiempo',  {
 				idTarea: event[0].dataset.tarea ,
 				machine: event[0].dataset.maquina,
@@ -1291,10 +1321,10 @@ async generarHtml(fecha, machine) {
 			}])*/
 		}
 
-		if(event[0].dataset.order==3){
-			this.router.navigate(['/tomar-foto',  { idTarea: idTareaEvent, retorno: "reporte-diario", idUser: this.idUser }])
+		if (event[0].dataset.order == 3) {
+			this.router.navigate(['/tomar-foto', { idTarea: idTareaEvent, retorno: "reporte-diario", idUser: this.idUser }])
 		}
-		
+
 		// var self = this;
 		// var mq = self.mq();
 		// this.animating = true;
@@ -1333,10 +1363,10 @@ async generarHtml(fecha, machine) {
 
 		// 	var modalWidth:number = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
 		// 		modalHeight:number = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
-        
+
 		// 	var modalTranslateX:any = (windowWidth - modalWidth)/2 - eventLeft,
 		// 		modalTranslateY:any = (windowHeight - modalHeight)/2 - eventTop; //parseInt
-			
+
 		// 	var HeaderBgScaleY = modalHeight/eventHeight,
 		// 		BodyBgScaleX = (modalWidth - eventWidth);
 
@@ -1371,7 +1401,7 @@ async generarHtml(fecha, machine) {
 		// 		width: eventWidth+'px',
 		// 	});
 		// 	self.transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
-			
+
 		// 	self.modalHeaderBg.one(this.transitionEnd, function(){
 		// 		//wait for the  end of the modalHeaderBg transformation and show the modal content
 		// 		self.modalHeaderBg.off(self.transitionEnd);
@@ -1382,24 +1412,24 @@ async generarHtml(fecha, machine) {
 
 		// //if browser do not support transitions -> no need to wait for the end of it
 		// if( !this.transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(this.transitionEnd);
-  };
-  
-  closeModal = (event) =>{
+	};
+
+	closeModal = (event) => {
 		var self = this;
 		var mq = self.mq();
 
 		this.animating = true;
 
-		if( mq == 'mobile' ) {
+		if (mq == 'mobile') {
 			this.element.removeClass('modal-is-open');
-			this.modal.one(this.transitionEnd, function(){
+			this.modal.one(this.transitionEnd, function () {
 				self.modal.off(self.transitionEnd);
 				self.animating = false;
 				self.element.removeClass('content-loaded');
 				event.removeClass('selected-event');
 			});
 		} else {
-			var eventTop = event.offset().top -this.window.scrollY,//$(this.window).scrollTop(),
+			var eventTop = event.offset().top - this.window.scrollY,//$(this.window).scrollTop(),
 				eventLeft = event.offset().left,
 				eventHeight = event.innerHeight(),
 				eventWidth = event.innerWidth();
@@ -1414,24 +1444,24 @@ async generarHtml(fecha, machine) {
 
 			//change modal width/height and translate it
 			this.modal.css({
-				width: eventWidth+'px',
-				height: eventHeight+'px'
+				width: eventWidth + 'px',
+				height: eventHeight + 'px'
 			});
-			self.transformElement(self.modal, 'translateX('+modalTranslateX+'px) translateY('+modalTranslateY+'px)');
-			
+			self.transformElement(self.modal, 'translateX(' + modalTranslateX + 'px) translateY(' + modalTranslateY + 'px)');
+
 			//scale down modalBodyBg element
 			self.transformElement(self.modalBodyBg, 'scaleX(0) scaleY(1)');
 			//scale down modalHeaderBg element
 			self.transformElement(self.modalHeaderBg, 'scaleY(1)');
 
-			this.modalHeaderBg.one(this.transitionEnd, function(){
+			this.modalHeaderBg.one(this.transitionEnd, function () {
 				//wait for the  end of the modalHeaderBg transformation and reset modal style
 				self.modalHeaderBg.off(self.transitionEnd);
 				self.modal.addClass('no-transition');
-				setTimeout(function(){
+				setTimeout(function () {
 					self.modal.add(self.modalHeader).add(self.modalBody).add(self.modalHeaderBg).add(self.modalBodyBg).attr('style', '');
 				}, 10);
-				setTimeout(function(){
+				setTimeout(function () {
 					self.modal.removeClass('no-transition');
 				}, 20);
 
@@ -1442,27 +1472,28 @@ async generarHtml(fecha, machine) {
 		}
 
 		//browser do not support transitions -> no need to wait for the end of it
-		if( !this.transitionsSupported ) self.modal.add(self.modalHeaderBg).trigger(this.transitionEnd);
-  }
-  
-  mq = ()=>{
+		if (!this.transitionsSupported) self.modal.add(self.modalHeaderBg).trigger(this.transitionEnd);
+	}
+
+	mq = () => {
 		//get MQ value ('desktop' or 'mobile') 
 		var self = this;
 		console.log("mq")
 		return this.window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
-  };
-  
-  checkEventModal = ()=> {
+
+	};
+
+	checkEventModal = () => {
 		this.animating = true;
 		var self = this;
 		var mq = this.mq();
 
-		if( mq == 'mobile' ) {
+		if (mq == 'mobile') {
 			//reset modal style on mobile
 			self.modal.add(self.modalHeader).add(self.modalHeaderBg).add(self.modalBody).add(self.modalBodyBg).attr('style', '');
-			self.modal.removeClass('no-transition');	
-			self.animating = false;	
-		} else if( mq == 'desktop' && self.element.hasClass('modal-is-open') ) {
+			self.modal.removeClass('no-transition');
+			self.animating = false;
+		} else if (mq == 'desktop' && self.element.hasClass('modal-is-open')) {
 			self.modal.addClass('no-transition');
 			self.element.addClass('animation-completed');
 			var event = self.eventsGroup.find('.selected-event');
@@ -1472,76 +1503,76 @@ async generarHtml(fecha, machine) {
 				eventHeight = event.innerHeight(),
 				eventWidth = event.innerWidth();
 
-			var windowWidth:number = this.window.innerWidth,// $(window).width(),
-				windowHeight:number = this.window.innerHeight// $(window).height();
+			var windowWidth: number = this.window.innerWidth,// $(window).width(),
+				windowHeight: number = this.window.innerHeight// $(window).height();
 
-			var modalWidth = ( windowWidth*.8 > self.modalMaxWidth ) ? self.modalMaxWidth : windowWidth*.8,
-				modalHeight = ( windowHeight*.8 > self.modalMaxHeight ) ? self.modalMaxHeight : windowHeight*.8;
+			var modalWidth = (windowWidth * .8 > self.modalMaxWidth) ? self.modalMaxWidth : windowWidth * .8,
+				modalHeight = (windowHeight * .8 > self.modalMaxHeight) ? self.modalMaxHeight : windowHeight * .8;
 
-			var HeaderBgScaleY = modalHeight/eventHeight,
+			var HeaderBgScaleY = modalHeight / eventHeight,
 				BodyBgScaleX = (modalWidth - eventWidth);
 
-			setTimeout(function(){
+			setTimeout(function () {
 				self.modal.css({
-					width: modalWidth+'px',
-					height: modalHeight+'px',
-					top: (windowHeight/2 - modalHeight/2)+'px',
-					left: (windowWidth/2 - modalWidth/2)+'px',
+					width: modalWidth + 'px',
+					height: modalHeight + 'px',
+					top: (windowHeight / 2 - modalHeight / 2) + 'px',
+					left: (windowWidth / 2 - modalWidth / 2) + 'px',
 				});
 				self.transformElement(self.modal, 'translateY(0) translateX(0)');
 				//change modal modalBodyBg height/width
 				self.modalBodyBg.css({
-					height: modalHeight+'px',
+					height: modalHeight + 'px',
 					width: '1px',
 				});
-				self.transformElement(self.modalBodyBg, 'scaleX('+BodyBgScaleX+')');
+				self.transformElement(self.modalBodyBg, 'scaleX(' + BodyBgScaleX + ')');
 				//set modalHeader width
 				self.modalHeader.css({
-					width: eventWidth+'px',
+					width: eventWidth + 'px',
 				});
 				//set modalBody left margin
 				self.modalBody.css({
-					marginLeft: eventWidth+'px',
+					marginLeft: eventWidth + 'px',
 				});
 				//change modal modalHeaderBg height/width and scale it
 				self.modalHeaderBg.css({
-					height: eventHeight+'px',
-					width: eventWidth+'px',
+					height: eventHeight + 'px',
+					width: eventWidth + 'px',
 				});
-				self.transformElement(self.modalHeaderBg, 'scaleY('+HeaderBgScaleY+')');
+				self.transformElement(self.modalHeaderBg, 'scaleY(' + HeaderBgScaleY + ')');
 			}, 10);
 
-			setTimeout(function(){
+			setTimeout(function () {
 				self.modal.removeClass('no-transition');
-				self.animating = false;	
+				self.animating = false;
 			}, 20);
 		}
 	};
 
-   checkResize(){
-		this.objSchedulesPlan.forEach(function(element:any){
+	checkResize() {
+		this.objSchedulesPlan.forEach(function (element: any) {
 			element.scheduleReset();
 		});
 		this.windowResize = false;
 	}
 
-	 getScheduleTimestamp(time:any) {
+	getScheduleTimestamp(time: any) {
 		//accepts hh:mm format - convert hh:mm to timestamp
-		time = time.replace(/ /g,'');
+		time = time.replace(/ /g, '');
 		var timeArray = time.split(':');
-		var timeStamp = parseInt(timeArray[0])*60 + parseInt(timeArray[1]);
+		var timeStamp = parseInt(timeArray[0]) * 60 + parseInt(timeArray[1]);
 		return timeStamp;
 	}
 
-	 transformElement(element:any, value:any) {
+	transformElement(element: any, value: any) {
 		element.css({
-		    '-moz-transform': value,
-		    '-webkit-transform': value,
+			'-moz-transform': value,
+			'-webkit-transform': value,
 			'-ms-transform': value,
 			'-o-transform': value,
 			'transform': value
 		});
 	}
-//#endregion
+	//#endregion
 
 }

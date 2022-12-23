@@ -9,11 +9,9 @@
         Regresar a las tareas
       </ion-button> 
 
-      <ion-select  interface="popover" placeholder="--Seleccione--" id="cmbTarea" [(ngModel)]="cmbMaquina">
-        <ion-select-option *ngFor="let c of item" detail
-                  [value]="c.value" >
-          {{ c.nombre }}
-        </ion-select-option>
+      <ion-select  interface="popover" placeholder="--Seleccione--"  id="cmbMaquina" [(ngModel)]="cmbMaquina"  >
+        <!--<ion-select-option value="">--Seleccione--</ion-select-option>
+        <ion-select-option *ngFor="let c of item" value="{{c.value}}" >{{ c.nombre }}</ion-select-option>-->
       </ion-select>
 
       <ion-datetime-button datetime="datetime"></ion-datetime-button>

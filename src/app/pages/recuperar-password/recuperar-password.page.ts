@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { AlertController } from '@ionic/angular';
 import { LoginService } from 'src/app/services/login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-recuperar-password',
@@ -12,6 +13,7 @@ export class RecuperarPasswordPage implements OnInit {
   flagCodigo: Boolean = false;
   formRecuperacion: FormGroup;
 
+
   email: String = '';
   codigo: String = '';
   pass1: String = '';
@@ -19,7 +21,8 @@ export class RecuperarPasswordPage implements OnInit {
 
   constructor(public formBuilder: FormBuilder,
               private loginService: LoginService,
-              private alertController: AlertController) {
+              private alertController: AlertController,
+              private route: Router) {
     this.formRecuperacion = this.formBuilder.group({
       email: ['', Validators.required],
       codigo: ['', Validators.required],
@@ -44,7 +47,7 @@ export class RecuperarPasswordPage implements OnInit {
       if(data.ok){
         const { recovery_usuario } = data;
 
-        console.log(recovery_usuario);
+       
         
         idRecovery = recovery_usuario[0].uid;
         idUser = recovery_usuario[0].idUser;
@@ -60,12 +63,15 @@ export class RecuperarPasswordPage implements OnInit {
           password: this.pass1
         }
 
-        console.log(recovery)
 
         this.loginService.actualizarPassword(recovery).subscribe((data: any) => {
           console.log(data);
+          this.alertMessage("Codigo validado! Se cambio la contraseña correctamente!")
+          this.route.navigateByUrl('/login',{replaceUrl:true});
         })
 
+      }else{
+        this.alertMessage(data.msg)
       }
     });
   }
@@ -75,10 +81,15 @@ export class RecuperarPasswordPage implements OnInit {
     this.loginService.enviarCodigo(this.email).subscribe((data: any) => {
       if(data.total > 0){
         this.flagCodigo = true;
+        this.formRecuperacion.value.codigo=""
       }else {
         this.flagCodigo = false;
       }
     })
+  }
+
+  yaCuentaConCodigo(){
+    this.flagCodigo=true
   }
 
   async alertMessage(mensaje: string) {
