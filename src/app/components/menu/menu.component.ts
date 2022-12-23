@@ -16,19 +16,11 @@ export class MenuComponent implements OnInit {
     private optionService: OptionService){
   }
 
+
   async ngOnInit(): Promise<void> {
     this.optionService.getOption().subscribe((data: any) => {
       console.log('menu',data)
       this.appPages = data.option;
     })
   }
-
-  // public appPages = [
-  //   { title: 'Inicio', url: '/inicio', icon: 'home' },
-  //   { title: 'Asignación tareas', url: '/asigna-tarea', icon: 'calendar' },
-  //   // { title: 'Asignación tareas', url: '/maquina-tarea', icon: 'calendar' },
-  //   { title: 'Configuración', url: '/configuracion', icon: 'settings' },
-  //   { title: 'Cerrar Sesion', url: '/login', icon: 'power' },
-  // ];
-
 }

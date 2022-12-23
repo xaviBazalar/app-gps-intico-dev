@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
+import { TaskModel } from 'src/app/models/task';
 import { UserModel } from 'src/app/models/user';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
 import { StorageService } from 'src/app/services/storage.service';
