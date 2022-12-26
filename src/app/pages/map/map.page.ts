@@ -53,16 +53,16 @@ export class MapPage implements OnInit {
   }
 
   async renderMarkers() {
-    console.log('buscando ubicaciones')
+    //console.log('buscando ubicaciones')
     let idTarea: string | null = this._route.snapshot.paramMap.get("idTarea");
 
     if(idTarea)
       this.idTarea = idTarea;
 
-    console.log('tareaa', idTarea);
+    //console.log('tareaa', idTarea);
 
     (await this.eventService.getTaskEventMap(this.idTarea)).subscribe(async (data: any) =>{
-      console.log('task', data)
+      //console.log('task', data)
 
       if(data.ok){
         const { taskEvent } = data;
@@ -80,7 +80,7 @@ export class MapPage implements OnInit {
         const hhFin = Number.parseInt(horFin[0])
         const mmFin = Number.parseInt(horFin[1])
 
-        console.log("fecha",fecha)
+        //console.log("fecha",fecha)
         let fechaInicio = fecha;
         fechaInicio.setHours(hhIni);
         fechaInicio.setMinutes(mmIni);
@@ -97,11 +97,11 @@ export class MapPage implements OnInit {
 
         const fechaHastaTS = (fechaFin).getTime() / 1000;
         
-        console.log('fechaDesdeTS',fechaDesdeTS)
-        console.log('fechaHastaTS',fechaHastaTS);
+        //console.log('fechaDesdeTS',fechaDesdeTS)
+        //console.log('fechaHastaTS',fechaHastaTS);
 
         (await this.taskService.obtenerUbicaTiempo(machine.idInterno, fechaDesdeTS.toString(), fechaHastaTS.toString())).subscribe((data: any) => {
-          console.log('flespi',data)
+          //console.log('flespi',data)
           const { result } = data
       
           for(let i = 0; i < result.length; i++){

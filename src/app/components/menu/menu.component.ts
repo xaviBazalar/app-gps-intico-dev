@@ -19,7 +19,7 @@ export class MenuComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.optionService.getOption().subscribe((data: any) => {
-      console.log('menu',data)
+      //console.log('menu',data)
       this.appPages = data.option;
     })
   }

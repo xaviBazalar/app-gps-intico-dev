@@ -1,10 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MenuController, ModalController } from '@ionic/angular';
-import { TaskService } from 'src/app/services/task.service';
+//import { TaskService } from 'src/app/services/task.service';
 import { MaquinaTareaPage } from '../maquina-tarea/maquina-tarea.page';
-import { TaskModel } from '../../models/task'
-import { UserModel } from '../../models/user'
-import { StorageService } from 'src/app/services/storage.service';
+//import { TaskModel } from '../../models/task'
+//import { UserModel } from '../../models/user'
+//import { StorageService } from 'src/app/services/storage.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app.reducer';
+import { addTareas } from '../../store/tareas/tareas.actions';
 
 @Component({
   selector: 'app-asigna-tarea',
@@ -24,37 +27,43 @@ export class AsignaTareaPage implements OnInit {
   idTask: String = '';
   idUser: String = '';
   idInterno: any = { idInter: '', idGene: '' };
+  dataUser: any
 
   constructor(private menu: MenuController,
               private modalCtrl: ModalController,
-              private taskService: TaskService,
-              private storageService: StorageService
+              //private taskService: TaskService,
+              //private storageService: StorageService,
+              private store: Store<AppState>
               ) {
     this.menu.enable(true);
 
   }
 
   ngOnInit() {
+    this.store.select("login").subscribe((data: any) => {
+      this.dataUser = data.dataLogin[0]
+    })
   }
 
   async ngAfterViewInit(): Promise<void> {
-    let userData = this.storageService.loadUser();
-    const [user] = await Promise.all([userData])
+    //let userData = this.storageService.loadUser();
+    //const [user] = await Promise.all([userData])
 
 
-    const dataUser = user;
+    //const dataUser = user;
 
-    if(dataUser){
-      this.idUser = dataUser[0].uid;
-
-      this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
-        console.log(data);
-        const { task } = data;
-        console.log('tarea', task);
-        for (let index = 0; index < task.length; index++) {
-          console.log(task[index]);
-          const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = task[index];
-          console.log(tareaMaquinaria)
+    if(this.dataUser!=""){
+      this.idUser = this.dataUser.uid;
+      this.store.dispatch(addTareas({ id: this.idUser }))
+      //this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
+      this.store.select("tareas").subscribe((data: any) => {
+        const { tareas } = data;
+        this.planTrabajo=[]
+        this.tareaMachine=[]
+        this.turnoArray=[]
+        this.machine=[]
+        for (let index = 0; index < tareas.length; index++) {
+          const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = tareas[index];
           this.planTrabajo.push(planificacionTrabajo);
           this.tareaMachine.push(tareaMaquinaria);
           this.turnoArray.push(turno);
@@ -84,8 +93,6 @@ export class AsignaTareaPage implements OnInit {
 }
 
  async abrirMaquinaTrabajo() {
-  // console.log('idmaquina',this.idInterno.idInter);
-  // console.log('maquina',this.idInterno.idGene );
   const modal = this.modalCtrl.create({
     component: MaquinaTareaPage,
     componentProps: {

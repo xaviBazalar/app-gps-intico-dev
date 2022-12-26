@@ -1,4 +1,5 @@
-import { NgModule } from '@angular/core';
+import { isDevMode, NgModule } from '@angular/core';
+import { StoreModule } from '@ngrx/store';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -17,36 +18,47 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { InfouserComponent } from './components/infouser/infouser.component';
+import { appReducers } from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { EffectsArray } from './store/effects/index';
 
-export function HttpLoaderFactory(http: HttpClient){
+import { StoreDevtoolsModule } from '@ngrx/store-devtools'
+import { environment } from '../environments/environment';
+
+export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
 
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule,
-            IonicModule.forRoot(),
-            AppRoutingModule,
-            ComponentsModule,
-            HttpClientModule,
-            TranslateModule.forRoot(
-              {
-                loader:{
-                  provide:TranslateLoader,
-                  useFactory:HttpLoaderFactory,
-                  deps:[HttpClient]
-                }
-              }
-            ),
-            IonicStorageModule.forRoot(),
-            
-          ],
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    ComponentsModule,
+    HttpClientModule,
+    TranslateModule.forRoot(
+      {
+        loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+        }
+      }
+    ),
+    IonicStorageModule.forRoot(),
+    StoreModule.forRoot(appReducers),
+    EffectsModule.forRoot(EffectsArray),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
+
+  ],
   providers: [Camera,
-              Geolocation,
-              FileTransfer,
-              BackgroundMode,
-              { provide: RouteReuseStrategy,
-                useClass: IonicRouteStrategy }],
+    Geolocation,
+    FileTransfer,
+    BackgroundMode,
+    {
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy
+    }],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

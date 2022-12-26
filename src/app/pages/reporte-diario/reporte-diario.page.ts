@@ -5,13 +5,13 @@ import { DOCUMENT } from '@angular/common';
 import { TaskEventsModel } from '../../models/taskEvents'
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { parse } from 'path';
 import { StorageService } from 'src/app/services/storage.service';
 import { MaquinariaService } from 'src/app/services/maquinaria.service';
 import { EvidenceService } from 'src/app/services/evidence.service';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
-
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app.reducer';
 
 @Component({
 	selector: 'app-reporte-diario',
@@ -55,6 +55,7 @@ export class ReporteDiarioPage implements OnInit {
 	listaEventos: Array<TaskEventsModel> = [];
 	idMachine: String | null = '';
 	item: any[] = [];
+	dataUser: any
 
 	@Input() page;
 	idUser: String = '';
@@ -68,7 +69,8 @@ export class ReporteDiarioPage implements OnInit {
 		private evidenceService: EvidenceService,
 		public alertController: AlertController,
 		public loadingController: LoadingController,
-		public cdr: ChangeDetectorRef
+		public cdr: ChangeDetectorRef,
+		private store: Store<AppState>
 	) {
 		this.window = this.document.defaultView;
 		this.date = new Date().toString();
@@ -83,7 +85,7 @@ export class ReporteDiarioPage implements OnInit {
 
 	@HostListener('unloaded')
 	ionViewWillLeave() {
-		console.log("me movi")
+		//console.log("me movi")
 		this.serviceMaquinaria.unsubscribe()
 	}
 
@@ -114,16 +116,10 @@ export class ReporteDiarioPage implements OnInit {
 		
 	}
 
-	async ngOnInit(): Promise<void> {
-		
-		await this.storageService.init()
-		const [user] = await Promise.all([this.storageService.loadUser()]);
-		const dataUser = user;
-		this.idUser = dataUser[0].uid;
-
-		// console.log("iduser", idUser);
-
-		
+	ngOnInit() {
+		this.store.select("login").subscribe((data: any) => {
+			this.dataUser = data.dataLogin[0]
+		})
 	}
 
 	loadMachines(id:any){
@@ -132,7 +128,7 @@ export class ReporteDiarioPage implements OnInit {
 		this.serviceMaquinaria=this.machineService.getMachine(id).subscribe((data: any) => {
 			// console.log('idUser', idUser);
 			const { machine } = data;
-			console.log("llamando getMachine");
+			//console.log("llamando getMachine");
 			// console.log('tarea', task);
 			for (let index = 0; index < machine.length; index++) {
 				const _item = {
@@ -156,14 +152,14 @@ export class ReporteDiarioPage implements OnInit {
 
 
 	async generarHtml(fecha, machine) {
-		console.log('Armado del html')
+		//console.log('Armado del html')
 		this.fechaSeleccionada = fecha
 		let html: string = '<ul class="wrap">';
-		console.log("fecha", fecha)
+		//console.log("fecha", fecha)
 		this.taskService.getTaskEventReporte(fecha, machine).subscribe(async (data: any) => {
 			const { taskEvent } = data;
 			const div = document.getElementById('divEventos');
-			console.log(taskEvent)
+			//console.log(taskEvent)
 			if (data.ok == false) {
 				div!.innerHTML = "";
 				this.dismissLoading()
@@ -192,8 +188,8 @@ export class ReporteDiarioPage implements OnInit {
 					let minTemp: any = parseFloat("0." + dataTime[1])
 					minutos = minTemp * 60
 					hora = dataTime[0]
-					console.log("horas", dataTime[0])
-					console.log("minutos", parseInt(minutos))
+					//console.log("horas", dataTime[0])
+					//console.log("minutos", parseInt(minutos))
 				}
 				this.listaHorasActivas.push({
 					inicio: taskEvent[i].horaInicio.replace(":", ""),
@@ -247,8 +243,8 @@ export class ReporteDiarioPage implements OnInit {
 					let minTemp: any = parseFloat("0." + dataTime[1])
 					minutos = minTemp * 60
 					hora = dataTime[0]
-					console.log("horas", dataTime[0])
-					console.log("minutos", parseInt(minutos))
+					//console.log("horas", dataTime[0])
+					//console.log("minutos", parseInt(minutos))
 				}
 
 				/*
@@ -288,9 +284,9 @@ export class ReporteDiarioPage implements OnInit {
 				<ul>`;
 			for (let i = 0; i < taskEvent.length; i++) {
 				let dataevent: string = 'event-2';
-				console.log(taskEvent[i].uid)
+				//console.log(taskEvent[i].uid)
 				const data: any = await this.evidenceService.obtenerEvidence(taskEvent[i].uid).toPromise()
-				console.log("evidencia", data)
+				//console.log("evidencia", data)
 				if (data.ok) {
 					html += `<li class="single-event"  data-start="${taskEvent[i].horaFin}" data-end="${taskEvent[i].horaFin}" data-content="event-abs-circuit" data-event="${dataevent}">`;
 					html += `<a href="#2" data-order="3" data-uid="${taskEvent[i].uid}" >
@@ -1075,7 +1071,7 @@ export class ReporteDiarioPage implements OnInit {
 	}
 
 	openFotos(idTareaEvent: any) {
-		console.log('entra al route')
+		//console.log('entra al route')
 		this.router.navigate(['/tomar-foto', { idTarea: idTareaEvent, retorn: "reporte-diario" }])
 	}
 
@@ -1083,7 +1079,7 @@ export class ReporteDiarioPage implements OnInit {
 		this.ShowLoading()
 		//const maquina = document.getElementById('cmbTarea');
 		const idMachine = this.cmbMaquina//(maquina as HTMLIonSelectElement).value;
-		console.log("idmachine", idMachine)
+		//console.log("idmachine", idMachine)
 		this.idMachine = idMachine;
 
 		const dtime: any = document.getElementById('datetime');
@@ -1112,9 +1108,9 @@ export class ReporteDiarioPage implements OnInit {
 		const [user] = await Promise.all([this.storageService.loadUser()]);
 		const dataUser = user;
 		this.idUser = dataUser[0].uid;
-		console.log(this.item.length)
+		//console.log(this.item.length)
 		if(this.item.length==0){
-			this.loadMachines(this.idUser)
+			this.loadMachines(this.dataUser.uid)
 		}
 
 
@@ -1165,7 +1161,7 @@ export class ReporteDiarioPage implements OnInit {
 		if (schedules.length > 0) {
 			schedules.each(function (this) {
 				//create SchedulePlan objects
-				console.log("RunSchedulePlan", this)
+				//console.log("RunSchedulePlan", this)
 				//objSchedulesPlan.push(self.SchedulePlan($(this)));
 				self.SchedulePlan(this)
 			});
@@ -1338,7 +1334,7 @@ export class ReporteDiarioPage implements OnInit {
 
 		if (event[0].dataset.order == 3) {
 			//this.router.navigate(['/tomar-foto', { idTarea: idTareaEvent, retorno: "reporte-diario", idUser: this.idUser }])
-			let paramsFoto:string=`;idTarea=${idTareaEvent};retorno=reporte-diario;idUser=${this.idUser}`
+			let paramsFoto:string=`;idTarea=${idTareaEvent};retorno=reporte-diario;idUser=${this.dataUser.uid}`
 			this.router.navigateByUrl('/tomar-foto'+paramsFoto,{replaceUrl:true})
 		}
 

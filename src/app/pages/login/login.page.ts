@@ -6,6 +6,9 @@ import { UsuarioService } from '../../services/usuario.service';
 import { LoginService } from '../../services/login.service';
 import { UserModel } from 'src/app/models/user';
 import { StorageService } from 'src/app/services/storage.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app.reducer';
+import * as storeActions from '../../store/actions';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +31,8 @@ export class LoginPage implements OnInit {
               private menu: MenuController,
               private route: Router,
               private loginService: LoginService,
-              private storageService: StorageService) {
+              private storageService: StorageService,
+              private store: Store<AppState>) {
     this.formularioLogin = this.fb.group({
       nombre: ['', Validators.required],
       password: ['',Validators.required]
@@ -52,14 +56,15 @@ export class LoginPage implements OnInit {
       return;
     }    
 
+    this.store.dispatch(storeActions.validateLogin({user:this.usuario.usuario,pass: this.usuario.password}))
+
     this.loginService.validateLogin(this.usuario.usuario, this.usuario.password).subscribe(
       async (data:any) => {
-        console.log('rpta', data);
         
         if(data.ok){
           this.usuario = data.usuario;
           await this.storageService.saveRemoveUsuario(this.usuario);
-          this.route.navigate(['./inicio']);
+          this.route.navigateByUrl('/inicio');
         }else{
           this.errorMsg = data.msg;
         }
