@@ -8,27 +8,57 @@
       <ion-card-content>      
         <ion-label>Planificacion de Trabajo</ion-label>
         <ion-item>
-          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" >
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" id="cmbPlanificacionTrabajo">
             <ion-select-option *ngFor="let c of planTrabajo" 
-                                [value]="c._id"> {{ c.descripcion }} </ion-select-option>
-            <!-- <ion-select-option value="apples">{{ taskModel.planificacionTrabajo }}</ion-select-option>             -->
+                                [value]="c._id">{{ c.descripcion }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-label>Contrato</ion-label>
+        <ion-item>
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" id="cmbContrato">
+            <ion-select-option *ngFor="let c of contrats" 
+                                [value]="c.uid">{{ c.descripcion }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-label>Maquinaria</ion-label>
         <ion-item>
-          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" [(ngModel)]="idInterno">
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" id="cmbMaquina">
             <ion-select-option *ngFor="let c of machine" 
-                                [value]="c.id"> {{ c.des }} </ion-select-option>
-            <!-- <ion-select-option value="apples">{{ taskModel.machine }}</ion-select-option> -->
+                                [value]="c.uid">{{ c.descripcion }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-label>Tarea de la maquinaria</ion-label>
         <ion-item>
-          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--">
-            <ion-select-option *ngFor="let c of tareaMachine" 
-                                [value]="c"> {{ c }} </ion-select-option>
-            <!-- <ion-select-option value="apples">{{ taskModel.tareaMaquinaria }}</ion-select-option> -->
+          <ion-input type="text" id="txtTareaMaquinaria" placeholder="Nombre de tarea"></ion-input>
+        </ion-item>
+        <ion-label>Fecha Desde</ion-label>
+        <ion-item>
+          <ion-datetime-button datetime="datetime1"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true" #modalTime1 >
+              <ng-template>
+                <ion-datetime presentation="date" id="datetime1" (ionChange)="modalTime1.dismiss();" on="true"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+        </ion-item>
+        <ion-label>Fecha Hasta</ion-label>
+        <ion-item>
+          <ion-datetime-button datetime="datetime2"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true" #modalTime2 >
+              <ng-template>
+                <ion-datetime presentation="date" id="datetime2" (ionChange)="modalTime2.dismiss();" on="true"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+        </ion-item>
+        <ion-label>Turno</ion-label>
+        <ion-item>
+          <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" id="cmbTurno">
+            <ion-select-option value="A.M">A.M</ion-select-option>
+            <ion-select-option value="P.M">P.M</ion-select-option>
           </ion-select>
+        </ion-item>
+        <ion-label>Tiempo SLA</ion-label>
+        <ion-item>
+          <ion-input type="text" id="txtHoras" placeholder="Tiempo SLA: 0 a 24"></ion-input>
         </ion-item>
       </ion-card-content>
     </ion-card>
