@@ -10,6 +10,8 @@ export class TaskModel {
     contrato: String;
     tiempoSLA: String;
     uid: String | null;
+    fechaTareaDesde: Date | null;
+    fechaTareaHasta: Date | null;
 
     constructor(){
         this.planificacionTrabajo = '';
@@ -23,5 +25,7 @@ export class TaskModel {
         this.contrato = '';
         this.tiempoSLA = '';
         this.uid = null;
+        this.fechaTareaDesde = null;
+        this.fechaTareaHasta = null;
     }
 }

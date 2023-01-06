@@ -28,6 +28,19 @@ export class TareasEffects {
     )
     );
 
+    cargarTareaNueva$ = createEffect(() => this.actions$.pipe(
+        ofType(TareasActions.addTareasNew),
+        //tap(data=>console.log("effect tap")),
+        mergeMap(
+            (action: any) => this.taskService.postTask(action.data)
+                .pipe(
+                    tap(data=>console.log("effect postTask tap",data)),
+                    map((tareas: any) =>TareasActions.successTareaNew({ data: tareas })),
+                    catchError(err => of(TareasActions.errorTarea({ payload: err })))
+                ))
+    )
+    );
+
 
 
 }

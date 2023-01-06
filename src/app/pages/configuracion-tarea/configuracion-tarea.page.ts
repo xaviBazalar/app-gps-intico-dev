@@ -1,11 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController, ModalController } from '@ionic/angular';
+import { AlertController, MenuController, ModalController } from '@ionic/angular';
 //import { TaskService } from 'src/app/services/task.service';
 import { MaquinaTareaPage } from '../maquina-tarea/maquina-tarea.page';
 //import { StorageService } from 'src/app/services/storage.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.reducer';
-import { addTareas } from '../../store/tareas/tareas.actions';
+import { addTareas, addTareasNew } from '../../store/tareas/tareas.actions';
+import { TaskModel } from 'src/app/models/task';
+import { PlanificacionTrabajoService } from 'src/app/services/planificacion-trabajo.service';
+import { PlanificacionTrabajoModel } from 'src/app/models/planificacionTrabajo';
+import { MaquinariaService } from 'src/app/services/maquinaria.service';
+import { ContractService } from 'src/app/services/contract.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-configuracion-tarea',
   templateUrl: './configuracion-tarea.page.html',
@@ -14,67 +20,55 @@ import { addTareas } from '../../store/tareas/tareas.actions';
 
 
 export class ConfiguracionTareaPage implements OnInit {
-
-  // taskModel: TaskModel = new TaskModel;
-  // userModel:UserModel = new UserModel;
-
   planTrabajo: any = [];
-  tareaMachine: any = [];
-  turnoArray: any = [];
   machine: any = [];
-  idMaquina: any = [];
-  idTask: String = '';
+  contrats: any = [];
   idUser: String = '';
-  idInterno: any = { idInter: '', idGene: '' };
-  dataUser: any
+  dataUser: any;
 
   constructor(private menu: MenuController,
-              private modalCtrl: ModalController,
-              //private taskService: TaskService,
-              //private storageService: StorageService,
-              private store: Store<AppState>
+              private alertController: AlertController,
+              private planificacionService: PlanificacionTrabajoService,
+              private maquinaService: MaquinariaService,
+              private contratoService: ContractService,
+              private store: Store<AppState>,
+              private router: Router
               ) {
     this.menu.enable(true);
-
   }
 
   ngOnInit() {
     this.store.select("login").subscribe((data: any) => {
-      this.dataUser = data.dataLogin[0]
+        this.dataUser = data.dataLogin[0]
     })
   }
 
   async ngAfterViewInit(): Promise<void> {
-    //let userData = this.storageService.loadUser();
-    //const [user] = await Promise.all([userData])
-
-
-    //const dataUser = user;
-
-    if(this.dataUser!=""){
+    if(this.dataUser){
+      console.log('Usuario',this.dataUser);
       this.idUser = this.dataUser.uid;
-      this.store.dispatch(addTareas({ id: this.idUser }))
-
-      //this.taskService.getTask(this.idUser, null, null).subscribe((data:any) => {
-      this.store.select("tareas").subscribe((data: any) => {
-        const { tareas } = data;
-        this.planTrabajo=[]
-        this.tareaMachine=[]
-        this.turnoArray=[]
-        this.machine=[]
-        for (let index = 0; index < tareas.length; index++) {
-          const { planificacionTrabajo, tareaMaquinaria, turno, uid, machine, user } = tareas[index];
-          this.planTrabajo.push(planificacionTrabajo);
-          this.tareaMachine.push(tareaMaquinaria);
-          this.turnoArray.push(turno);
-          this.machine.push({des: machine.descripcion, id: {idInter: machine.idInterno, idGene: machine._id}});
-          this.idTask = uid;
-          this.idUser = user;
+      
+      this.planificacionService.getPlanificacionTrabajo().subscribe((data: any) => {
+        if(data.ok){
+          console.log(data);
+          const { PlanificacionTrabajo } = data
+          this.planTrabajo = PlanificacionTrabajo;
         }
-
-        this.planTrabajo=this.removeDuplicates(this.planTrabajo)
-        this.machine=this.removeDuplicates(this.machine)
       });
+
+      this.maquinaService.getMachine(this.idUser).subscribe((data: any) => {
+        if(data.ok){
+          const { machine } = data;
+          this.machine = machine
+        }
+      });
+
+      this.contratoService.getContratos().subscribe((data: any) => {
+        if(data.ok){
+          const { contract } = data;
+          this.contrats = contract;
+        }
+      })
     }
   }
 
@@ -93,17 +87,114 @@ export class ConfiguracionTareaPage implements OnInit {
 }
 
  async abrirMaquinaTrabajo() {
-  const modal = this.modalCtrl.create({
-    component: MaquinaTareaPage,
-    componentProps: {
-      idMaquina: this.idInterno.idGene,//'637d169d21c773c9052c9406',
-      idUser: this.idUser,//'6377fb874bf53e9bb88d55dd',
-      idTarea: this.idTask,//'637d1c9321c773c9052c9416',
-      idMaquinaInterna: this.idInterno.idInter
+  const dtime1: any = document.getElementById('datetime1');
+	const fechaDesde = new Date(dtime1.value);
+
+  const dtime2: any = document.getElementById('datetime2');
+	const fechaHasta = new Date(dtime2.value);
+
+  const planificacionInput: any = document.getElementById('cmbPlanificacionTrabajo');
+	const planificacion = planificacionInput.value;
+
+  const txtTareaMaquinaria: any = document.getElementById('txtTareaMaquinaria');
+	const tareaMaquinaria = txtTareaMaquinaria.value;
+
+  const txtHoras: any = document.getElementById('txtHoras');
+	const horas = txtHoras.value;
+
+  const cmbMaquina: any = document.getElementById('cmbMaquina');
+	const maquina = cmbMaquina.value;
+
+  const cmbTurno: any = document.getElementById('cmbTurno');
+	const turno = cmbTurno.value;  
+
+  const cmbContrato: any = document.getElementById('cmbContrato');
+	const contrato = cmbContrato.value;  
+
+  try {
+    const hh = Number.parseInt(horas)
+    if(hh < 1 || hh > 24 ){
+      await this.alertMessage('El tiempo debe estar entre 1 a 24');
+      return;
     }
+  } catch (error) {
+    await this.alertMessage('El tiempo debe ser de tipo numerico y estar entre 1 a 24');
+    return;
+  }
+
+  const fechaAux: Date = new Date();
+  fechaAux.setHours(0);
+  fechaAux.setMinutes(0);
+  fechaAux.setSeconds(0);
+  fechaAux.setMilliseconds(0);
+
+  let task: TaskModel = new TaskModel;
+  if(dtime1.value){
+    task.fechaTareaDesde = fechaDesde;
+  }else{
+    task.fechaTareaDesde = fechaAux;    
+  }
+
+  if(dtime2.value){
+    task.fechaTareaHasta = fechaHasta;
+  }else{
+    task.fechaTareaHasta = fechaAux;    
+  }
+  
+  task.tareaMaquinaria = tareaMaquinaria;
+ // task.planificacionTrabajo=planificacion
+  task.machine = maquina;
+
+  let dataPlanificacion=this.planTrabajo.filter((data:any)=>{
+      return data.descripcion==planificacion
+  })
+
+  const tiempo: String = horas.toString();
+  const tiempoSLA = tiempo.padStart(2, '0') + '00 Hrs';
+
+  task.division = dataPlanificacion[0].division._id
+  task.gerencia = dataPlanificacion[0].division.idGerencia
+  task.planificacionTrabajo = dataPlanificacion[0].uid
+  task.turno = turno;
+  task.tiempoSLA = tiempoSLA;
+  task.contrato = contrato;
+  task.user = this.idUser;
+
+  // console.log(dataPlanificacion)
+  console.log(task)
+  
+  this.store.dispatch(addTareasNew({data: task}));
+  this.store.select("tareas").subscribe(async (data: any) => {
+    console.log(data.rptaTarea)
+    if(data.rptaTarea.ok){
+      // await this.alertMessage('Se registró con éxito');
+      this.router.navigate(['/inicio'])
+    }else{
+      await this.alertMessage(data.rptaTarea.msg);
+    }
+  })
+
+ }
+ 
+ async alertMessage(mensaje: string) {
+  const head = mensaje
+
+  const alert = await this.alertController.create({
+    header: head,
+    cssClass: 'custom-alert',
+    backdropDismiss: false,
+    buttons: [
+      {
+        text: 'Ok',
+        cssClass: 'alert-button-confirm',
+        role: '1',
+      },
+    ],
   });
 
-  (await modal).present();
- }
+  await alert.present();
+
+  return true;
+  }
 }
 

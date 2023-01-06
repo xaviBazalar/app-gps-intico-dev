@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { TaskEventsModel } from '../models/taskEvents'
+import { TaskModel } from '../models/task';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,10 @@ export class TaskService {
 
   getTaskId(id:String) {
     return this.http.get(`${this.baseUrl}/task/id?id=${ id }`)
+  }
+
+  postTask(task: TaskModel) {
+    return this.http.post(`${ this.baseUrl }/task`, task);        
   }
 
   guardarTaskEvent(task: TaskEventsModel) {
