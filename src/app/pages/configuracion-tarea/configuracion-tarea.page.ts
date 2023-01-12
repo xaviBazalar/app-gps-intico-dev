@@ -50,16 +50,20 @@ export class ConfiguracionTareaPage implements OnInit {
       
       this.planificacionService.getPlanificacionTrabajo().subscribe((data: any) => {
         if(data.ok){
-          console.log(data);
-          const { PlanificacionTrabajo } = data
+          console.log('planificacion',data.PlanificacionTrabajo);
+          const { docs: PlanificacionTrabajo } = data.PlanificacionTrabajo
           this.planTrabajo = PlanificacionTrabajo;
         }
       });
 
       this.maquinaService.getMachine(this.idUser).subscribe((data: any) => {
+        console.log('maquina', data)
         if(data.ok){
-          const { machine } = data;
-          this.machine = machine
+          const { usermachine } = data;
+          for(let i=0; i<usermachine.length; i++){
+            const {machine} = usermachine[i]
+            this.machine.push(machine)
+          }
         }
       });
 

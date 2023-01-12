@@ -127,13 +127,13 @@ export class ReporteDiarioPage implements OnInit {
 		
 		this.serviceMaquinaria=this.machineService.getMachine(id).subscribe((data: any) => {
 			// console.log('idUser', idUser);
-			const { machine } = data;
+			const { usermachine } = data;
 			//console.log("llamando getMachine");
 			// console.log('tarea', task);
-			for (let index = 0; index < machine.length; index++) {
+			for (let index = 0; index < usermachine.length; index++) {
 				const _item = {
-					nombre: machine[index].descripcion,
-					value: machine[index].uid
+					nombre: usermachine[index].machine.descripcion,
+					value: usermachine[index].machine._id
 				};
 				// console.log(_item );
 				this.item.push(_item);

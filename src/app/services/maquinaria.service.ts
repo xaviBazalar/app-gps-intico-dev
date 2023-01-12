@@ -69,6 +69,6 @@ export class MaquinariaService {
   } 
 
   getMachine(idUsuario: String){
-    return this.http.get(`${ baseUrl }/machine?idUser=${ idUsuario }`)
+    return this.http.get(`${ baseUrl }/user-machine?idUser=${ idUsuario }`)
   }
 }
