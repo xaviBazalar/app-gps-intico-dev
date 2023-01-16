@@ -5,6 +5,7 @@ export interface TareasState {
     tareas: any,
     rptaTarea: any,
     loaded: boolean,
+    loadedNew: boolean,
     loading: boolean,
     error: any,
 
@@ -14,6 +15,7 @@ export const tareasInitialState: TareasState = {
     tareas: [],
     rptaTarea: [],
     loaded: false,
+    loadedNew: false,
     loading: false,
     error: {
         url:"",
@@ -33,18 +35,21 @@ const _tareaReducer = createReducer(tareasInitialState,
         ...state, 
         loading: false ,
         loaded: true,
+        loadedNew: false,
         tareas:[...data]
     })),
     on(successTareaNew, (state, { data }) => ({ 
         ...state, 
         loading: false,
         loaded: true,
+        loadedNew: true,
         rptaTarea: data
     })),
     on(errorTarea, (state, { payload }) => ({ 
         ...state, 
         loading: false ,
         loaded:false,
+        loadedNew: false,
         error:{
             url:payload?.url,
             name:payload?.name,

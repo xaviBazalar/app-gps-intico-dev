@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 
 import * as TareasActions from '../tareas/tareas.actions'
-import { catchError, mergeMap, tap } from 'rxjs/operators'
+import { catchError, mergeMap, switchMap, tap } from 'rxjs/operators'
 import { TaskService } from '../../services/task.service';
 import { map, of } from 'rxjs';
 
