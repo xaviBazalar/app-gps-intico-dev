@@ -169,9 +169,9 @@ export class ConfiguracionTareaPage implements OnInit {
   
   this.store.dispatch(addTareasNew({data: task}));
   this.store.select("tareas").subscribe(async (data: any) => {
-    console.log(data.rptaTarea)
-    if(data.rptaTarea.ok){
-      // await this.alertMessage('Se registró con éxito');
+    console.log('respuesta', data)
+    if( data.rptaTarea.ok ){
+      await this.alertMessage('Se registró con éxito');
       this.router.navigate(['/inicio'])
     }else{
       await this.alertMessage(data.rptaTarea.msg);
