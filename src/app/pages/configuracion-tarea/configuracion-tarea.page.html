@@ -24,7 +24,7 @@
         <ion-item>
           <ion-select class="select-ttiempo" interface="popover" placeholder="--Seleccione--" id="cmbMaquina">
             <ion-select-option *ngFor="let c of machine" 
-                                [value]="c.uid">{{ c.descripcion }}</ion-select-option>
+                                [value]="c._id">{{ c.descripcion }}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-label>Tarea de la maquinaria</ion-label>
