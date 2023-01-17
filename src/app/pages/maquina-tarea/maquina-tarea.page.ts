@@ -20,6 +20,7 @@ import { LoadingController } from '@ionic/angular';
   styleUrls: ['./maquina-tarea.page.scss'],
 })
 export class MaquinaTareaPage implements OnInit {
+//#region "Variables"
   maquinaModel: MaquinariaModel = new MaquinariaModel;
   taskEventsModel: TaskEventsModel = new TaskEventsModel;
   taskEvent: TaskEventsModel = new TaskEventsModel;
@@ -77,6 +78,7 @@ export class MaquinaTareaPage implements OnInit {
   @Input() idUser;
   @Input() idTarea;
   @Input() idMaquinaInterna;
+//#endregion "Variables"
 
   constructor(private modalController: ModalController,
               private menuController: MenuController,
